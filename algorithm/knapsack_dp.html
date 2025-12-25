@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>背包 DP 专题 | Backpack DP Tutorial</title>
+    
+    <!-- 引入 MathJax 脚本，用于渲染数学公式 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.5rem; }
+            .section-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">背包 DP 专题</h1>
+            <p class="content-subtitle">Backpack Dynamic Programming - 经典动态规划应用</p>
+        </div>
+
+        <!-- 01背包 -->
+        <div class="content-section">
+            <h2 class="section-title">1. 01 背包问题</h2>
+            <div class="section-content">
+                <p><strong>问题描述：</strong> 有 $N$ 件物品和一个容量为 $V$ 的背包。每件物品仅有一件，其体积为 $v_i$，价值为 $w_i$。求将哪些物品装入背包可使价值总和最大。</p>
+                <p><strong>核心状态：</strong> $dp[j]$ 表示容量为 $j$ 的背包能装下的最大价值。</p>
+                <p><strong>状态转移：</strong> $dp[j] = \max(dp[j], dp[j - v_i] + w_i)$</p>
+                <p><strong>关键点：</strong> 为了保证每件物品只用一次，<strong>第二层循环必须逆序遍历</strong>。</p>
+                <div class="code-block">
+<pre>// 01 背包核心代码
+for (int i = 1; i <= n; i++) {
+    for (int j = m; j >= v[i]; j--) { // 逆序！
+        dp[j] = max(dp[j], dp[j - v[i]] + w[i]);
+    }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 完全背包 -->
+        <div class="content-section">
+            <h2 class="section-title">2. 完全背包问题</h2>
+            <div class="section-content">
+                <p><strong>问题描述：</strong> 每件物品有<strong>无限多件</strong>。求背包能装下的最大价值。</p>
+                <p><strong>核心逻辑：</strong> 因为物品可以无限次使用，所以当我们更新 $dp[j]$ 时，可以使用当前已经放入过该物品的状态 $dp[j - v_i]$。</p>
+                <p><strong>关键点：</strong> 相比 01 背包，完全背包的<strong>第二层循环需要正序遍历</strong>。</p>
+                <div class="code-block">
+<pre>// 完全背包核心代码
+for (int i = 1; i <= n; i++) {
+    for (int j = v[i]; j <= m; j++) { // 正序！
+        dp[j] = max(dp[j], dp[j - v[i]] + w[i]);
+    }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 多重背包 -->
+        <div class="content-section">
+            <h2 class="section-title">3. 多重背包问题</h2>
+            <div class="section-content">
+                <p><strong>问题描述：</strong> 每件物品有固定的<strong> $s_i$ 件</strong>。求背包最大价值。</p>
+                <p><strong>朴素做法：</strong> 将 $s_i$ 件拆成 $s_i$ 个独立的 01 背包物品，复杂度为 $O(V \cdot \sum s_i)$。</p>
+                <p><strong>二进制优化：</strong> 将 $s_i$ 拆分为 $1, 2, 4, \dots, 2^k, R$ 等若干堆，每一堆看作一个整体。任何 $1 \sim s_i$ 之间的数量都可以由这些堆组合而成。优化后复杂度为 $O(V \cdot \sum \log s_i)$。</p>
+                <div class="code-block">
+<pre>// 二进制拆分示例
+for (int i = 1; i <= n; i++) {
+    int v, w, s; cin >> v >> w >> s;
+    for (int k = 1; k <= s; k *= 2) {
+        items.push_back({v * k, w * k});
+        s -= k;
+    }
+    if (s > 0) items.push_back({v * s, w * s});
+}
+// 然后对 items 进行一遍 01 背包即可</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 树形背包 -->
+        <div class="content-section">
+            <h2 class="section-title">4. 树形背包 (有依赖的背包)</h2>
+            <div class="section-content">
+                <p><strong>问题描述：</strong> 物品之间存在树状依赖关系，若要选子节点物品，必须先选父节点物品。</p>
+                <p><strong>核心状态：</strong> $dp[u][j]$ 表示以 $u$ 为根的子树，在容量为 $j$ 时的最大价值。</p>
+                <p><strong>解法：</strong> 使用 DFS 遍历树。对于每个节点 $u$，先递归处理子节点 $v$，然后将 $v$ 作为一个“分组背包”合并到 $u$ 中。</p>
+                <div class="code-block">
+<pre>void dfs(int u) {
+    for (int i = v[u]; i <= m; i++) dp[u][i] = w[u]; // 必须选父节点
+    for (int edge = head[u]; edge; edge = next[edge]) {
+        int v = to[edge];
+        dfs(v);
+        // 分组背包合并
+        for (int j = m; j >= v[u]; j--) {
+            for (int k = 0; k <= j - v[u]; k++) {
+                dp[u][j] = max(dp[u][j], dp[u][j - k] + dp[v][k]);
+            }
+        }
+    }
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- 对比总结 -->
+        <div class="content-section">
+            <h2 class="section-title">5. 总结对比</h2>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>背包类型</th>
+                            <th>物品限制</th>
+                            <th>核心特征</th>
+                            <th>常用优化</th>
+                        </tr>
+                        <tr>
+                            <td>01 背包</td>
+                            <td>每种 1 个</td>
+                            <td>逆序遍历容量层</td>
+                            <td>一维数组空间优化</td>
+                        </tr>
+                        <tr>
+                            <td>完全背包</td>
+                            <td>每种无限个</td>
+                            <td>正序遍历容量层</td>
+                            <td>无</td>
+                        </tr>
+                        <tr>
+                            <td>多重背包</td>
+                            <td>每种 $s_i$ 个</td>
+                            <td>拆分物品数量</td>
+                            <td>二进制优化、单调队列优化</td>
+                        </tr>
+                        <tr>
+                            <td>树形背包</td>
+                            <td>父子依赖</td>
+                            <td>DFS + 分组背包</td>
+                            <td>-</td>
+                        </tr>
+                    </table>
+                </div>
+                <p><strong>记忆口诀：</strong> 01 逆，完全正；多重拆，树形递归跑。</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

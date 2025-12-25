@@ -1,0 +1,511 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>匈牙利算法 | Hungarian Algorithm</title>
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul,
+        .section-content ol {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 强调文字 */
+        strong {
+            color: var(--primary-color);
+        }
+
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .content-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">匈牙利算法</h1>
+            <p class="content-subtitle">Hungarian Algorithm & Bipartite Matching</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是二分图匹配?</h2>
+            <div class="section-content">
+                <p><strong>二分图 (Bipartite Graph)</strong> 是一类特殊的图，其顶点可以分成两个独立的集合（通常称为左部和右部），所有的边都只连接不同集合的顶点，集合内部没有边相连。</p>
+                <p><strong>最大匹配 (Maximum Matching)</strong> 则是指在图中选择尽可能多的边，使得这些边没有公共顶点。通俗地说，就是在一个群体中尽可能多地凑成“一对一”的配对。</p>
+                <p>最经典的例子是<strong>男生女生相亲问题</strong>：左边集合是男生，右边集合是女生，连线代表互有好感。匈牙利算法的目的就是撮合出最多对的情侣。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 核心思想：腾位置</h2>
+            <div class="section-content">
+                <p>匈牙利算法的核心思想可以总结为一句话：<strong>“有机会上，没机会创造机会也要上”。</strong></p>
+                <p>具体策略（递归寻找增广路）：</p>
+                <ul>
+                    <li>遍历每一个左部节点（例如：男生），让他去尝试匹配他喜欢的右部节点（例如：女生）。</li>
+                    <li>如果该女生<strong>没有对象</strong>，则直接配对成功。</li>
+                    <li>如果该女生<strong>已经有对象了</strong>（假设为前男友），那么男生尝试去和“前男友”商量：<strong>“你能换一个对象吗？”</strong></li>
+                    <li>如果“前男友”能找到其他没被占用的女生，或者能让他的“现女友”再去找别人（递归过程），那么“前男友”就腾出了位置，当前的配对也就成功了。</li>
+                    <li>如果商量无果，该男生则尝试下一个心仪对象。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 算法演示</h2>
+            <div class="section-content">
+                <p>假设有以下关系：</p>
+                <ul>
+                    <li>男生 A：喜欢女生 1, 2</li>
+                    <li>男生 B：喜欢女生 2</li>
+                    <li>男生 C：喜欢女生 1</li>
+                </ul>
+                <p><strong>匹配过程：</strong></p>
+                <ol>
+                    <li><strong>轮到 A：</strong> A 尝试连女生 1，女生 1 没对象 → <strong>(A-1) 配对成功</strong>。</li>
+                    <li><strong>轮到 B：</strong> B 尝试连女生 2，女生 2 没对象 → <strong>(B-2) 配对成功</strong>。</li>
+                    <li><strong>轮到 C：</strong> C 尝试连女生 1。
+                        <br>→ 发现女生 1 已经跟 A 在一起了。
+                        <br>→ C 让 A 去找别人（腾位置）。
+                        <br>→ A 发现自己还喜欢女生 2。
+                        <br>→ A 发现女生 2 已经跟 B 在一起了。
+                        <br>→ A 让 B 去找别人。
+                        <br>→ B 发现自己只喜欢女生 2，<strong>无法腾位置</strong>。
+                        <br>→ <strong>冲突无法解决</strong>，C 匹配失败。
+                    </li>
+                </ol>
+                <p>注：如果 A 只是让出了女生 1 去找了空闲的女生 3，那么全员匹配成功。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 代码实现 (C++)</h2>
+            <div class="section-content">
+                <p>这是基于 DFS（深度优先搜索）的实现方式，代码非常短小精悍。</p>
+                <div class="code-block">
+<pre>#include &lt;bits/stdc++.h&gt;
+using namespace std;
+
+const int MAXN = 505; // 最大节点数
+vector&lt;int&gt; adj[MAXN]; // 邻接表存图：adj[u] 存左边点 u 能连到的右边点
+int match[MAXN];       // match[v] = u 表示右边点 v 的当前对象是 u
+bool vis[MAXN];        // vis[v] 标记右边点 v 在当前这一轮递归中是否被访问过
+
+// 核心函数：尝试给左边点 u 找对象
+bool dfs(int u) {
+    // 遍历 u 所有喜欢的右边点 v
+    for (int v : adj[u]) {
+        if (vis[v]) continue; // 这一轮已经问过 v 了，不要重复问
+        vis[v] = true;        // 标记这一轮已访问
+
+        // 如果 v 没有对象 (match[v] == 0)
+        // 或者 v 的对象 match[v] 可以去找别人 (dfs(match[v]))
+        if (match[v] == 0 || dfs(match[v])) {
+            match[v] = u; // 匹配成功，v 的对象变成 u
+            return true;
+        }
+    }
+    return false; // 找了一圈都没成功
+}
+
+int main() {
+    int n, m, e; // n:左边点数, m:右边点数, e:边数
+    cin >> n >> m >> e;
+    
+    for (int i = 0; i < e; i++) {
+        int u, v;
+        cin >> u >> v;
+        adj[u].push_back(v); // 建立单向边即可 (左 -> 右)
+    }
+
+    int ans = 0;
+    // 遍历每一个左边的点，尝试寻找增广路
+    for (int i = 1; i <= n; i++) {
+        // 重要：每次尝试给 i 找对象前，都要清空访问标记
+        // 因为对于 i 来说，所有的右边点都是这一轮未访问过的
+        memset(vis, 0, sizeof(vis));
+        if (dfs(i)) {
+            ans++;
+        }
+    }
+
+    cout << ans << endl;
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 复杂度与总结</h2>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <th>项目</th>
+                        <th>说明</th>
+                    </tr>
+                    <tr>
+                        <td><strong>时间复杂度</strong></td>
+                        <td>O(V·E) - 其中 V 是顶点数，E 是边数。最坏情况每个点都要遍历所有边。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>空间复杂度</strong></td>
+                        <td>O(V + E) - 使用邻接表存储图。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>优点</strong></td>
+                        <td>代码极短，逻辑简单，适合大多数算法竞赛题目。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>局限性</strong></td>
+                        <td>对于超大规模的图（如 V > 10^5），可能需要 HK 算法 (Hopcroft-Karp) 进行优化。</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查用户偏好或本地存储
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 设置初始主题
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 更新主题
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // 保存到本地存储
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        // 监听滚动事件
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        // 点击回到顶部
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

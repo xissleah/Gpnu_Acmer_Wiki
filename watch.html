@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赛事推荐 | 编程竞赛</title>
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+            --category-bg: #ffffff;
+            --category-hover: #f8f9fa;
+            --category-active: #007bff;
+            --category-active-text: #ffffff;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+            --category-bg: #2a2a2a;
+            --category-hover: #3a3a3a;
+            --category-active: #667eea;
+            --category-active-text: #ffffff;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-container {
+            display: flex;
+            padding: 2rem;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        /* 左侧分类导航 */
+        .category-nav {
+            width: 200px;
+            background-color: var(--category-bg);
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            position: sticky;
+            top: 2rem;
+            align-self: flex-start;
+        }
+        
+        .category-title {
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border-color);
+        }
+        
+        .category-list {
+            list-style: none;
+        }
+        
+        .category-item {
+            margin-bottom: 0.25rem;
+        }
+        
+        .category-btn {
+            width: 100%;
+            padding: 0.6rem 0.8rem;
+            text-align: left;
+            background-color: transparent;
+            border: none;
+            border-radius: 4px;
+            color: var(--text-color);
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .category-icon {
+            display: inline-block;
+            width: 1.2rem;
+            height: 1.2rem;
+            text-align: center;
+            line-height: 1.2rem;
+            font-size: 1.2rem;
+        }
+        
+        .category-text {
+            display: inline-block;
+        }
+        
+        .category-btn:hover {
+            background-color: var(--category-hover);
+        }
+        
+        .category-btn.active {
+            background-color: var(--category-active);
+            color: var(--category-active-text);
+        }
+        
+        /* 右侧内容区域 */
+        .content-area {
+            flex: 1;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 0.95rem;
+        }
+        
+        /* 横版卡片容器 */
+        .cards-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        /* 横版卡片 */
+        .horizontal-card {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            overflow: hidden;
+            display: flex;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 150px; /* 设置固定高度 */
+        }
+        
+        .horizontal-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 20px var(--shadow-color);
+        }
+        
+        .card-image {
+            width: 200px;
+            height: 150px;
+            object-fit: fill;
+        }
+        
+        .card-content {
+            flex: 1;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .card-header {
+            margin-bottom: 1rem;
+        }
+        
+        .card-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .card-description {
+            color: var(--text-light);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        .card-meta {
+            display: flex;
+            gap: 1rem;
+            font-size: 0.8rem;
+            color: var(--text-light);
+        }
+        
+        .card-stats {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        
+        .card-action {
+            margin-top: 1rem;
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: bold;
+            transition: background-color 0.3s, color 0.3s;
+            text-decoration: none;
+            display: inline-block;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-outline:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .main-container {
+                flex-direction: column;
+                padding: 1rem;
+            }
+            
+            .category-nav {
+                width: 100%;
+                position: static;
+            }
+            
+            .horizontal-card {
+                flex-direction: column;
+            }
+            
+            .card-image {
+                width: 100%;
+                height: 200px;
+            }
+            
+            .header {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <a href="SignIn.html" class="btn btn-outline">登录/注册</a>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <!-- 左侧分类导航 -->
+        <nav class="category-nav">
+            <h3 class="category-title">赛事分类</h3>
+            <ul class="category-list">
+                <li class="category-item">
+                    <button class="category-btn active" data-category="all">
+                        <span class="category-icon">🏠</span>
+                        <span class="category-text">全部赛事</span>
+                    </button>
+                </li>
+                <li class="category-item">
+                    <button class="category-btn" data-category="domestic">
+                        <span class="category-icon">🇨🇳</span>
+                        <span class="category-text">国内赛事</span>
+                    </button>
+                </li>
+                <li class="category-item">
+                    <button class="category-btn" data-category="international">
+                        <span class="category-icon">🌍</span>
+                        <span class="category-text">国际赛事</span>
+                    </button>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- 右侧内容区域 -->
+        <main class="content-area">
+            <div class="content-header">
+                <h1 class="content-title">赛事推荐</h1>
+                <p class="content-subtitle">精选国内外优质编程竞赛，助你提升竞技水平</p>
+            </div>
+
+            <!-- 横版卡片容器 -->
+            <div class="cards-container" id="cardsContainer">
+                <!-- 卡片将通过JavaScript动态生成 -->
+            </div>
+        </main>
+    </div>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Website Name / All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查用户偏好或本地存储
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 设置初始主题
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 更新主题
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // 保存到本地存储
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 赛事数据
+        const competitions = [
+            {
+                id: 1,
+                name: '蓝桥杯',
+                description: '国内知名的算法竞赛，面向大学生和职业开发者，设有不同难度级别，奖项具有较高含金量。',
+                category: ['domestic'],
+                image: 'logo/lanqiao.png',
+                difficulty: '初级到高级',
+                date: '2025年4月',
+                url: 'https://dasai.lanqiao.cn/'
+            },
+            {
+                id: 2,
+                name: 'CCPC',
+                description: '中国大学生程序设计竞赛，由中国计算机学会主办，是国内最高水平的大学生算法竞赛之一。',
+                category: ['domestic'],
+                image: 'logo/ccpc.jpg',
+                difficulty: '高级',
+                date: '2025年9月',
+                url: 'https://ccpc.io/'
+            },
+            {
+                id: 3,
+                name: 'ICPC',
+                description: '国际大学生程序设计竞赛，全球最具影响力的算法竞赛之一，被誉为"算法奥运会"。',
+                category: ['international'],
+                image: 'logo/icpc.jpg',
+                difficulty: '高级',
+                date: '2025年11月',
+                url: 'https://icpc.global/'
+            },
+            {
+                id: 4,
+                name: 'Codeforces Round',
+                description: 'Codeforces平台每周举办的在线编程竞赛，吸引了全球顶尖选手参与，题目质量高。',
+                category: ['international'],
+                image: 'logo/cf.png',
+                difficulty: '中级到高级',
+                date: '每周举办',
+                url: 'https://codeforces.com/contests'
+            },
+            {
+                id: 5,
+                name: 'AtCoder Beginner Contest',
+                description: 'AtCoder平台专为初学者设计的竞赛，难度适中，适合算法入门者。',
+                category: ['international'],
+                image: 'logo/atcoder.png',
+                difficulty: '初级到中级',
+                date: '每周举办',
+                url: 'https://atcoder.jp/contests'
+            },
+            {
+                id: 6,
+                name: 'ACM/ICPC 亚洲区预选赛',
+                description: 'ICPC亚洲区预选赛，选拔优秀队伍参加全球总决赛，竞争激烈。',
+                category: ['international'],
+                image: 'logo/icpc.jpg',
+                difficulty: '高级',
+                date: '2025年10月',
+                url: 'https://icpc.global/regions'
+            },
+            {
+                id: 7,
+                name: '牛客编程竞赛',
+                description: '牛客网举办的在线编程竞赛，涵盖算法、数据结构等多个领域，适合不同水平的选手。',
+                category: ['domestic'],
+                image: 'logo/niuke.png',
+                difficulty: '初级到高级',
+                date: '定期举办',
+                url: 'https://ac.nowcoder.com/acm/contest/vip-index'
+            },
+            {
+                id: 8,
+                name: 'CACC',
+                description: '中国大学生程序设计竞赛，由中国计算机学会主办，是国内重要的算法竞赛之一。',
+                category: ['domestic'],
+                image: 'logo/cacc.png',
+                difficulty: '高级',
+                date: '2025年8月',
+                url: 'https://cacc.ccf.org.cn/#/home'
+            },
+            {
+                id: 9,
+                name: 'LeetCode Weekly Contest',
+                description: 'LeetCode平台每周举办的在线编程竞赛，题目贴近实际面试，适合准备技术面试的开发者。',
+                category: ['international'],
+                image: 'logo/leetcode.png',
+                difficulty: '中级',
+                date: '每周举办',
+                url: 'https://leetcode.com/contest/'
+            },
+            {
+                id: 10,
+                name: '百度之星',
+                description: '百度举办的编程竞赛，面向全球编程爱好者，题目涵盖算法、数据结构等领域。',
+                category: ['domestic'],
+                image: 'logo/baidu.jpg',
+                difficulty: '中级到高级',
+                date: '每年举办',
+                url: 'https://star.baidu.com/'
+            }
+        ];
+
+        // 渲染卡片函数
+        function renderCards(category = 'all') {
+            const container = document.getElementById('cardsContainer');
+            container.innerHTML = '';
+
+            const filteredCompetitions = category === 'all' 
+                ? competitions 
+                : competitions.filter(competition => competition.category.includes(category));
+
+            if (filteredCompetitions.length === 0) {
+                // 显示无结果提示
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 4rem; color: var(--text-light);">
+                        <p style="font-size: 1.2rem; margin-bottom: 0.5rem;">暂无相关赛事</p>
+                        <p>请尝试选择其他分类</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filteredCompetitions.forEach(competition => {
+                const cardLink = document.createElement('a');
+                cardLink.href = competition.url;
+                cardLink.target = '_blank';
+                cardLink.className = 'card-link';
+                cardLink.style.textDecoration = 'none';
+                cardLink.style.display = 'block';
+                
+                const card = document.createElement('div');
+                card.className = 'horizontal-card';
+                card.innerHTML = `
+                    <img src="${competition.image}" alt="${competition.name}" class="card-image">
+                    <div class="card-content">
+                        <div class="card-header">
+                            <h3 class="card-title">${competition.name}</h3>
+                            <div class="card-description">${competition.description}</div>
+                        </div>
+                        <div class="card-meta">
+                            <span class="card-stats">📅 ${competition.date}</span>
+                            <span class="card-stats">⚡ ${competition.difficulty}</span>
+                        </div>
+                    </div>
+                `;
+                
+                cardLink.appendChild(card);
+                container.appendChild(cardLink);
+            });
+        }
+
+        // 分类按钮事件监听
+        const categoryBtns = document.querySelectorAll('.category-btn');
+        categoryBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                // 移除所有按钮的active类
+                categoryBtns.forEach(b => b.classList.remove('active'));
+                // 为当前按钮添加active类
+                btn.classList.add('active');
+                // 获取当前分类
+                const category = btn.getAttribute('data-category');
+                // 渲染对应分类的卡片
+                renderCards(category);
+            });
+        });
+
+        // 初始渲染所有赛事
+        renderCards();
+    </script>
+</body>
+</html>

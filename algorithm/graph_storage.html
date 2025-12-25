@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>图的存储 | Graph Storage Tutorial</title>
+    
+    <!-- 引入 MathJax 脚本，用于渲染数学公式 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.5rem; }
+            .section-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">图的存储</h1>
+            <p class="content-subtitle">Graph Storage - 如何在代码中表示一张图</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 为什么需要研究图的存储?</h2>
+            <div class="section-content">
+                <p>图由顶点 ($V$) 和边 ($E$) 组成。在算法竞赛中，节点的数量可能达到 $10^5$，边可能达到 $10^6$。如果存储方式选择不当，轻则浪费内存（MLE），重则导致算法运行效率极低（TLE）。</p>
+                <p>我们将图分为两种：</p>
+                <ul>
+                    <li><strong>稠密图：</strong> 边数接近顶点数的平方。</li>
+                    <li><strong>稀疏图：</strong> 边数远小于顶点数的平方。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 邻接矩阵 (Adjacency Matrix)</h2>
+            <div class="section-content">
+                <p>使用一个二维数组 <code>g[N][N]</code> 来存储。<code>g[i][j]</code> 的值代表节点 $i$ 到节点 $j$ 之间的边权。</p>
+                <div class="code-block">
+<pre>// 初始化
+int g[N][N];
+memset(g, 0x3f, sizeof g); // 求最短路时常初始化为无穷大
+
+// 存入边 (u -> v 权值为 w)
+g[u][v] = w;
+// 如果是无向图，还需要：g[v][u] = w;</pre>
+                </div>
+                <p><strong>优点：</strong> 查找两个点之间是否有边非常快 $O(1)$。</p>
+                <p><strong>缺点：</strong> 空间复杂度 $O(V^2)$。当 $V=10^5$ 时，内存会直接爆炸。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 邻接表 (Adjacency List - Vector 版)</h2>
+            <div class="section-content">
+                <p>对每个节点开一个动态数组 <code>vector</code>，存储它所有能到达的点。这是最易于理解且代码最简洁的存储方式。</p>
+                <div class="code-block">
+<pre>#include &lt;vector&gt;
+struct Edge { int to, w; };
+vector&lt;Edge&gt; g[N];
+
+// 存入边
+g[u].push_back({v, w});
+
+// 遍历 u 的所有邻居
+for (auto edge : g[u]) {
+    int v = edge.to;
+    int w = edge.w;
+}</pre>
+                </div>
+                <p><strong>优点：</strong> 空间复杂度 $O(V+E)$，非常节省内存。适合稀疏图。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 链式前向星 (竞赛推荐)</h2>
+            <div class="section-content">
+                <p>这是用静态数组模拟邻接表的一种方式。由于它没有 <code>vector</code> 的额外开销（动态扩容、内存碎片等），在竞赛中运行速度最快，是处理大规模图的首选。</p>
+                <div class="code-block">
+<pre>int head[N], tot; // head 记录每个点最后一次加入的边编号
+struct Edge {
+    int to, next, w;
+} edge[M];
+
+// 加边函数
+void add(int u, int v, int w) {
+    edge[++tot].to = v;
+    edge[tot].w = w;
+    edge[tot].next = head[u]; // 指向 u 之前连的那条边
+    head[u] = tot;            // 更新 u 的最后一条边
+}
+
+// 遍历 u 的所有邻居 (核心套路)
+for (int i = head[u]; i; i = edge[i].next) {
+    int v = edge[i].to;
+    int w = edge[i].w;
+}</pre>
+                </div>
+                <p><strong>记忆要点：</strong> 每一条边都指向“上一次在这个起点加的那条边”，形成一条倒序的链表。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 存储方式深度对比</h2>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>比较项</th>
+                            <th>邻接矩阵</th>
+                            <th>邻接表 (Vector)</th>
+                            <th>链式前向星</th>
+                        </tr>
+                        <tr>
+                            <td><strong>空间复杂度</strong></td>
+                            <td>$O(V^2)$</td>
+                            <td>$O(V+E)$</td>
+                            <td>$O(V+E)$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>查询 $u, v$ 连通性</strong></td>
+                            <td>$O(1)$</td>
+                            <td>$O(degree(u))$</td>
+                            <td>$O(degree(u))$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>遍历所有邻居</strong></td>
+                            <td>$O(V)$</td>
+                            <td>$O(degree(u))$</td>
+                            <td>$O(degree(u))$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>运行效率</strong></td>
+                            <td>低 (由于 $V$ 大)</td>
+                            <td>中 (Vector 稍慢)</td>
+                            <td><strong>极高</strong></td>
+                        </tr>
+                        <tr>
+                            <td><strong>适用场景</strong></td>
+                            <td>点少边多的稠密图</td>
+                            <td>大部分场景，简单易写</td>
+                            <td>大规模稀疏图，追求极致速度</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">6. 总结与建议</h2>
+            <div class="section-content">
+                <ul>
+                    <li>如果顶点数 $V \le 500$，直接用<strong>邻接矩阵</strong>，写起来最快。</li>
+                    <li>如果是普通练习或面试，用 <strong>Vector 邻接表</strong>，逻辑最清晰。</li>
+                    <li>如果是参加 ACM、蓝桥杯或 OI，强烈建议熟练掌握<strong>链式前向星</strong>。</li>
+                </ul>
+                <p><strong>注意点：</strong> 无向图在存储时，需要调用两次加边函数：<code>add(u, v)</code> 和 <code>add(v, u)</code>，因此边数组 <code>edge[]</code> 的大小要开到题目给定的边数 $M$ 的<strong>两倍</strong>。</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

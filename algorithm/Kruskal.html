@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kruskal 算法 | Kruskal's Algorithm</title>
+    
+    <!-- 引入 MathJax 脚本，用于渲染数学公式 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.5rem; }
+            .section-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">Kruskal 算法</h1>
+            <p class="content-subtitle">Kruskal's Algorithm - Minimum Spanning Tree</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是 Kruskal 算法?</h2>
+            <div class="section-content">
+                <p>Kruskal 算法（克鲁斯卡尔算法）是另一种求图中<strong>最小生成树 (MST)</strong> 的经典贪心算法。</p>
+                <p>与 Prim 算法“由点及面”的生长方式不同，Kruskal 算法更像是“森林合并”。它直接以<strong>边</strong>为核心，每次选择权重最小的边，只要这条边不让已有的树变成“环”。</p>
+                <p><strong>通俗理解：</strong> 在一个有很多岛屿的海域，我们要修桥连通所有岛屿。Kruskal 的做法是：先修最便宜的那座桥，再修第二便宜的…… 唯一的限制是，如果两座岛已经通过别的桥连通了，就不再重复修桥。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 核心逻辑：基于边的贪心</h2>
+            <div class="section-content">
+                <p>Kruskal 的操作流程非常直观：</p>
+                <ol>
+                    <li>将图中所有的边按<strong>权值从小到大</strong>排序。</li>
+                    <li>依次遍历这些边 $(u, v)$，权值为 $w$：
+                        <ul>
+                            <li>检查 $u$ 和 $v$ 是否已经连通。</li>
+                            <li><strong>若不连通：</strong> 说明加入这条边不会形成环，选择它，并将 $u$ 和 $v$ 所在的两个集合合并。</li>
+                            <li><strong>若已连通：</strong> 舍弃这条边。</li>
+                        </ul>
+                    </li>
+                    <li>重复直到选够了 $N-1$ 条边。</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 关键数据结构：并查集 (DSU)</h2>
+            <div class="section-content">
+                <p>在算法中，我们需要高效地完成“查询是否连通”和“合并集合”的操作。这正是<strong>并查集</strong>的拿手好戏。</p>
+                <ul>
+                    <li><code>find(i)</code>：查询节点 $i$ 属于哪个集合（找祖先）。</li>
+                    <li><code>p[i] = j</code>：将两个集合合并。</li>
+                </ul>
+                <p>如果没有并查集，Kruskal 算法判断环的复杂度会非常高，有了并查集，判断和合并几乎是 $O(1)$ 的时间复杂度。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 代码实现 (C++)</h2>
+            <div class="section-content">
+                <p>Kruskal 算法的代码结构非常固定。先定义边结构体，排序，然后用并查集扫描即可。</p>
+                <div class="code-block">
+<pre>#include &lt;iostream&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+const int N = 100010, M = 200010;
+
+// 1. 定义边结构体
+struct Edge {
+    int u, v, w;
+    // 重载小于号，方便直接调用 sort 排序
+    bool operator< (const Edge &W) const {
+        return w < W.w;
+    }
+} edges[M];
+
+int p[N]; // 并查集数组
+int n, m;
+
+// 2. 并查集核心操作：查找祖先 + 路径压缩
+int find(int x) {
+    if (p[x] != x) p[x] = find(p[x]);
+    return p[x];
+}
+
+int kruskal() {
+    // 3. 按照边权从小到大排序
+    sort(edges, edges + m);
+
+    // 初始化并查集
+    for (int i = 1; i <= n; i++) p[i] = i;
+
+    int res = 0, cnt = 0; // res 存储权值和，cnt 记录存了多少条边
+    
+    // 4. 枚举每一条边
+    for (int i = 0; i < m; i++) {
+        int u = edges[i].u, v = edges[i].v, w = edges[i].w;
+
+        u = find(u), v = find(v);
+        if (u != v) { // 如果不连通（不在一个集合中）
+            p[u] = v; // 合并集合
+            res += w;
+            cnt++;
+        }
+    }
+
+    // 如果选中的边小于 n-1，说明图不连通
+    if (cnt < n - 1) return -1;
+    return res;
+}
+
+int main() {
+    cin >> n >> m;
+    for (int i = 0; i < m; i++) {
+        int u, v, w;
+        cin >> u >> v >> w;
+        edges[i] = {u, v, w};
+    }
+
+    int t = kruskal();
+    if (t == -1) puts("impossible");
+    else cout << t << endl;
+
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 算法对比：Kruskal vs Prim</h2>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>特性</th>
+                            <th>Prim 算法 (朴素)</th>
+                            <th>Kruskal 算法</th>
+                        </tr>
+                        <tr>
+                            <td><strong>核心思想</strong></td>
+                            <td>维护点集，每次找离集合最近的点</td>
+                            <td>维护边集，每次找权值最小的边</td>
+                        </tr>
+                        <tr>
+                            <td><strong>时间复杂度</strong></td>
+                            <td>$O(N^2)$</td>
+                            <td>$O(M \log M)$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>适用图类型</strong></td>
+                            <td><strong>稠密图</strong> (点少边多)</td>
+                            <td><strong>稀疏图</strong> (点多边少)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>实现难度</strong></td>
+                            <td>中等（类似 Dijkstra）</td>
+                            <td><strong>简单</strong>（排序 + 并查集）</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">6. 总结与应用场景</h2>
+            <div class="section-content">
+                <ul>
+                    <li>Kruskal 算法的瓶颈在于<strong>排序</strong>。如果边数 $M$ 巨大，$M \log M$ 的代价会很高。</li>
+                    <li>在竞赛中，Kruskal 比 Prim 更常用，因为它：
+                        <ol>
+                            <li>代码更简短，不容易写错。</li>
+                            <li>由于大部分题目给出的图都是稀疏图，$O(M \log M)$ 性能非常优秀。</li>
+                            <li>可以很方便地扩展，比如求“次小生成树”或者处理一些需要并查集的题目。</li>
+                        </ol>
+                    </li>
+                </ul>
+                <p><strong>记住口诀：</strong> 先排序，再扫描，并查集判断，不连通就加，连通就跳。</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

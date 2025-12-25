@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>单调队列 | Monotonic Queue</title>
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .content-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">单调队列</h1>
+            <p class="content-subtitle">Monotonic Queue</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是单调队列?</h2>
+            <div class="section-content">
+                <p>单调队列是一种特殊的双端队列（Deque），队列中的元素始终保持<strong>单调递增</strong>或<strong>单调递减</strong>的顺序。</p>
+                <p>它主要用于解决<strong>滑动窗口最值问题</strong>。例如：给定一个长度为 N 的数组，有一个长度为 K 的窗口在数组上移动，求每次移动时窗口内的最大值或最小值。</p>
+                <p>其核心优势在于，可以在 <strong>O(N)</strong> 的线性时间内解决普通算法需要 O(NK) 才能解决的问题。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 核心思想：优胜劣汰</h2>
+            <div class="section-content">
+                <p>单调队列维护最大值的逻辑可以用一句经典的 OI 圈名言来概括：</p>
+                <p style="border-left: 4px solid var(--primary-color); padding-left: 1rem; font-style: italic; background: rgba(0,0,0,0.02); padding: 10px;">
+                    “如果一个选手比你小，还比你强，那你就可以退役了。”
+                </p>
+                <p><strong>解释：</strong></p>
+                <ul>
+                    <li><strong>“比你小”</strong>：指的是元素的下标更大（后进来的），在滑动窗口中存活的时间更长。</li>
+                    <li><strong>“比你强”</strong>：指的是元素的值更大（如果是求最大值）。</li>
+                </ul>
+                <p>如果新进来的元素比队列末尾的元素更大，那么队列末尾的元素在未来的任何时刻都不可能成为“最大值”（因为新元素比它大，而且活得比它久），所以队列末尾的元素可以直接被淘汰（出队）。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 演示：滑动窗口最大值</h2>
+            <div class="section-content">
+                <p>假设数组为 <code>[1, 3, -1, -3, 5]</code>，窗口大小 k=3。我们需要维护一个<strong>单调递减</strong>的队列（队首永远是当前窗口最大值）。</p>
+                <div class="code-block">
+<pre>初始状态：队列为空
+
+1. 元素 '1' 进来：
+   - 队列空，直接入队。
+   - 队列：[1] (存下标)
+
+2. 元素 '3' 进来：
+   - 3 比 1 大，1 永远不可能是最大值了，弹出 1。
+   - 3 入队。
+   - 队列：[3]
+
+3. 元素 '-1' 进来：
+   - -1 比 3 小，但 -1 活得久，可能以后成大王，保留。
+   - -1 入队。
+   - 队列：[3, -1] -> 队首是 3，当前窗口最大值：3
+
+4. 元素 '-3' 进来：
+   - -3 比 -1 小，保留。
+   - 检查队首 3 是否过期（比如下标超出了窗口范围）。
+   - 队列：[3, -1, -3] -> 队首是 3，当前窗口最大值：3
+
+5. 元素 '5' 进来：
+   - 5 比 -3 大，弹出 -3。
+   - 5 比 -1 大，弹出 -1。
+   - 5 比 3 大，弹出 3。
+   - 5 入队。
+   - 队列：[5] -> 当前窗口最大值：5</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 代码实现 (C++ STL)</h2>
+            <div class="section-content">
+                <p>在实现时，有一个非常关键的技巧：<strong>队列中存储的是数组的下标，而不是数值</strong>。存下标既能通过 <code>a[i]</code> 找到数值，又能判断元素是否滑出了窗口范围。</p>
+                <p>以下代码解决了 LeetCode 239. 滑动窗口最大值：</p>
+                <div class="code-block">
+<pre>#include &lt;iostream&gt;
+#include &lt;deque&gt;
+#include &lt;vector&gt;
+using namespace std;
+
+// 打印数组函数
+void printRes(const vector&lt;int&gt;& res) {
+    for(int x : res) cout << x << " ";
+    cout << endl;
+}
+
+int main() {
+    vector&lt;int&gt; nums = {1, 3, -1, -3, 5, 3, 6, 7};
+    int k = 3; // 窗口大小
+    
+    // 双端队列，存下标
+    deque&lt;int&gt; q; 
+    vector&lt;int&gt; result;
+
+    for (int i = 0; i < nums.size(); i++) {
+        // 1. 入队前，维护单调性（去尾）
+        // 如果新元素 >= 队尾元素，说明队尾元素“废了”，弹出
+        while (!q.empty() && nums[i] >= nums[q.back()]) {
+            q.pop_back();
+        }
+
+        // 2. 元素入队
+        q.push_back(i);
+
+        // 3. 检查队首是否过期（去头）
+        // 当前窗口范围是 [i-k+1, i]，如果队首下标 < i-k+1，说明滑出去了
+        if (q.front() < i - k + 1) {
+            q.pop_front();
+        }
+
+        // 4. 记录结果
+        // 当窗口完全形成后（i >= k-1），队首就是最大值
+        if (i >= k - 1) {
+            result.push_back(nums[q.front()]);
+        }
+    }
+
+    cout << "滑动窗口最大值结果: ";
+    printRes(result);
+    // 输出: 3 3 5 5 6 7
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 复杂度分析与对比</h2>
+            <div class="section-content">
+                <p>为什么单调队列这么快？</p>
+                <table>
+                    <tr>
+                        <th>方法</th>
+                        <th>每次查询复杂度</th>
+                        <th>总时间复杂度 (N个元素)</th>
+                        <th>解释</th>
+                    </tr>
+                    <tr>
+                        <td>暴力法</td>
+                        <td>O(K)</td>
+                        <td>O(NK)</td>
+                        <td>每次都要遍历整个窗口找最大值。</td>
+                    </tr>
+                    <tr>
+                        <td>优先队列 (堆)</td>
+                        <td>O(log K)</td>
+                        <td>O(N log K)</td>
+                        <td>维护一个堆，插入和删除需要对数时间。</td>
+                    </tr>
+                    <tr>
+                        <td><strong>单调队列</strong></td>
+                        <td><strong>O(1)</strong> (均摊)</td>
+                        <td><strong>O(N)</strong></td>
+                        <td>每个元素最多<strong>进队一次，出队一次</strong>。虽然有 while 循环，但总操作次数不会超过 2N。</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查用户偏好或本地存储
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 设置初始主题
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 更新主题
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // 保存到本地存储
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        // 监听滚动事件
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        // 点击回到顶部
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

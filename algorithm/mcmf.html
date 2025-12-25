@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>最小费用最大流 | MCMF Tutorial</title>
+    
+    <!-- 引入 MathJax 脚本，用于渲染数学公式 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.5rem; }
+            .section-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">最小费用最大流 (MCMF)</h1>
+            <p class="content-subtitle">Minimum Cost Maximum Flow - 让网络流更有“价值”</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是费用流?</h2>
+            <div class="section-content">
+                <p>在之前的<strong>最大流</strong>问题中，我们只关心从源点到汇点能运送多少“货物”。但在实际生活中，每条管道不仅有容量限制，还有运输成本。</p>
+                <p><strong>定义：</strong> 给定一个网络，每条边 $(u, v)$ 除了容量 $c(u, v)$ 外，还有一个单位费用 $w(u, v)$。我们需要在保证总流量最大的前提下，使得总费用（$\sum \text{流量} \times \text{单位费用}$）最小。</p>
+                <p><strong>核心逻辑：</strong> 只要图中还有从源点到汇点的增广路，我们就选一条<strong>费用最低</strong>的路径进行增广。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 算法核心：SSP 算法</h2>
+            <div class="section-content">
+                <p>常用的费用流求解方法是 <strong>SSP (Successive Shortest Path)</strong> 算法。它的流程和 Edmonds-Karp 最大流算法非常相似：</p>
+                <ul>
+                    <li><strong>找路：</strong> 最大流用 BFS 找任意路径，而费用流用 <strong>SPFA</strong> 找一条以“单位费用”为权值的<strong>最短路</strong>。</li>
+                    <li><strong>增广：</strong> 沿着这条最短路进行流量增广。</li>
+                    <li><strong>更新：</strong> 更新残留网。注意：反向边的容量为 0，但其费用为<strong>原费用的相反数</strong>（即 $-w$），表示“退回流量可以返还费用”。</li>
+                </ul>
+                <p><strong>注意：</strong> 为什么不用 Dijkstra？因为反向边的权值为负，普通的 Dijkstra 无法处理，必须使用 SPFA 或带势能优化的 Dijkstra。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 代码实现 (C++)</h2>
+            <div class="section-content">
+                <p>以下是基于 SPFA 实现的最小费用最大流模板，结构清晰：</p>
+                <div class="code-block">
+<pre>#include &lt;iostream&gt;
+#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;cstring&gt;
+
+using namespace std;
+
+const int N = 5005, M = 100005, INF = 0x3f3f3f3f;
+
+struct Edge {
+    int to, next, cap, flow, cost;
+} edge[M];
+
+int head[N], pre[N], edge_idx[N], dist[N];
+bool vis[N];
+int n, m, s, t, tot = 1;
+
+void add_edge(int u, int v, int c, int w) {
+    edge[++tot] = {v, head[u], c, 0, w}; head[u] = tot;
+    edge[++tot] = {u, head[v], 0, 0, -w}; head[v] = tot;
+}
+
+bool spfa() {
+    memset(dist, 0x3f, sizeof dist);
+    memset(vis, 0, sizeof vis);
+    queue&lt;int&gt; q;
+    q.push(s); dist[s] = 0; vis[s] = 1;
+
+    while (!q.empty()) {
+        int u = q.front(); q.pop(); vis[u] = 0;
+        for (int i = head[u]; i; i = edge[i].next) {
+            int v = edge[i].to;
+            if (edge[i].cap > edge[i].flow && dist[v] > dist[u] + edge[i].cost) {
+                dist[v] = dist[u] + edge[i].cost;
+                pre[v] = u;        // 记录前驱节点
+                edge_idx[v] = i;    // 记录是通过哪条边过来的
+                if (!vis[v]) { q.push(v); vis[v] = 1; }
+            }
+        }
+    }
+    return dist[t] != INF;
+}
+
+void mcmf(int &max_flow, int &min_cost) {
+    while (spfa()) {
+        int flow = INF;
+        // 1. 找到该路径上的最小剩余容量
+        for (int i = t; i != s; i = pre[i])
+            flow = min(flow, edge[edge_idx[i]].cap - edge[edge_idx[i]].flow);
+        
+        // 2. 更新流量和总费用
+        max_flow += flow;
+        for (int i = t; i != s; i = pre[i]) {
+            edge[edge_idx[i]].flow += flow;
+            edge[edge_idx[i] ^ 1].flow -= flow;
+            min_cost += flow * edge[edge_idx[i]].cost;
+        }
+    }
+}
+
+int main() {
+    cin >> n >> m >> s >> t;
+    while (m--) {
+        int u, v, c, w;
+        cin >> u >> v >> c >> w;
+        add_edge(u, v, c, w);
+    }
+    int flow = 0, cost = 0;
+    mcmf(flow, cost);
+    cout << flow << " " << cost << endl;
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 关键点深度解析</h2>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>细节项目</th>
+                            <th>逻辑解释</th>
+                        </tr>
+                        <tr>
+                            <td><strong>反向边费用</strong></td>
+                            <td>设为 $-w$。当你反悔退回 1 单位流量时，你应该把之前付出的 $w$ 费用拿回来。</td>
+                        </tr>
+                        <tr>
+                            <td><strong>停止条件</strong></td>
+                            <td>SPFA 无法找到从 $S$ 到 $T$ 的路径，说明最大流已达到，算法结束。</td>
+                        </tr>
+                        <tr>
+                            <td><strong>时间复杂度</strong></td>
+                            <td>$O(F \cdot E \cdot V)$，其中 $F$ 是最大流数值。实际运行速度通常很快。</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 总结与应用</h2>
+            <div class="section-content">
+                <p>费用流是解决“分配问题”的神器：</p>
+                <ul>
+                    <li><strong>二分图最佳匹配：</strong> 在带权二分图中找最大权匹配。</li>
+                    <li><strong>任务调度：</strong> 有多项任务和多个人，每个人做不同任务的效率/成本不同。</li>
+                    <li><strong>物流规划：</strong> 如何用最低的油费把货物送到目的地。</li>
+                </ul>
+                <p><strong>一句话记忆：</strong> 把 Edmonds-Karp 的 BFS 换成 SPFA，每次增广最便宜的路，就是最小费用最大流。</p>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

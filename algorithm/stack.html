@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>栈 | Stack</title>
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .section-content ul {
+            margin-left: 2rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            text-align: left;
+        }
+        
+        th {
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            padding: 2rem;
+            text-align: center;
+            margin-top: 2rem;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="../main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">栈</h1>
+            <p class="content-subtitle">Stack</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是栈?</h2>
+            <div class="section-content">
+                <p>栈（Stack）是一种特殊的线性数据结构，它遵循**后进先出**（LIFO, Last In First Out）的原则。就像一摞盘子，你只能从最上面放入盘子（Push），也只能从最上面取走盘子（Pop）。</p>
+                <p>最后放入栈的元素，会最先被取出来。这种特性使得栈在处理需要“回溯”或“撤销”操作的问题时非常有用。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 栈的基本操作</h2>
+            <div class="section-content">
+                <p>栈主要支持以下几种操作：</p>
+                <ul>
+                    <li><strong>push(x)</strong>: 将元素 x 放入栈顶（入栈）。</li>
+                    <li><strong>pop()</strong>: 移除栈顶元素（出栈）。</li>
+                    <li><strong>top()</strong>: 获取栈顶元素的值，但不移除它。</li>
+                    <li><strong>empty()</strong>: 判断栈是否为空。</li>
+                    <li><strong>size()</strong>: 获取栈中元素的数量。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 栈的实现 (C++ STL)</h2>
+            <div class="section-content">
+                <p>在 C++ 中，我们可以直接使用标准模板库（STL）中的 <code>stack</code> 容器。</p>
+                <div class="code-block">
+<pre>#include &lt;iostream&gt;
+#include &lt;stack&gt;
+using namespace std;
+
+int main() {
+    stack&lt;int&gt; s; // 定义一个存储 int 的栈
+
+    // 入栈
+    s.push(10);
+    s.push(20);
+    s.push(30);
+
+    // 输出栈顶元素
+    cout << "栈顶元素: " << s.top() << endl; // 输出 30
+
+    // 出栈
+    s.pop();
+    cout << "出栈后栈顶元素: " << s.top() << endl; // 输出 20
+
+    // 检查是否为空
+    if (!s.empty()) {
+        cout << "栈不为空" << endl;
+    }
+    
+    // 栈的大小
+    cout << "栈的大小: " << s.size() << endl; // 输出 2
+
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content-section">
+            <h2 class="section-title">4. 手写栈的实现</h2>
+            <div class="section-content">
+                <p>我们也可以用数组模拟一个栈，这在算法竞赛中非常常见，因为效率稍高且实现简单。</p>
+                <div class="code-block">
+<pre>#include &lt;iostream&gt;
+using namespace std;
+
+const int MAXN = 100010;
+int stk[MAXN]; // 栈数组
+int tt = 0;    // 栈顶指针，初始为 0 表示空栈
+
+// 入栈
+void push(int x) {
+    stk[++tt] = x;
+}
+
+// 出栈
+void pop() {
+    if (tt > 0) tt--;
+}
+
+// 获取栈顶
+int top() {
+    return stk[tt];
+}
+
+// 判断空
+bool empty() {
+    return tt == 0;
+}
+
+int main() {
+    push(1);
+    push(2);
+    cout << top() << endl; // 2
+    pop();
+    cout << top() << endl; // 1
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 复杂度分析</h2>
+            <div class="section-content">
+                <table>
+                    <tr>
+                        <th>操作</th>
+                        <th>时间复杂度</th>
+                    </tr>
+                    <tr>
+                        <td>入栈 (Push)</td>
+                        <td>O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>出栈 (Pop)</td>
+                        <td>O(1)</td>
+                    </tr>
+                    <tr>
+                        <td>获取栈顶 (Top)</td>
+                        <td>O(1)</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查用户偏好或本地存储
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 设置初始主题
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 更新主题
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // 保存到本地存储
+            localStorage.setItem('theme', newTheme);
+        });
+    </script>
+</body>
+</html>

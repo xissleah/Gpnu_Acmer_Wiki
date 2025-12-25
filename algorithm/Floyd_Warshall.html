@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Floyd 算法 | Floyd-Warshall Algorithm</title>
+    
+    <!-- 引入 MathJax 脚本，用于渲染数学公式 -->
+    <script>
+        MathJax = {
+            tex: {
+                inlineMath: [['$', '$'], ['\\(', '\\)']]
+            }
+        };
+    </script>
+    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
+
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.5rem; }
+            .section-title { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="main.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">Floyd 算法</h1>
+            <p class="content-subtitle">Floyd-Warshall Algorithm - All-Pairs Shortest Paths</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是 Floyd 算法?</h2>
+            <div class="section-content">
+                <p>Floyd 算法（弗洛伊德算法）是一种用于寻找给定的加权图中<strong>任意两点之间最短路径</strong>的算法。</p>
+                <p>与 Dijkstra 或 Bellman-Ford 这种“单源”最短路算法不同，Floyd 算法一次性解决<strong>多源</strong>最短路问题。它能够处理有向图或负权边，但不能处理包含“负权回路”的图。</p>
+                <p><strong>核心特点：</strong></p>
+                <ul>
+                    <li>算法简单，代码只有三层循环。</li>
+                    <li>时间复杂度为 $O(N^3)$，空间复杂度为 $O(N^2)$。</li>
+                    <li>适用于顶点数较少的图（通常 $N \le 500$）。</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 核心逻辑：动态规划</h2>
+            <div class="section-content">
+                <p>Floyd 算法的本质是<strong>动态规划 (Dynamic Programming)</strong>。</p>
+                <p>假设 $d[k][i][j]$ 表示点 $i$ 到点 $j$ 之间，只允许经过结点 $1, 2, \dots, k$ 作为中转点时的最短路径长度。</p>
+                <p><strong>状态转移方程：</strong></p>
+                <p>当我们要考虑第 $k$ 个点是否作为中转点时：</p>
+                <ul>
+                    <li>如果不经过 $k$，则最短路就是 $d[k-1][i][j]$。</li>
+                    <li>如果经过 $k$，则最短路是 $i \to k$ 的最短路加上 $k \to j$ 的最短路，即 $d[k-1][i][k] + d[k-1][k][j]$。</li>
+                </ul>
+                <p>由此得出：$d[k][i][j] = \min(d[k-1][i][j], d[k-1][i][k] + d[k-1][k][j])$。</p>
+                <p>在实际实现中，我们可以省略第一维 $k$，直接在二维数组上更新。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 避坑指南：循环顺序</h2>
+            <div class="section-content">
+                <p>这是 Floyd 算法<strong>最容易出错</strong>的地方！三层循环的嵌套顺序必须是：</p>
+                <div class="code-block" style="background-color: rgba(255, 0, 0, 0.05); border-left: 4px solid #ff4d4d;">
+<pre>
+// 必须把中转点 k 放在最外层！
+for (int k = 1; k <= n; k++)         // 中转点
+    for (int i = 1; i <= n; i++)     // 起点
+        for (int j = 1; j <= n; j++) // 终点
+            d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+</pre>
+                </div>
+                <p><strong>原理：</strong> 只有外层先固定了中转点 $k$，我们才能保证在计算 $d[i][j]$ 时，所有以 $1 \dots k$ 为中转点的路径都已经计算完毕。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 代码实现 (C++)</h2>
+            <div class="section-content">
+                <p>Floyd 算法使用邻接矩阵来存储图。初始化时，自身到自身距离为 0，有边连接的设为权值，无边连接的设为无穷大。</p>
+                <div class="code-block">
+<pre>#include &lt;iostream&gt;
+#include &lt;cstring&gt;
+#include &lt;algorithm&gt;
+
+using namespace std;
+
+const int N = 210, INF = 1e9;
+
+int n, m, q;
+int d[N][N]; // 邻接矩阵存储最短距离
+
+void floyd() {
+    for (int k = 1; k <= n; k++) {
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= n; j++) {
+                // 如果能通过 k 缩短 i 到 j 的距离
+                if (d[i][k] < INF / 2 && d[k][j] < INF / 2) {
+                    d[i][j] = min(d[i][j], d[i][k] + d[k][j]);
+                }
+            }
+        }
+    }
+}
+
+int main() {
+    cin >> n >> m >> q;
+
+    // 1. 初始化
+    for (int i = 1; i <= n; i++) {
+        for (int j = 1; j <= n; j++) {
+            if (i == j) d[i][j] = 0;
+            else d[i][j] = INF;
+        }
+    }
+
+    // 2. 读入边（处理重边：取最小值）
+    while (m--) {
+        int a, b, w;
+        cin >> a >> b >> w;
+        d[a][b] = min(d[a][b], w);
+    }
+
+    // 3. 执行算法
+    floyd();
+
+    // 4. 查询结果
+    while (q--) {
+        int a, b;
+        cin >> a >> b;
+        if (d[a][b] > INF / 2) puts("impossible");
+        else cout << d[a][b] << endl;
+    }
+
+    return 0;
+}</pre>
+                </div>
+                <p><small>* 注意：代码中使用 <code>INF / 2</code> 是为了防止负权边叠加导致 <code>INF + (-w)</code> 略小于 <code>INF</code> 的情况出现。</small></p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 算法对比：Floyd vs Dijkstra</h2>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>比较项</th>
+                            <th>Floyd 算法</th>
+                            <th>Dijkstra 算法 (堆优化)</th>
+                        </tr>
+                        <tr>
+                            <td><strong>解决问题</strong></td>
+                            <td>所有点对间最短路 (APSP)</td>
+                            <td>单源最短路 (SSSP)</td>
+                        </tr>
+                        <tr>
+                            <td><strong>负权边</strong></td>
+                            <td><strong>可以</strong> 处理</td>
+                            <td><strong>不能</strong> 处理</td>
+                        </tr>
+                        <tr>
+                            <td><strong>时间复杂度</strong></td>
+                            <td>$O(N^3)$</td>
+                            <td>$O(M \log N)$</td>
+                        </tr>
+                        <tr>
+                            <td><strong>适用场景</strong></td>
+                            <td>点少（$N \le 500$），多源查询</td>
+                            <td>点多，稀疏图，单源查询</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">6. 总结</h2>
+            <div class="section-content">
+                <p>Floyd 算法是图论中最“暴力”但也最优雅的动态规划应用之一。它不需要复杂的数据结构（如优先队列或并查集），只需要一个简单的二维数组和三层嵌套循环。</p>
+                <p><strong>记忆要点：</strong></p>
+                <ul>
+                    <li>中转点 $k$ 必须在<strong>最外层</strong>循环。</li>
+                    <li>初始化：<code>d[i][i] = 0</code>，其余 <code>INF</code>。</li>
+                    <li>适用性：小规模图的多源最短路。</li>
+                </ul>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
