@@ -1,8 +1,0 @@
-# 指定 main.html 为网站首页
-permalink: /:path/
-defaults:
-  - scope:
-      path: "main.html" # 匹配你的自定义首页文件
-    values:
-      permalink: / # 将 main.html 映射到根路径（首页）
-include: ["main.html"] # 确保文件被 Jekyll 包含渲染
