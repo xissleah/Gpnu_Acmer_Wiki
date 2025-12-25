@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>找回密码</title>
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+            --banner-arrow-bg: rgba(255, 255, 255, 0.3);
+            --banner-arrow-hover: rgba(255, 255, 255, 0.5);
+            --container-bg: rgba(255, 255, 255, 0.85);
+            --input-bg: #f8f9fa;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+            --banner-arrow-bg: rgba(0, 0, 0, 0.3);
+            --banner-arrow-hover: rgba(0, 0, 0, 0.5);
+            --container-bg: rgba(42, 42, 42, 0.95);
+            --input-bg: #333333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            height: 100vh;
+            overflow: hidden;
+        }
+        
+        /* 背景容器 */
+        .background-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('logo/citlali.jpg');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            filter: brightness(0.9);
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        /* 找回密码容器 */
+        .find-container {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 400px;
+            max-width: 90%;
+            background-color: var(--container-bg);
+            border-radius: 15px;
+            padding: 2.5rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            box-shadow: 0 5px 20px var(--shadow-color);
+        }
+        
+        /* 找回密码头部 */
+        .find-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+            width: 100%;
+        }
+        
+        .find-logo {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 1.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        
+        .find-logo img {
+            width: 90%;
+            height: 90%;
+            object-fit: contain;
+        }
+        
+        .find-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--text-color);
+            margin: 0;
+        }
+        
+        /* 表单样式 */
+        .find-form {
+            width: 100%;
+        }
+        
+        .form-group {
+            margin-bottom: 1.5rem;
+            position: relative;
+            width: 100%;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 1rem 3rem 1rem 3rem;
+            border: 1px solid var(--border-color);
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background-color: var(--input-bg);
+            color: var(--text-color);
+            /* 隐藏浏览器默认的密码图标 */
+            -webkit-text-security: none;
+        }
+        
+        /* 针对不同浏览器的默认密码图标隐藏 */
+        input[type="password"]::-ms-reveal,
+        input[type="password"]::-ms-clear {
+            display: none;
+        }
+        
+        /* Safari浏览器 */
+        @supports (-webkit-appearance: none) {
+            input[type="password"] {
+                -webkit-text-security: disc;
+            }
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            background-color: var(--bg-color);
+        }
+        
+        .form-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.1rem;
+        }
+        
+        /* 验证码区域 */
+        .verification-group {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .verification-group .form-input {
+            flex: 1;
+            padding-right: 1rem;
+        }
+        
+        .get-code-btn {
+            padding: 1rem 1.5rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 0.9rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+        
+        .get-code-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .get-code-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 重置密码按钮 */
+        .reset-btn {
+            width: 100%;
+            padding: 1rem;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 1.5rem;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        /* 密码显示/隐藏切换 */
+        .toggle-password {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #667eea;
+            font-size: 1.1rem;
+            cursor: pointer;
+        }
+        
+        /* 返回登录链接 */
+        .login-link {
+            margin-top: 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-light);
+        }
+        
+        .login-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+        
+        .login-link a:hover {
+            color: #764ba2;
+            text-decoration: underline;
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .find-container {
+                padding: 2rem 1.5rem;
+            }
+            
+            .find-title {
+                font-size: 1.6rem;
+            }
+            
+            .find-logo {
+                width: 65px;
+                height: 65px;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .find-container {
+                padding: 1.5rem;
+                margin: 1rem;
+            }
+            
+            .find-title {
+                font-size: 1.5rem;
+            }
+            
+            .find-logo {
+                width: 60px;
+                height: 60px;
+            }
+            
+            .form-input {
+                padding: 0.9rem 2.5rem 0.9rem 2.5rem;
+                font-size: 0.95rem;
+            }
+            
+            .reset-btn {
+                padding: 0.9rem;
+                font-size: 1rem;
+            }
+            
+            .get-code-btn {
+                padding: 0.9rem 1rem;
+                font-size: 0.8rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 背景容器 -->
+    <div class="background-container"></div>
+
+    <!-- 找回密码容器 -->
+    <div class="find-container">
+        <div class="find-header">
+            <div class="find-logo">
+                <img src="logo/Gpnu.png" alt="Logo">
+            </div>
+            <h1 class="find-title">找回密码</h1>
+        </div>
+        
+        <form class="find-form">
+            <div class="form-group">
+                <div class="form-icon">👤</div>
+                <input type="text" class="form-input" placeholder="邮箱" required pattern="[a-zA-Z0-9@_]+" title="邮箱只能包含字母、数字、@和下划线">
+            </div>
+            
+            <div class="form-group">
+                <div class="form-icon">🔒</div>
+                <input type="password" class="form-input" id="new-password" placeholder="设置新密码" required pattern="[a-zA-Z0-9_]+" title="密码只能包含字母、数字和下划线">
+                <div class="toggle-password" id="toggle-new-password">😌</div>
+            </div>
+            
+            <div class="form-group verification-group">
+                <div class="form-icon">✉️</div>
+                <input type="text" class="form-input" placeholder="验证码" required>
+                <button type="button" class="get-code-btn" id="get-code-btn">获取验证码</button>
+            </div>
+            
+            <button type="submit" class="reset-btn">重置密码</button>
+        </form>
+        
+        <div class="login-link">
+            <p>返回<a href="SignIn.html">登录页面</a></p>
+        </div>
+    </div>
+
+    <script>
+        // 找回密码表单提交处理
+        document.querySelector('.find-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // 获取表单数据
+            const emailPhone = this.querySelector('input[type="text"]').value;
+            const newPassword = document.getElementById('new-password').value;
+            const verificationCode = this.querySelector('.verification-group input').value;
+            
+            // 简单的表单验证
+            if (!emailPhone.trim() || !newPassword.trim() || !verificationCode.trim()) {
+                alert('请填写所有必填字段');
+                return;
+            }
+            
+            // 邮箱格式验证：只允许字母、数字、@和下划线
+            const emailRegex = /^[a-zA-Z0-9@_]+$/;
+            if (!emailRegex.test(emailPhone)) {
+                alert('邮箱只能包含字母、数字、@和下划线！');
+                return;
+            }
+            
+            // 密码格式验证：只允许字母、数字和下划线
+            const passwordRegex = /^[a-zA-Z0-9_]+$/;
+            if (!passwordRegex.test(newPassword)) {
+                alert('密码只能包含字母、数字和下划线！');
+                return;
+            }
+            
+            // 这里可以添加找回密码逻辑
+            console.log('找回密码信息:', { emailPhone, newPassword, verificationCode });
+            alert('重置密码成功！\n就你小子天天忘记密码是吧 （｀Δ´）！');
+        });
+        
+        // 密码显示/隐藏切换功能
+        const toggleNewPassword = document.getElementById('toggle-new-password');
+        const newPasswordInput = document.getElementById('new-password');
+        
+        toggleNewPassword.addEventListener('click', function() {
+            // 切换密码可见性
+            const type = newPasswordInput.getAttribute('type') === 'password' ? 'text' : 'password';
+            newPasswordInput.setAttribute('type', type);
+            
+            // 切换图标：隐藏时显示😌，显示时显示👀
+            this.textContent = type === 'password' ? '😌' : '👀';
+        });
+        
+        // 获取验证码按钮功能
+        const getCodeBtn = document.getElementById('get-code-btn');
+        let countdown = 60;
+        
+        getCodeBtn.addEventListener('click', function() {
+            // 这里可以添加获取验证码的逻辑
+            console.log('获取验证码');
+            
+            // 模拟倒计时
+            this.disabled = true;
+            this.textContent = `${countdown}秒后重新获取`;
+            
+            const timer = setInterval(() => {
+                countdown--;
+                getCodeBtn.textContent = `${countdown}秒后重新获取`;
+                
+                if (countdown <= 0) {
+                    clearInterval(timer);
+                    getCodeBtn.disabled = false;
+                    getCodeBtn.textContent = '获取验证码';
+                    countdown = 60;
+                }
+            }, 1000);
+            
+            alert('验证码已发送');
+        });
+        
+        // 输入框聚焦效果
+        const inputs = document.querySelectorAll('.form-input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentElement.style.transform = 'translateY(-2px)';
+                this.parentElement.style.transition = 'transform 0.3s ease';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentElement.style.transform = 'translateY(0)';
+            });
+        });
+        
+        // 深色模式同步功能
+        // 检查用户偏好或本地存储
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 设置初始主题
+        document.documentElement.setAttribute('data-theme', currentTheme);
+    </script>
+</body>
+</html>

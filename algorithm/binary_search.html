@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>二分查找 | Binary Search</title>
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .content-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="../index.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="../search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">二分查找</h1>
+            <p class="content-subtitle">Binary Search</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是二分查找?</h2>
+            <div class="section-content">
+                <p>二分查找是一种高效的查找算法，它的核心思想是在有序数组中通过不断将搜索区间减半来定位目标元素。</p>
+                <p>二分查找的基本条件是：</p>
+                <ol>
+                    <li>待查找的数组必须是有序的（通常是升序或降序排列）</li>
+                    <li>数组中不存在重复元素（或允许存在重复元素，但需要明确查找目标）</li>
+                </ol>
+                <p>二分查找的时间复杂度是O(log n)，远优于线性查找的O(n)时间复杂度，尤其在大数据量的情况下表现更为突出。</p>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 二分查找的基本原理</h2>
+            <div class="section-content">
+                <p>二分查找的基本原理可以概括为以下几个步骤：</p>
+                <ol>
+                    <li><strong>确定搜索区间</strong>：初始时，搜索区间是整个数组，即left=0，right=n-1（n为数组长度）</li>
+                    <li><strong>计算中间位置</strong>：取搜索区间的中间位置mid = left + (right - left) / 2（这样计算可以避免整数溢出）</li>
+                    <li><strong>比较中间元素与目标值</strong>：
+                        <ul>
+                            <li>如果arr[mid] == target：找到了目标值，返回mid</li>
+                            <li>如果arr[mid] < target：目标值在右半部分，将搜索区间更新为[mid+1, right]</li>
+                            <li>如果arr[mid] > target：目标值在左半部分，将搜索区间更新为[left, mid-1]</li>
+                        </ul>
+                    </li>
+                    <li><strong>重复上述过程</strong>：直到left > right，表示搜索区间为空，目标值不存在，返回-1</li>
+                </ol>
+                <p>下面通过一个例子来说明二分查找的过程：</p>
+                <p>假设我们有一个有序数组：[1, 3, 5, 7, 9, 11, 13, 15, 17, 19]，要查找目标值13。</p>
+                <div class="code-block">
+<pre>初始数组：[1, 3, 5, 7, 9, 11, 13, 15, 17, 19]
+目标值：13
+
+步骤1：left=0, right=9, mid=4
+arr[mid]=9 < 13 → 在右半部分查找，left=5
+
+步骤2：left=5, right=9, mid=7
+arr[mid]=15 > 13 → 在左半部分查找，right=6
+
+步骤3：left=5, right=6, mid=5
+arr[mid]=11 < 13 → 在右半部分查找，left=6
+
+步骤4：left=6, right=6, mid=6
+arr[mid]=13 == 13 → 找到目标值，返回6</pre>
+                </div>
+                
+                <!-- 二分查找流程图 -->
+                <div style="margin: 1.5rem 0; overflow-x: auto; padding-bottom: 1rem;">
+                    <h3 style="text-align: center; margin-bottom: 1rem;">二分查找流程图</h3>
+                    <div style="display: flex; justify-content: center;">
+                        <img src="../logo/binary_search.png" alt="二分查找流程图" style="width: 2500px; height: auto; border-radius: 8px; box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 二分查找的实现</h2>
+            <div class="section-content">
+                <p>二分查找有多种实现方式，包括递归实现和迭代实现。下面我们将分别介绍这两种实现方式。</p>
+                
+                <h3>3.1 迭代实现</h3>
+                <p>迭代实现是二分查找最常见的实现方式，它通过循环不断缩小搜索区间：</p>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+int binarySearch(int arr[], int n, int target) {
+    int left = 0;
+    int right = n - 1;
+    
+    while (left <= right) {
+        // 计算中间位置，避免整数溢出
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            return mid;  // 找到目标值，返回索引
+        } else if (arr[mid] < target) {
+            left = mid + 1;  // 目标值在右半部分
+        } else {
+            right = mid - 1;  // 目标值在左半部分
+        }
+    }
+    
+    return -1;  // 目标值不存在，返回-1
+}
+
+int main() {
+    int arr[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int target = 13;
+    
+    int result = binarySearch(arr, n, target);
+    
+    if (result != -1) {
+        cout << "目标值 " << target << " 在数组中的索引为: " << result << endl;
+    } else {
+        cout << "目标值 " << target << " 不在数组中" << endl;
+    }
+    
+    return 0;
+}</pre>
+                </div>
+                
+                <h3>3.2 递归实现</h3>
+                <p>递归实现利用函数的递归调用特性来实现二分查找：</p>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+int binarySearchRecursive(int arr[], int left, int right, int target) {
+    if (left > right) {
+        return -1;  // 基本情况：搜索区间为空
+    }
+    
+    int mid = left + (right - left) / 2;
+    
+    if (arr[mid] == target) {
+        return mid;  // 找到目标值
+    } else if (arr[mid] < target) {
+        return binarySearchRecursive(arr, mid + 1, right, target);  // 递归查找右半部分
+    } else {
+        return binarySearchRecursive(arr, left, mid - 1, target);  // 递归查找左半部分
+    }
+}
+
+int binarySearch(int arr[], int n, int target) {
+    return binarySearchRecursive(arr, 0, n - 1, target);
+}
+
+int main() {
+    int arr[] = {1, 3, 5, 7, 9, 11, 13, 15, 17, 19};
+    int n = sizeof(arr) / sizeof(arr[0]);
+    int target = 13;
+    
+    int result = binarySearch(arr, n, target);
+    
+    if (result != -1) {
+        cout << "目标值 " << target << " 在数组中的索引为: " << result << endl;
+    } else {
+        cout << "目标值 " << target << " 不在数组中" << endl;
+    }
+    
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 二分查找的变体</h2>
+            <div class="section-content">
+                <p>除了基本的二分查找外，还有一些常见的二分查找变体，用于解决不同的问题场景：</p>
+                
+                <h3>4.1 查找第一个等于目标值的元素</h3>
+                <p>当数组中存在重复元素时，我们可能需要找到第一个出现的目标值：</p>
+                <div class="code-block">
+<pre>int findFirstEqual(int arr[], int n, int target) {
+    int left = 0;
+    int right = n - 1;
+    int result = -1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            result = mid;      // 记录当前找到的位置
+            right = mid - 1;   // 继续向左查找，看是否还有更早的匹配
+        } else if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return result;
+}</pre>
+                </div>
+                
+                <h3>4.2 查找最后一个等于目标值的元素</h3>
+                <p>类似地，我们也可以查找最后一个出现的目标值：</p>
+                <div class="code-block">
+<pre>int findLastEqual(int arr[], int n, int target) {
+    int left = 0;
+    int right = n - 1;
+    int result = -1;
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] == target) {
+            result = mid;      // 记录当前找到的位置
+            left = mid + 1;    // 继续向右查找，看是否还有更晚的匹配
+        } else if (arr[mid] < target) {
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    
+    return result;
+}</pre>
+                </div>
+                
+                <h3>4.3 查找第一个大于等于目标值的元素</h3>
+                <p>这个变体常用于在有序数组中查找插入位置：</p>
+                <div class="code-block">
+<pre>int findFirstGreaterOrEqual(int arr[], int n, int target) {
+    int left = 0;
+    int right = n - 1;
+    int result = n;  // 默认插入到数组末尾
+    
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        
+        if (arr[mid] >= target) {
+            result = mid;      // 记录当前可能的插入位置
+            right = mid - 1;   // 继续向左查找更小的插入位置
+        } else {
+            left = mid + 1;
+        }
+    }
+    
+    return result;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 二分查找的时间复杂度分析</h2>
+            <div class="section-content">
+                <p>二分查找的时间复杂度可以通过以下方式分析：</p>
+                <ol>
+                    <li>每次迭代，搜索区间的大小都会减半</li>
+                    <li>初始搜索区间大小为n</li>
+                    <li>经过k次迭代后，搜索区间大小为n/2^k</li>
+                    <li>当搜索区间大小变为1时，最多需要log2(n)次迭代</li>
+                    <li>每次迭代的时间复杂度为O(1)</li>
+                </ol>
+                <p>因此，二分查找的时间复杂度为O(log n)，这是一种非常高效的查找算法。</p>
+                <p>与线性查找相比，二分查找在大数据量下的优势非常明显：</p>
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>数据规模n</th>
+                            <th>线性查找次数</th>
+                            <th>二分查找次数</th>
+                        </tr>
+                        <tr>
+                            <td>100</td>
+                            <td>约50次</td>
+                            <td>约7次</td>
+                        </tr>
+                        <tr>
+                            <td>1000</td>
+                            <td>约500次</td>
+                            <td>约10次</td>
+                        </tr>
+                        <tr>
+                            <td>1,000,000</td>
+                            <td>约500,000次</td>
+                            <td>约20次</td>
+                        </tr>
+                        <tr>
+                            <td>1,000,000,000</td>
+                            <td>约500,000,000次</td>
+                            <td>约30次</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">6. 二分查找与其他查找算法的对比</h2>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>算法类型</th>
+                            <th>基本思想</th>
+                            <th>时间复杂度</th>
+                            <th>空间复杂度</th>
+                            <th>适用场景</th>
+                        </tr>
+                        <tr>
+                            <td>线性查找</td>
+                            <td>逐个比较数组元素</td>
+                            <td>O(n)</td>
+                            <td>O(1)</td>
+                            <td>无序或有序数组，数据量小</td>
+                        </tr>
+                        <tr>
+                            <td>二分查找</td>
+                            <td>将搜索区间不断减半</td>
+                            <td>O(log n)</td>
+                            <td>O(1)（迭代）或O(log n)（递归）</td>
+                            <td>有序数组，数据量大</td>
+                        </tr>
+                        <tr>
+                            <td>哈希查找</td>
+                            <td>通过哈希函数直接定位元素</td>
+                            <td>平均O(1)，最坏O(n)</td>
+                            <td>O(n)</td>
+                            <td>需要快速查找，允许额外空间</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">7. 二分查找的应用场景</h2>
+            <div class="section-content">
+                <p>二分查找在计算机科学中有广泛的应用，以下是一些常见的应用场景：</p>
+                <ol>
+                    <li><strong>在有序数组中查找元素</strong>：这是二分查找最基本的应用</li>
+                    <li><strong>查找插入位置</strong>：确定一个元素在有序数组中的插入位置，保持数组的有序性</li>
+                    <li><strong>寻找边界值</strong>：如查找最大值、最小值、第一个满足条件的元素等</li>
+                    <li><strong>解决单调性问题</strong>：如在单调函数中寻找零点、最优化问题等</li>
+                    <li><strong>在计算机系统中的应用</strong>：如内存分配、文件查找等</li>
+                </ol>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Website Name / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查用户偏好或本地存储
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 设置初始主题
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 更新主题
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // 保存到本地存储
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        // 监听滚动事件
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        // 点击回到顶部
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>

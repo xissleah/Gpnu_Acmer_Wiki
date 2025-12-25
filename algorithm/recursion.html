@@ -1,0 +1,700 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>递归算法 | Recursion Algorithm</title>
+    <style>
+        /* CSS变量定义 - 浅色模式 */
+        :root {
+            --primary-color: #007bff;
+            --primary-dark: #0056b3;
+            --bg-color: #ffffff;
+            --text-color: #333333;
+            --text-light: #666666;
+            --header-bg: #ffffff;
+            --card-bg: #ffffff;
+            --footer-bg: #333333;
+            --footer-text: #ffffff;
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --border-color: #eee;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-dark: #5568d3;
+            --bg-color: #121212;
+            --text-color: #ffffff;
+            --text-light: #cccccc;
+            --header-bg: #1e1e1e;
+            --card-bg: #2a2a2a;
+            --footer-bg: #1e1e1e;
+            --footer-text: #cccccc;
+            --shadow-color: rgba(0, 0, 0, 0.3);
+            --border-color: #333;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            line-height: 1.6;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+        }
+        
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 2rem;
+            background-color: var(--header-bg);
+            box-shadow: 0 2px 5px var(--shadow-color);
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--text-color);
+            text-decoration: none;
+        }
+        
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            border-radius: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        
+        .logo-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .nav-icon {
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s, transform 0.3s ease;
+        }
+        
+        .nav-icon:hover {
+            color: var(--primary-color);
+        }
+        
+        .theme-toggle {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: color 0.3s ease, transform 0.3s ease;
+            padding: 0;
+            line-height: 1;
+            vertical-align: middle;
+            display: inline-block;
+        }
+        
+        .theme-toggle:hover {
+            color: var(--primary-color);
+            transform: scale(1.3);
+        }
+        
+        /* 主要内容区域 */
+        .main-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+        }
+        
+        .content-title {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: var(--text-color);
+        }
+        
+        .content-subtitle {
+            color: var(--text-light);
+            font-size: 1rem;
+        }
+        
+        .content-section {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            padding: 2rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            margin-bottom: 2rem;
+        }
+        
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+        
+        .section-content {
+            margin-bottom: 1.5rem;
+            line-height: 1.8;
+        }
+        
+        .section-content p {
+            margin-bottom: 1rem;
+        }
+        
+        .section-content ol {
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .section-content li {
+            margin-bottom: 0.5rem;
+            line-height: 1.8;
+        }
+        
+        .code-block {
+            background-color: #f5f5f5;
+            border-radius: 4px;
+            padding: 1rem;
+            font-family: 'Courier New', Courier, monospace;
+            overflow-x: auto;
+            margin-bottom: 1rem;
+        }
+        
+        [data-theme="dark"] .code-block {
+            background-color: #1e1e1e;
+            color: #d4d4d4;
+        }
+        
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: white;
+            font-weight: bold;
+        }
+        
+        tr:hover {
+            background-color: rgba(0, 123, 255, 0.05);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(102, 126, 234, 0.1);
+        }
+        
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 2px 10px var(--shadow-color);
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            background-color: var(--primary-dark);
+            transform: scale(1.1);
+        }
+        
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
+            }
+            
+            .content-title {
+                font-size: 1.5rem;
+            }
+            
+            .section-title {
+                font-size: 1.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <a href="../index.html" class="logo">
+            <div class="logo-icon">
+                <img src="../logo/Gpnu.png" alt="Logo">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="../search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
+            <div class="nav-icon">🔔</div>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+        </div>
+    </header>
+
+    <!-- 主要内容区域 -->
+    <main class="main-content">
+        <div class="content-header">
+            <h1 class="content-title">递归算法</h1>
+            <p class="content-subtitle">Recursion Algorithm</p>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">1. 什么是递归算法?</h2>
+            <div class="section-content">
+                <p>递归算法是一种直接或间接调用自身的算法，常用于解决可以分解为相同子问题的复杂问题。</p>
+                <p>递归算法的核心思想是将一个复杂问题分解为规模更小、结构相同的子问题，直到子问题变得简单到可以直接求解，然后将子问题的解合并得到原问题的解。</p>
+                <p>递归算法必须包含两个基本要素：</p>
+                <ol>
+                    <li><strong>基本情况（Base Case）</strong>：递归终止的条件，即不需要再继续递归的简单情况。</li>
+                    <li><strong>递归步骤（Recursive Step）</strong>：将问题分解为规模更小的子问题，并调用自身解决子问题。</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">2. 递归算法的基本原理</h2>
+            <div class="section-content">
+                <p>以计算阶乘为例，阶乘的数学定义为：</p>
+                <div class="code-block">
+                    n! = n × (n-1) × (n-2) × ... × 1
+                    <br>
+                    0! = 1（基本情况）
+                </div>
+                <p>使用递归实现阶乘的过程可以分为两个阶段：</p>
+                <ol>
+                    <li><strong>递推阶段（Recursion Phase）</strong>：将原问题分解为子问题，直到达到基本情况。</li>
+                    <li><strong>回归阶段（Regression Phase）</strong>：从基本情况开始，逐步合并子问题的解，得到原问题的解。</li>
+                </ol>
+                <p>计算5!的递归过程：</p>
+                <div class="code-block">
+                    factorial(5) → 5 × factorial(4)
+                    <br>
+                    factorial(4) → 4 × factorial(3)
+                    <br>
+                    factorial(3) → 3 × factorial(2)
+                    <br>
+                    factorial(2) → 2 × factorial(1)
+                    <br>
+                    factorial(1) → 1 × factorial(0)
+                    <br>
+                    factorial(0) → 1（基本情况）
+                    <br>
+                    <br>
+                    回归阶段：
+                    <br>
+                    factorial(0) → 1
+                    <br>
+                    factorial(1) → 1 × 1 = 1
+                    <br>
+                    factorial(2) → 2 × 1 = 2
+                    <br>
+                    factorial(3) → 3 × 2 = 6
+                    <br>
+                    factorial(4) → 4 × 6 = 24
+                    <br>
+                    factorial(5) → 5 × 24 = 120
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">3. 递归算法的实现</h2>
+            <div class="section-content">
+                <p>以下是几个经典的递归算法实现示例：</p>
+                
+                <h3>3.1 阶乘计算</h3>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+// 递归计算阶乘
+int factorial(int n) {
+    // 基本情况：0! = 1
+    if (n == 0) {
+        return 1;
+    }
+    // 递归步骤：n! = n * (n-1)!
+    return n * factorial(n - 1);
+}
+
+int main() {
+    int num = 5;
+    cout << num << "! = " << factorial(num) << endl;
+    return 0;
+}</pre>
+                </div>
+                
+                <h3>3.2 斐波那契数列</h3>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+// 递归计算斐波那契数列
+int fibonacci(int n) {
+    // 基本情况：F(0) = 0, F(1) = 1
+    if (n == 0) {
+        return 0;
+    }
+    if (n == 1) {
+        return 1;
+    }
+    // 递归步骤：F(n) = F(n-1) + F(n-2)
+    return fibonacci(n - 1) + fibonacci(n - 2);
+}
+
+int main() {
+    int num = 10;
+    cout << "斐波那契数列第" << num << "项：" << fibonacci(num) << endl;
+    return 0;
+}</pre>
+                </div>
+                
+                <h3>3.3 幂运算</h3>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+// 递归计算 x^n
+int power(int x, int n) {
+    // 基本情况：x^0 = 1
+    if (n == 0) {
+        return 1;
+    }
+    // 递归步骤：x^n = x * x^(n-1)
+    return x * power(x, n - 1);
+}
+
+int main() {
+    int x = 2, n = 5;
+    cout << x << "^" << n << " = " << power(x, n) << endl;
+    return 0;
+}</pre>
+                </div>
+                
+                <h3>3.4 汉诺塔问题</h3>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+// 汉诺塔问题的递归实现
+// 将n个盘子从from柱子移动到to柱子，借助aux柱子
+void hanoi(int n, char from, char to, char aux) {
+    // 基本情况：只有一个盘子时，直接移动
+    if (n == 1) {
+        cout << "将盘子1从" << from << "移动到" << to << endl;
+        return;
+    }
+    
+    // 递归步骤1：将n-1个盘子从from柱子移动到aux柱子，借助to柱子
+    hanoi(n - 1, from, aux, to);
+    
+    // 移动第n个盘子从from柱子到to柱子
+    cout << "将盘子" << n << "从" << from << "移动到" << to << endl;
+    
+    // 递归步骤2：将n-1个盘子从aux柱子移动到to柱子，借助from柱子
+    hanoi(n - 1, aux, to, from);
+}
+
+int main() {
+    int n = 3;  // 盘子数量
+    cout << "移动" << n << "个盘子的步骤：" << endl;
+    hanoi(n, 'A', 'C', 'B');  // A是起始柱，C是目标柱，B是辅助柱
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">4. 递归算法的优缺点</h2>
+            <div class="section-content">
+                <h3>4.1 优点</h3>
+                <ol>
+                    <li><strong>代码简洁</strong>：递归算法可以用更简洁的代码表达复杂的逻辑。</li>
+                    <li><strong>可读性好</strong>：递归算法更接近问题的数学描述，容易理解。</li>
+                    <li><strong>易于实现</strong>：对于一些问题（如树结构遍历），递归实现比迭代实现更直观。</li>
+                </ol>
+                
+                <h3>4.2 缺点</h3>
+                <ol>
+                    <li><strong>效率较低</strong>：递归会产生额外的函数调用开销，可能导致栈溢出。</li>
+                    <li><strong>内存占用大</strong>：每次递归调用都会在栈上创建新的函数栈帧，占用内存。</li>
+                    <li><strong>可能导致栈溢出</strong>：对于深度较大的递归，可能会导致栈溢出错误。</li>
+                    <li><strong>可能存在重复计算</strong>：某些递归算法（如斐波那契数列）会重复计算相同的子问题。</li>
+                </ol>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">5. 递归与迭代的对比</h2>
+            <div class="section-content">
+                <div class="table-container">
+                    <table>
+                        <tr>
+                            <th>比较维度</th>
+                            <th>递归</th>
+                            <th>迭代</th>
+                        </tr>
+                        <tr>
+                            <td>代码复杂度</td>
+                            <td>通常更简洁</td>
+                            <td>可能更复杂</td>
+                        </tr>
+                        <tr>
+                            <td>可读性</td>
+                            <td>通常更好</td>
+                            <td>可能较差</td>
+                        </tr>
+                        <tr>
+                            <td>内存使用</td>
+                            <td>较高（栈帧开销）</td>
+                            <td>较低</td>
+                        </tr>
+                        <tr>
+                            <td>效率</td>
+                            <td>通常较低（函数调用开销）</td>
+                            <td>通常较高</td>
+                        </tr>
+                        <tr>
+                            <td>栈溢出风险</td>
+                            <td>存在（深度较大时）</td>
+                            <td>不存在</td>
+                        </tr>
+                        <tr>
+                            <td>适用场景</td>
+                            <td>树结构、分治问题等</td>
+                            <td>循环结构、线性问题等</td>
+                        </tr>
+                    </table>
+                </div>
+                <p>以下是阶乘计算的迭代实现示例：</p>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+// 迭代计算阶乘
+int factorial_iterative(int n) {
+    int result = 1;
+    for (int i = 1; i <= n; i++) {
+        result *= i;
+    }
+    return result;
+}
+
+int main() {
+    int num = 5;
+    cout << num << "! = " << factorial_iterative(num) << endl;
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">6. 递归算法的优化</h2>
+            <div class="section-content">
+                <h3>6.1 尾递归优化</h3>
+                <p>尾递归是指递归调用是函数的最后一个操作。编译器可以对尾递归进行优化，将递归转换为迭代，避免栈溢出。</p>
+                <div class="code-block">
+<pre>#include <iostream>
+using namespace std;
+
+// 尾递归计算阶乘
+int factorial_tail(int n, int result = 1) {
+    // 基本情况
+    if (n == 0) {
+        return result;
+    }
+    // 尾递归调用：递归调用是函数的最后一个操作
+    return factorial_tail(n - 1, n * result);
+}
+
+int main() {
+    int num = 5;
+    cout << num << "! = " << factorial_tail(num) << endl;
+    return 0;
+}</pre>
+                </div>
+                
+                <h3>6.2 记忆化技术</h3>
+                <p>记忆化技术可以避免重复计算相同的子问题，提高递归算法的效率。</p>
+                <div class="code-block">
+<pre>#include <iostream>
+#include <vector>
+using namespace std;
+
+// 使用记忆化技术优化斐波那契数列计算
+int fibonacci_memo(int n, vector<int>& memo) {
+    // 如果已经计算过，直接返回结果
+    if (memo[n] != -1) {
+        return memo[n];
+    }
+    
+    // 基本情况
+    if (n == 0) {
+        memo[0] = 0;
+        return 0;
+    }
+    if (n == 1) {
+        memo[1] = 1;
+        return 1;
+    }
+    
+    // 计算并存储结果
+    memo[n] = fibonacci_memo(n - 1, memo) + fibonacci_memo(n - 2, memo);
+    return memo[n];
+}
+
+int main() {
+    int num = 10;
+    vector<int> memo(num + 1, -1);  // 初始化记忆化数组
+    cout << "斐波那契数列第" << num << "项：" << fibonacci_memo(num, memo) << endl;
+    return 0;
+}</pre>
+                </div>
+            </div>
+        </div>
+
+        <div class="content-section">
+            <h2 class="section-title">7. 递归算法的应用场景</h2>
+            <div class="section-content">
+                <p>递归算法广泛应用于以下场景：</p>
+                <ol>
+                    <li><strong>树结构遍历</strong>：前序、中序、后序遍历二叉树。</li>
+                    <li><strong>分治算法</strong>：归并排序、快速排序等。</li>
+                    <li><strong>图算法</strong>：深度优先搜索（DFS）。</li>
+                    <li><strong>组合问题</strong>：排列、组合生成等。</li>
+                    <li><strong>回溯算法</strong>：八皇后问题、迷宫问题等。</li>
+                    <li><strong>动态规划</strong>：某些动态规划问题可以用递归+记忆化实现。</li>
+                </ol>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- 页脚 -->
+    <footer class="footer">
+        <p>Copyright © 2025 Website Name / All Rights Reserved</p>
+    </footer>
+
+    <!-- 回到顶部按钮 -->
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
+
+    <script>
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        
+        // 检查用户偏好或本地存储
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        // 设置初始主题
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
+        // 切换主题
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = document.documentElement.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            // 更新主题
+            document.documentElement.setAttribute('data-theme', newTheme);
+            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            
+            // 保存到本地存储
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        
+        // 监听滚动事件
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        // 点击回到顶部
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
+    </script>
+</body>
+</html>
