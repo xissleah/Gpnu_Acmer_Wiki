@@ -4,131 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>图的存储 | Graph Storage Tutorial</title>
-    
-    <!-- 引入 MathJax 脚本，用于渲染数学公式 -->
     <script>
         MathJax = {
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']]
             }
         };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
+    </script><script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* CSS变量定义 - 现代化配色 */
         :root {
-            --primary-color: #007bff;
+            /* 主色调 */
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            
+            /* 背景遮罩 - 浅色模式下让背景图稍微变白一点 */
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            /* 卡片背景 */
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --border-color: #eee;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
+            /* 代码块背景 */
+            --code-bg: rgba(0, 0, 0, 0.05);
         }
         
         /* 深色模式变量 */
         [data-theme="dark"] {
             --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --card-bg: #2a2a2a;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --border-color: #333;
+            
+            /* 深色模式下让背景图变暗 */
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
+            
+            --code-bg: rgba(0, 0, 0, 0.3);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            
+            /* --- 背景图设置 --- */
+            background-image: url('../logo/citlali.jpg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
-        
+
+        /* 背景遮罩层 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-overlay); 
+            z-index: -1; 
+            backdrop-filter: blur(3px); 
+            transition: background-color 0.3s ease;
+        }
+
         /* 顶部导航栏 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: var(--text-color);
             text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        /* --- Logo 图标样式 (正圆形) --- */
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%; /* 正圆 */
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
         
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
         
+        /* --- 导航栏右侧布局 (严格对齐) --- */
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
-        .nav-icon {
-            font-size: 1.2rem;
+        /* 通用图标容器样式 */
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
             cursor: pointer;
             color: var(--text-light);
-            transition: color 0.3s, transform 0.3s ease;
-        }
-        
-        .nav-icon:hover {
-            color: var(--primary-color);
-        }
-        
-        .theme-toggle {
-            background: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* 布局属性 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;  /* 固定宽度 */
+            height: 40px; /* 固定高度 */
+            text-decoration: none;
             border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            background: transparent;
         }
         
-        .theme-toggle:hover {
-            color: var(--primary-color);
-            transform: scale(1.3);
+        .nav-icon:hover { 
+            color: var(--primary-color); 
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .theme-toggle:hover { 
+            color: #f1c40f; 
+            transform: scale(1.3); 
         }
         
         /* 主要内容区域 */
@@ -136,70 +188,103 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+            width: 100%;
+            position: relative;
+            z-index: 1;
         }
         
         .content-header {
             margin-bottom: 2rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
         }
         
         .content-title {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.2rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             color: var(--text-color);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .content-subtitle {
             color: var(--text-light);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         
+        /* 文章章节卡片化 */
         .content-section {
             background-color: var(--card-bg);
-            border-radius: 8px;
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-5px);
         }
         
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
         }
         
         .section-content {
-            margin-bottom: 1.5rem;
             line-height: 1.8;
+            color: var(--text-light);
         }
         
         .section-content p {
             margin-bottom: 1rem;
         }
-
+        
         .section-content ul, .section-content ol {
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
         
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* 代码块样式优化 */
         .code-block {
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             overflow-x: auto;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
         }
         
-        [data-theme="dark"] .code-block {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+        pre {
+            margin: 0;
         }
         
+        /* 表格样式 */
         .table-container {
             overflow-x: auto;
             margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         
         table {
@@ -208,32 +293,40 @@
         }
         
         th, td {
-            padding: 0.8rem;
+            padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
         
         th {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
         }
         
         tr:hover {
-            background-color: rgba(0, 123, 255, 0.05);
+            background-color: rgba(0, 0, 0, 0.02);
         }
         
         [data-theme="dark"] tr:hover {
-            background-color: rgba(102, 126, 234, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
+        /* 强调文本 */
+        .highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
         /* 页脚 */
         .footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
             text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
         
         /* 回到顶部按钮 */
@@ -243,7 +336,7 @@
             right: 2rem;
             width: 50px;
             height: 50px;
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
             border: none;
             border-radius: 50%;
@@ -252,10 +345,11 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
             opacity: 0;
             visibility: hidden;
+            z-index: 100;
         }
         
         .back-to-top.visible {
@@ -264,8 +358,8 @@
         }
         
         .back-to-top:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.1);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
         }
         
         /* 响应式设计 */
@@ -273,69 +367,67 @@
             .header { padding: 1rem; }
             .main-content { padding: 1rem; }
             .content-section { padding: 1.5rem; }
-            .content-title { font-size: 1.5rem; }
-            .section-title { font-size: 1.2rem; }
+            .content-title { font-size: 1.8rem; }
+            .section-title { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
     <!-- 顶部导航栏 -->
     <header class="header">
-        <a href="index.html" class="logo">
+        <a href="../index.html" class="logo">
             <div class="logo-icon">
                 <img src="../logo/Gpnu.png" alt="Logo">
             </div>
             <span>Gpnu_Acmer_Wiki</span>
         </a>
         <div class="nav-right">
-            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
-            <div class="nav-icon">🔔</div>
+            <a href="../search.html" class="nav-icon" title="搜索">🔍</a>
+            <a href="../issue.html" class="nav-icon" title="通知">🔔</a>
             <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <!-- 保持登录按钮一致性，虽然内部页可能不需要 -->
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
     <main class="main-content">
-        <div class="content-header">
-            <h1 class="content-title">图的存储</h1>
-            <p class="content-subtitle">Graph Storage - 如何在代码中表示一张图</p>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">1. 为什么需要研究图的存储?</h2>
-            <div class="section-content">
-                <p>图由顶点 ($V$) 和边 ($E$) 组成。在算法竞赛中，节点的数量可能达到 $10^5$，边可能达到 $10^6$。如果存储方式选择不当，轻则浪费内存（MLE），重则导致算法运行效率极低（TLE）。</p>
-                <p>我们将图分为两种：</p>
-                <ul>
-                    <li><strong>稠密图：</strong> 边数接近顶点数的平方。</li>
-                    <li><strong>稀疏图：</strong> 边数远小于顶点数的平方。</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">2. 邻接矩阵 (Adjacency Matrix)</h2>
-            <div class="section-content">
-                <p>使用一个二维数组 <code>g[N][N]</code> 来存储。<code>g[i][j]</code> 的值代表节点 $i$ 到节点 $j$ 之间的边权。</p>
-                <div class="code-block">
+        
+<div class="content-header">
+<h1 class="content-title">图的存储</h1>
+<p class="content-subtitle">Graph Storage - 如何在代码中表示一张图</p>
+</div>
+<div class="content-section">
+<h2 class="section-title">1. 为什么需要研究图的存储?</h2>
+<div class="section-content">
+<p>图由顶点 ($V$) 和边 ($E$) 组成。在算法竞赛中，节点的数量可能达到 $10^5$，边可能达到 $10^6$。如果存储方式选择不当，轻则浪费内存（MLE），重则导致算法运行效率极低（TLE）。</p>
+<p>我们将图分为两种：</p>
+<ul>
+<li><strong>稠密图：</strong> 边数接近顶点数的平方。</li>
+<li><strong>稀疏图：</strong> 边数远小于顶点数的平方。</li>
+</ul>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">2. 邻接矩阵 (Adjacency Matrix)</h2>
+<div class="section-content">
+<p>使用一个二维数组 <code>g[N][N]</code> 来存储。<code>g[i][j]</code> 的值代表节点 $i$ 到节点 $j$ 之间的边权。</p>
+<div class="code-block">
 <pre>// 初始化
 int g[N][N];
 memset(g, 0x3f, sizeof g); // 求最短路时常初始化为无穷大
 
-// 存入边 (u -> v 权值为 w)
+// 存入边 (u -&gt; v 权值为 w)
 g[u][v] = w;
 // 如果是无向图，还需要：g[v][u] = w;</pre>
-                </div>
-                <p><strong>优点：</strong> 查找两个点之间是否有边非常快 $O(1)$。</p>
-                <p><strong>缺点：</strong> 空间复杂度 $O(V^2)$。当 $V=10^5$ 时，内存会直接爆炸。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">3. 邻接表 (Adjacency List - Vector 版)</h2>
-            <div class="section-content">
-                <p>对每个节点开一个动态数组 <code>vector</code>，存储它所有能到达的点。这是最易于理解且代码最简洁的存储方式。</p>
-                <div class="code-block">
+</div>
+<p><strong>优点：</strong> 查找两个点之间是否有边非常快 $O(1)$。</p>
+<p><strong>缺点：</strong> 空间复杂度 $O(V^2)$。当 $V=10^5$ 时，内存会直接爆炸。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">3. 邻接表 (Adjacency List - Vector 版)</h2>
+<div class="section-content">
+<p>对每个节点开一个动态数组 <code>vector</code>，存储它所有能到达的点。这是最易于理解且代码最简洁的存储方式。</p>
+<div class="code-block">
 <pre>#include &lt;vector&gt;
 struct Edge { int to, w; };
 vector&lt;Edge&gt; g[N];
@@ -348,16 +440,15 @@ for (auto edge : g[u]) {
     int v = edge.to;
     int w = edge.w;
 }</pre>
-                </div>
-                <p><strong>优点：</strong> 空间复杂度 $O(V+E)$，非常节省内存。适合稀疏图。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">4. 链式前向星 (竞赛推荐)</h2>
-            <div class="section-content">
-                <p>这是用静态数组模拟邻接表的一种方式。由于它没有 <code>vector</code> 的额外开销（动态扩容、内存碎片等），在竞赛中运行速度最快，是处理大规模图的首选。</p>
-                <div class="code-block">
+</div>
+<p><strong>优点：</strong> 空间复杂度 $O(V+E)$，非常节省内存。适合稀疏图。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">4. 链式前向星 (竞赛推荐)</h2>
+<div class="section-content">
+<p>这是用静态数组模拟邻接表的一种方式。由于它没有 <code>vector</code> 的额外开销（动态扩容、内存碎片等），在竞赛中运行速度最快，是处理大规模图的首选。</p>
+<div class="code-block">
 <pre>int head[N], tot; // head 记录每个点最后一次加入的边编号
 struct Edge {
     int to, next, w;
@@ -376,79 +467,74 @@ for (int i = head[u]; i; i = edge[i].next) {
     int v = edge[i].to;
     int w = edge[i].w;
 }</pre>
-                </div>
-                <p><strong>记忆要点：</strong> 每一条边都指向“上一次在这个起点加的那条边”，形成一条倒序的链表。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">5. 存储方式深度对比</h2>
-            <div class="section-content">
-                <div class="table-container">
-                    <table>
-                        <tr>
-                            <th>比较项</th>
-                            <th>邻接矩阵</th>
-                            <th>邻接表 (Vector)</th>
-                            <th>链式前向星</th>
-                        </tr>
-                        <tr>
-                            <td><strong>空间复杂度</strong></td>
-                            <td>$O(V^2)$</td>
-                            <td>$O(V+E)$</td>
-                            <td>$O(V+E)$</td>
-                        </tr>
-                        <tr>
-                            <td><strong>查询 $u, v$ 连通性</strong></td>
-                            <td>$O(1)$</td>
-                            <td>$O(degree(u))$</td>
-                            <td>$O(degree(u))$</td>
-                        </tr>
-                        <tr>
-                            <td><strong>遍历所有邻居</strong></td>
-                            <td>$O(V)$</td>
-                            <td>$O(degree(u))$</td>
-                            <td>$O(degree(u))$</td>
-                        </tr>
-                        <tr>
-                            <td><strong>运行效率</strong></td>
-                            <td>低 (由于 $V$ 大)</td>
-                            <td>中 (Vector 稍慢)</td>
-                            <td><strong>极高</strong></td>
-                        </tr>
-                        <tr>
-                            <td><strong>适用场景</strong></td>
-                            <td>点少边多的稠密图</td>
-                            <td>大部分场景，简单易写</td>
-                            <td>大规模稀疏图，追求极致速度</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">6. 总结与建议</h2>
-            <div class="section-content">
-                <ul>
-                    <li>如果顶点数 $V \le 500$，直接用<strong>邻接矩阵</strong>，写起来最快。</li>
-                    <li>如果是普通练习或面试，用 <strong>Vector 邻接表</strong>，逻辑最清晰。</li>
-                    <li>如果是参加 ACM、蓝桥杯或 OI，强烈建议熟练掌握<strong>链式前向星</strong>。</li>
-                </ul>
-                <p><strong>注意点：</strong> 无向图在存储时，需要调用两次加边函数：<code>add(u, v)</code> 和 <code>add(v, u)</code>，因此边数组 <code>edge[]</code> 的大小要开到题目给定的边数 $M$ 的<strong>两倍</strong>。</p>
-            </div>
-        </div>
+</div>
+<p><strong>记忆要点：</strong> 每一条边都指向“上一次在这个起点加的那条边”，形成一条倒序的链表。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">5. 存储方式深度对比</h2>
+<div class="section-content">
+<div class="table-container">
+<table>
+<tr>
+<th>比较项</th>
+<th>邻接矩阵</th>
+<th>邻接表 (Vector)</th>
+<th>链式前向星</th>
+</tr>
+<tr>
+<td><strong>空间复杂度</strong></td>
+<td>$O(V^2)$</td>
+<td>$O(V+E)$</td>
+<td>$O(V+E)$</td>
+</tr>
+<tr>
+<td><strong>查询 $u, v$ 连通性</strong></td>
+<td>$O(1)$</td>
+<td>$O(degree(u))$</td>
+<td>$O(degree(u))$</td>
+</tr>
+<tr>
+<td><strong>遍历所有邻居</strong></td>
+<td>$O(V)$</td>
+<td>$O(degree(u))$</td>
+<td>$O(degree(u))$</td>
+</tr>
+<tr>
+<td><strong>运行效率</strong></td>
+<td>低 (由于 $V$ 大)</td>
+<td>中 (Vector 稍慢)</td>
+<td><strong>极高</strong></td>
+</tr>
+<tr>
+<td><strong>适用场景</strong></td>
+<td>点少边多的稠密图</td>
+<td>大部分场景，简单易写</td>
+<td>大规模稀疏图，追求极致速度</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">6. 总结与建议</h2>
+<div class="section-content">
+<ul>
+<li>如果顶点数 $V \le 500$，直接用<strong>邻接矩阵</strong>，写起来最快。</li>
+<li>如果是普通练习或面试，用 <strong>Vector 邻接表</strong>，逻辑最清晰。</li>
+<li>如果是参加 ACM、蓝桥杯或 OI，强烈建议熟练掌握<strong>链式前向星</strong>。</li>
+</ul>
+<p><strong>注意点：</strong> 无向图在存储时，需要调用两次加边函数：<code>add(u, v)</code> 和 <code>add(v, u)</code>，因此边数组 <code>edge[]</code> 的大小要开到题目给定的边数 $M$ 的<strong>两倍</strong>。</p>
+</div>
+</div>
 
     </main>
-
     <!-- 页脚 -->
     <footer class="footer">
         <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
     </footer>
 
-    <!-- 回到顶部按钮 -->
     <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
-
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
@@ -483,5 +569,6 @@ for (int i = head[u]; i; i = edge[i].next) {
             });
         });
     </script>
+
 </body>
 </html>

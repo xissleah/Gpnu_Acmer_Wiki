@@ -4,131 +4,183 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>网络流 | Network Flow Tutorial</title>
-    
-    <!-- 引入 MathJax 脚本，用于渲染数学公式 -->
     <script>
         MathJax = {
             tex: {
                 inlineMath: [['$', '$'], ['\\(', '\\)']]
             }
         };
-    </script>
-    <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
-
+    </script><script async="" id="MathJax-script" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* CSS变量定义 - 现代化配色 */
         :root {
-            --primary-color: #007bff;
+            /* 主色调 */
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            
+            /* 背景遮罩 - 浅色模式下让背景图稍微变白一点 */
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            /* 卡片背景 */
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --border-color: #eee;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
+            /* 代码块背景 */
+            --code-bg: rgba(0, 0, 0, 0.05);
         }
         
         /* 深色模式变量 */
         [data-theme="dark"] {
             --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --card-bg: #2a2a2a;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --border-color: #333;
+            
+            /* 深色模式下让背景图变暗 */
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
+            
+            --code-bg: rgba(0, 0, 0, 0.3);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            
+            /* --- 背景图设置 --- */
+            background-image: url('../logo/citlali.jpg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
-        
+
+        /* 背景遮罩层 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-overlay); 
+            z-index: -1; 
+            backdrop-filter: blur(3px); 
+            transition: background-color 0.3s ease;
+        }
+
         /* 顶部导航栏 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: var(--text-color);
             text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        /* --- Logo 图标样式 (正圆形) --- */
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%; /* 正圆 */
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
         
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
         
+        /* --- 导航栏右侧布局 (严格对齐) --- */
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
-        .nav-icon {
-            font-size: 1.2rem;
+        /* 通用图标容器样式 */
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
             cursor: pointer;
             color: var(--text-light);
-            transition: color 0.3s, transform 0.3s ease;
-        }
-        
-        .nav-icon:hover {
-            color: var(--primary-color);
-        }
-        
-        .theme-toggle {
-            background: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* 布局属性 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;  /* 固定宽度 */
+            height: 40px; /* 固定高度 */
+            text-decoration: none;
             border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            background: transparent;
         }
         
-        .theme-toggle:hover {
-            color: var(--primary-color);
-            transform: scale(1.3);
+        .nav-icon:hover { 
+            color: var(--primary-color); 
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .theme-toggle:hover { 
+            color: #f1c40f; 
+            transform: scale(1.3); 
         }
         
         /* 主要内容区域 */
@@ -136,70 +188,103 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+            width: 100%;
+            position: relative;
+            z-index: 1;
         }
         
         .content-header {
             margin-bottom: 2rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
         }
         
         .content-title {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.2rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             color: var(--text-color);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .content-subtitle {
             color: var(--text-light);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         
+        /* 文章章节卡片化 */
         .content-section {
             background-color: var(--card-bg);
-            border-radius: 8px;
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-5px);
         }
         
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
         }
         
         .section-content {
-            margin-bottom: 1.5rem;
             line-height: 1.8;
+            color: var(--text-light);
         }
         
         .section-content p {
             margin-bottom: 1rem;
         }
-
+        
         .section-content ul, .section-content ol {
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
         
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* 代码块样式优化 */
         .code-block {
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             overflow-x: auto;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
         }
         
-        [data-theme="dark"] .code-block {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+        pre {
+            margin: 0;
         }
         
+        /* 表格样式 */
         .table-container {
             overflow-x: auto;
             margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         
         table {
@@ -208,32 +293,40 @@
         }
         
         th, td {
-            padding: 0.8rem;
+            padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
         
         th {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
         }
         
         tr:hover {
-            background-color: rgba(0, 123, 255, 0.05);
+            background-color: rgba(0, 0, 0, 0.02);
         }
         
         [data-theme="dark"] tr:hover {
-            background-color: rgba(102, 126, 234, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
+        /* 强调文本 */
+        .highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
         /* 页脚 */
         .footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
             text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
         
         /* 回到顶部按钮 */
@@ -243,7 +336,7 @@
             right: 2rem;
             width: 50px;
             height: 50px;
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
             border: none;
             border-radius: 50%;
@@ -252,10 +345,11 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
             opacity: 0;
             visibility: hidden;
+            z-index: 100;
         }
         
         .back-to-top.visible {
@@ -264,8 +358,8 @@
         }
         
         .back-to-top:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.1);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
         }
         
         /* 响应式设计 */
@@ -273,73 +367,70 @@
             .header { padding: 1rem; }
             .main-content { padding: 1rem; }
             .content-section { padding: 1.5rem; }
-            .content-title { font-size: 1.5rem; }
-            .section-title { font-size: 1.2rem; }
+            .content-title { font-size: 1.8rem; }
+            .section-title { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
     <!-- 顶部导航栏 -->
     <header class="header">
-        <a href="index.html" class="logo">
+        <a href="../index.html" class="logo">
             <div class="logo-icon">
                 <img src="../logo/Gpnu.png" alt="Logo">
             </div>
             <span>Gpnu_Acmer_Wiki</span>
         </a>
         <div class="nav-right">
-            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
-            <div class="nav-icon">🔔</div>
+            <a href="../search.html" class="nav-icon" title="搜索">🔍</a>
+            <a href="../issue.html" class="nav-icon" title="通知">🔔</a>
             <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <!-- 保持登录按钮一致性，虽然内部页可能不需要 -->
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
     <main class="main-content">
-        <div class="content-header">
-            <h1 class="content-title">网络流：最大流问题</h1>
-            <p class="content-subtitle">Network Flow - Maximum Flow Problem</p>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">1. 基本概念</h2>
-            <div class="section-content">
-                <p>网络流可以形象地理解为<strong>自来水管网</strong>。我们有一个源头（源点 $S$）和终点（汇点 $T$），中间有很多管道。每个管道都有一个最大的承受能力（容量 $C$）。</p>
-                <p><strong>三个核心性质：</strong></p>
-                <ul>
-                    <li><strong>容量限制：</strong> 每条边的流量 $F$ 不能超过其容量 $C$，即 $0 \le F \le C$。</li>
-                    <li><strong>流量守恒：</strong> 除了源点和汇点，进入一个点的总流量等于流出该点的总流量（中间节点不存水）。</li>
-                    <li><strong>斜对称性：</strong> 从 $u$ 到 $v$ 的流量等于从 $v$ 到 $u$ 流量的相反数（这在构建反向边时非常重要）。</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">2. 核心难点：反向边（悔棋机制）</h2>
-            <div class="section-content">
-                <p>为什么网络流必须建反向边？</p>
-                <p>因为贪心算法在寻找路径（增广路）时可能会“走错路”。反向边的存在给予了算法一个<strong>反悔的机会</strong>：如果之后发现之前的流量走错了，可以通过反向边把流量“推回来”。</p>
-                <p><strong>操作：</strong> 当我们给正向边 $u \to v$ 消耗了 $k$ 个容量时，给反向边 $v \to u$ 增加 $k$ 个容量。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">3. Dinic 算法：高效求解最大流</h2>
-            <div class="section-content">
-                <p>Dinic 算法是目前竞赛中最常用的最大流算法，它是对 Edmonds-Karp 算法的深度优化，主要通过以下两步循环：</p>
-                <ol>
-                    <li><strong>BFS 构造分层图：</strong> 给每个点标号，记录它是从源点开始的第几层。这样可以保证 DFS 时只往更深的一层走，避免走回头路或死循环。</li>
-                    <li><strong>DFS 寻找增广路：</strong> 在分层图的基础上，一次性找出多条增广路，效率极高。</li>
-                    <li><strong>当前弧优化（必做优化）：</strong> 在 DFS 时，记录每个点已经尝试到了哪条边。下一次经过这个点时，直接从那条边开始，避免重复无效搜索。</li>
-                </ol>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">4. 代码实现 (C++)</h2>
-            <div class="section-content">
-                <p>这是 Dinic 算法的简洁模板。注意 <code>tot = 1</code> 的初始化技巧，这样可以使用 <code>i ^ 1</code> 快速找到反向边。</p>
-                <div class="code-block">
+        
+<div class="content-header">
+<h1 class="content-title">网络流：最大流问题</h1>
+<p class="content-subtitle">Network Flow - Maximum Flow Problem</p>
+</div>
+<div class="content-section">
+<h2 class="section-title">1. 基本概念</h2>
+<div class="section-content">
+<p>网络流可以形象地理解为<strong>自来水管网</strong>。我们有一个源头（源点 $S$）和终点（汇点 $T$），中间有很多管道。每个管道都有一个最大的承受能力（容量 $C$）。</p>
+<p><strong>三个核心性质：</strong></p>
+<ul>
+<li><strong>容量限制：</strong> 每条边的流量 $F$ 不能超过其容量 $C$，即 $0 \le F \le C$。</li>
+<li><strong>流量守恒：</strong> 除了源点和汇点，进入一个点的总流量等于流出该点的总流量（中间节点不存水）。</li>
+<li><strong>斜对称性：</strong> 从 $u$ 到 $v$ 的流量等于从 $v$ 到 $u$ 流量的相反数（这在构建反向边时非常重要）。</li>
+</ul>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">2. 核心难点：反向边（悔棋机制）</h2>
+<div class="section-content">
+<p>为什么网络流必须建反向边？</p>
+<p>因为贪心算法在寻找路径（增广路）时可能会“走错路”。反向边的存在给予了算法一个<strong>反悔的机会</strong>：如果之后发现之前的流量走错了，可以通过反向边把流量“推回来”。</p>
+<p><strong>操作：</strong> 当我们给正向边 $u \to v$ 消耗了 $k$ 个容量时，给反向边 $v \to u$ 增加 $k$ 个容量。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">3. Dinic 算法：高效求解最大流</h2>
+<div class="section-content">
+<p>Dinic 算法是目前竞赛中最常用的最大流算法，它是对 Edmonds-Karp 算法的深度优化，主要通过以下两步循环：</p>
+<ol>
+<li><strong>BFS 构造分层图：</strong> 给每个点标号，记录它是从源点开始的第几层。这样可以保证 DFS 时只往更深的一层走，避免走回头路或死循环。</li>
+<li><strong>DFS 寻找增广路：</strong> 在分层图的基础上，一次性找出多条增广路，效率极高。</li>
+<li><strong>当前弧优化（必做优化）：</strong> 在 DFS 时，记录每个点已经尝试到了哪条边。下一次经过这个点时，直接从那条边开始，避免重复无效搜索。</li>
+</ol>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">4. 代码实现 (C++)</h2>
+<div class="section-content">
+<p>这是 Dinic 算法的简洁模板。注意 <code>tot = 1</code> 的初始化技巧，这样可以使用 <code>i ^ 1</code> 快速找到反向边。</p>
+<div class="code-block">
 <pre>#include &lt;iostream&gt;
 #include &lt;vector&gt;
 #include &lt;queue&gt;
@@ -370,7 +461,7 @@ bool bfs() {
         int u = q.front(); q.pop();
         for (int i = head[u]; i; i = edge[i].next) {
             int v = edge[i].to;
-            if (d[v] == -1 && edge[i].cap) {
+            if (d[v] == -1 &amp;&amp; edge[i].cap) {
                 d[v] = d[u] + 1;
                 cur[v] = head[v];
                 if (v == t) return true;
@@ -385,10 +476,10 @@ bool bfs() {
 int dfs(int u, int limit) {
     if (u == t || !limit) return limit;
     int flow = 0;
-    for (int i = cur[u]; i && flow < limit; i = edge[i].next) {
+    for (int i = cur[u]; i &amp;&amp; flow &lt; limit; i = edge[i].next) {
         cur[u] = i; // 当前弧优化
         int v = edge[i].to;
-        if (d[v] == d[u] + 1 && edge[i].cap) {
+        if (d[v] == d[u] + 1 &amp;&amp; edge[i].cap) {
             int t = dfs(v, min(edge[i].cap, limit - flow));
             if (!t) d[v] = -1; // 剪枝：这个点已经没法增广了
             edge[i].cap -= t;
@@ -406,60 +497,56 @@ int dinic() {
 }
 
 int main() {
-    cin >> n >> m >> s >> t;
+    cin &gt;&gt; n &gt;&gt; m &gt;&gt; s &gt;&gt; t;
     while (m--) {
         int u, v, c;
-        cin >> u >> v >> c;
+        cin &gt;&gt; u &gt;&gt; v &gt;&gt; c;
         add(u, v, c);
     }
-    cout << dinic() << endl;
+    cout &lt;&lt; dinic() &lt;&lt; endl;
     return 0;
 }</pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">5. 算法分析与技巧</h2>
-            <div class="section-content">
-                <div class="table-container">
-                    <table>
-                        <tr>
-                            <th>算法</th>
-                            <th>复杂度</th>
-                            <th>特点</th>
-                        </tr>
-                        <tr>
-                            <td>Edmonds-Karp</td>
-                            <td>$O(VE^2)$</td>
-                            <td>逻辑简单，BFS 找路，速度慢。</td>
-                        </tr>
-                        <tr>
-                            <td><strong>Dinic</strong></td>
-                            <td>$O(V^2E)$</td>
-                            <td><strong>最常用</strong>。二分图匹配中复杂度仅为 $O(E\sqrt{V})$。</td>
-                        </tr>
-                        <tr>
-                            <td>ISAP</td>
-                            <td>$O(V^2E)$</td>
-                            <td>只需一次 BFS，速度比 Dinic 略快，但写法复杂。</td>
-                        </tr>
-                    </table>
-                </div>
-                <p><strong>核心优化提示：</strong> 如果你的 Dinic 跑得太慢，请务必检查“当前弧优化” (<code>cur[u] = i</code>) 是否写对，这是区分高手和新手的关键点。</p>
-            </div>
-        </div>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">5. 算法分析与技巧</h2>
+<div class="section-content">
+<div class="table-container">
+<table>
+<tr>
+<th>算法</th>
+<th>复杂度</th>
+<th>特点</th>
+</tr>
+<tr>
+<td>Edmonds-Karp</td>
+<td>$O(VE^2)$</td>
+<td>逻辑简单，BFS 找路，速度慢。</td>
+</tr>
+<tr>
+<td><strong>Dinic</strong></td>
+<td>$O(V^2E)$</td>
+<td><strong>最常用</strong>。二分图匹配中复杂度仅为 $O(E\sqrt{V})$。</td>
+</tr>
+<tr>
+<td>ISAP</td>
+<td>$O(V^2E)$</td>
+<td>只需一次 BFS，速度比 Dinic 略快，但写法复杂。</td>
+</tr>
+</table>
+</div>
+<p><strong>核心优化提示：</strong> 如果你的 Dinic 跑得太慢，请务必检查“当前弧优化” (<code>cur[u] = i</code>) 是否写对，这是区分高手和新手的关键点。</p>
+</div>
+</div>
 
     </main>
-
     <!-- 页脚 -->
     <footer class="footer">
         <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
     </footer>
 
-    <!-- 回到顶部按钮 -->
     <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
-
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
@@ -494,5 +581,6 @@ int main() {
             });
         });
     </script>
+
 </body>
 </html>

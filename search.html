@@ -3,149 +3,297 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>搜索页面</title>
+    <title>搜索页面 - Gpnu_Acmer_Wiki</title>
     <style>
+        /* CSS变量定义 - 现代化配色 (源自 index.html) */
+        :root {
+            /* 主色调 */
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+            --primary-dark: #0056b3;
+            
+            /* 背景遮罩 - 浅色模式下让背景图稍微变白一点 */
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            /* 卡片背景 */
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+        }
+        
+        /* 深色模式变量 */
+        [data-theme="dark"] {
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-dark: #5568d3;
+            
+            /* 深色模式下让背景图变暗 */
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
+        }
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-        
-        /* 定义CSS变量 - 浅色模式 */
-        :root {
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --container-bg: rgba(255, 255, 255, 0.9);
-            --input-bg: transparent;
-            --input-text-color: #333333;
-            --border-color: #e0e0e0;
-            --border-focus-color: #667eea;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --link-color: #667eea;
-            --link-hover-color: #5568d3;
-            --history-item-hover: #f8f9fa;
-            --empty-history-color: #999;
-            --search-icon-color: #666;
-        }
-        
-        /* 深色模式 */
-        [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --container-bg: rgba(42, 42, 42, 0.95);
-            --input-bg: transparent;
-            --input-text-color: #ffffff;
-            --border-color: #555555;
-            --border-focus-color: #764ba2;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --link-color: #667eea;
-            --link-hover-color: #764ba2;
-            --history-item-hover: #333333;
-            --empty-history-color: #666;
-            --search-icon-color: #aaa;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: var(--text-color);
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            
+            /* --- 背景图设置 --- */
+            background-image: url('logo/citlali.jpg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+        }
+
+        /* 背景遮罩层 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-overlay); 
+            z-index: -1; 
+            backdrop-filter: blur(3px); 
+            transition: background-color 0.3s ease;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.8rem 2rem;
+            background-color: var(--header-bg);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
         
-        /* 背景容器 - 与signin.html相同 */
-        .background-container {
-            position: absolute;
-            top: 0;
-            left: 0;
+        .logo {
+            display: flex;
+            align-items: center;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-color);
+            text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        
+        /* --- Logo 图标样式 (正圆形) --- */
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%; /* 正圆 */
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            border: 2px solid var(--primary-color);
+        }
+        
+        .logo-icon img {
             width: 100%;
             height: 100%;
-            background-image: url('logo/citlali.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            filter: brightness(0.9);
-            z-index: -1;
+            object-fit: cover;
+        }
+        
+        /* --- 导航栏右侧布局 (严格对齐) --- */
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        /* 通用图标容器样式 */
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--text-light);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* 布局属性 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;  /* 固定宽度 */
+            height: 40px; /* 固定高度 */
+            text-decoration: none;
+            border: none;
+            background: transparent;
+        }
+        
+        .nav-icon:hover { 
+            color: var(--primary-color); 
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .theme-toggle:hover { 
+            color: #f1c40f; 
+            transform: scale(1.3); 
+        }
+        
+        .btn {
+            padding: 0.6rem 1.4rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            position: relative;
             overflow: hidden;
         }
         
-        /* 搜索容器 */
+        .btn-login {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+            background: rgba(255,255,255,0.1); 
+        }
+        
+        .btn-login:hover { 
+            background: var(--primary-gradient); 
+            color: white; 
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+        }
+
+        /* 页脚 */
+        .footer {
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* --- 搜索页面特有样式 (适配新风格) --- */
+        
         .search-container {
             position: absolute;
-            top: 20%;
+            top: 25%;
             left: 50%;
             transform: translateX(-50%);
             width: 600px;
             max-width: 90%;
-            background-color: var(--container-bg);
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
             border-radius: 50px;
-            padding: 10px;
+            padding: 8px 10px;
             display: flex;
             align-items: center;
-            box-shadow: 0 4px 20px var(--shadow-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            z-index: 100;
+            transition: all 0.3s ease;
         }
-        
-        /* 搜索图标 */
+
         .search-icon {
             font-size: 1.2rem;
-            color: var(--search-icon-color);
+            color: var(--text-light);
             margin: 0 15px;
+            display: flex;
+            align-items: center;
         }
-        
-        /* 搜索输入框 */
+
         .search-input {
             flex: 1;
             border: none;
             outline: none;
             font-size: 1rem;
-            background-color: var(--input-bg);
-            color: var(--input-text-color);
+            background-color: transparent;
+            color: var(--text-color);
             padding: 10px 0;
+            height: 100%;
         }
-        
+
         .search-input::placeholder {
-            color: var(--search-icon-color);
+            color: var(--text-light);
+            opacity: 0.7;
         }
-        
-        /* 搜索按钮 */
+
         .search-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: var(--primary-gradient);
             color: white;
             border: none;
             outline: none;
             font-size: 1rem;
-            padding: 12px 25px;
+            padding: 10px 25px;
             border-radius: 50px;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.3);
+            white-space: nowrap;
         }
-        
-        /* 搜索按钮悬停效果 */
+
         .search-btn:hover {
-            background: linear-gradient(135deg, #5568d3 0%, #6a418c 100%);
             transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.4);
         }
-        
-        /* 搜索记录容器 */
+
         .search-history-container {
             position: absolute;
-            top: calc(20% + 70px);
+            top: calc(25% + 70px);
             left: 50%;
             transform: translateX(-50%);
             width: 600px;
             max-width: 90%;
-            background-color: var(--container-bg);
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
             border-radius: 20px;
-            box-shadow: 0 4px 20px var(--shadow-color);
-            padding: 1rem;
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            padding: 1.5rem;
             display: none;
-            z-index: 10;
+            z-index: 99;
         }
-        
-        /* 搜索记录标题 */
+
         .search-history-header {
             display: flex;
             justify-content: space-between;
@@ -154,113 +302,146 @@
             padding-bottom: 0.5rem;
             border-bottom: 1px solid var(--border-color);
         }
-        
+
         .search-history-title {
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-weight: bold;
             color: var(--text-color);
         }
-        
+
         .clear-history-btn {
             background: none;
             border: none;
-            color: var(--link-color);
-            font-size: 0.85rem;
+            color: var(--primary-color);
+            font-size: 0.9rem;
             cursor: pointer;
             transition: color 0.3s ease;
         }
-        
+
         .clear-history-btn:hover {
-            color: var(--link-hover-color);
+            color: var(--primary-dark);
+            text-decoration: underline;
         }
-        
-        /* 搜索记录列表 */
+
         .search-history-list {
             list-style: none;
             max-height: 300px;
             overflow-y: auto;
         }
-        
+
+        /* 滚动条美化 */
+        .search-history-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        .search-history-list::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .search-history-list::-webkit-scrollbar-thumb {
+            background-color: rgba(0,0,0,0.1);
+            border-radius: 3px;
+        }
+        [data-theme="dark"] .search-history-list::-webkit-scrollbar-thumb {
+            background-color: rgba(255,255,255,0.2);
+        }
+
         .search-history-item {
             display: flex;
             align-items: center;
-            padding: 0.75rem 0.5rem;
+            padding: 0.8rem 1rem;
             cursor: pointer;
             transition: background-color 0.2s ease;
             border-radius: 10px;
+            color: var(--text-color);
         }
-        
+
         .search-history-item:hover {
-            background-color: var(--history-item-hover);
+            background-color: rgba(0,0,0,0.05);
         }
-        
+        [data-theme="dark"] .search-history-item:hover {
+            background-color: rgba(255,255,255,0.05);
+        }
+
         .history-icon {
-            font-size: 0.9rem;
-            color: #aaa;
-            margin-right: 10px;
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-right: 12px;
+            display: flex;
+            align-items: center;
         }
-        
+
         .history-text {
             flex: 1;
             font-size: 0.95rem;
-            color: var(--text-color);
         }
-        
+
         .delete-history-item {
-            color: var(--search-icon-color);
-            font-size: 0.85rem;
+            color: var(--text-light);
+            font-size: 1.2rem;
             cursor: pointer;
             opacity: 0;
             transition: all 0.2s ease;
+            padding: 0 5px;
+            line-height: 1;
         }
-        
+
         .search-history-item:hover .delete-history-item {
             opacity: 1;
         }
-        
+
         .delete-history-item:hover {
             color: #ff4757;
         }
-        
-        /* 空历史记录 */
+
         .empty-history {
             text-align: center;
-            color: var(--empty-history-color);
+            color: var(--text-light);
             font-size: 0.9rem;
             padding: 2rem;
         }
         
-        /* 响应式设计 */
         @media (max-width: 768px) {
+            .header { padding: 1rem; }
             .search-container {
                 width: 95%;
-                padding: 8px;
+                padding: 5px 10px;
             }
-            
             .search-btn {
-                padding: 10px 20px;
+                padding: 8px 15px;
                 font-size: 0.9rem;
             }
-            
             .search-history-container {
                 width: 95%;
-                top: calc(20% + 60px);
+                top: calc(25% + 60px);
             }
         }
     </style>
 </head>
 <body>
-    <!-- 背景容器 -->
-    <div class="background-container"></div>
-    
-    <!-- 搜索容器 -->
+    <!-- 顶部导航栏 (与主页一致) -->
+    <header class="header">
+        <a href="index.html" class="logo">
+            <div class="logo-icon">
+                <img src="logo/Gpnu.png" alt="Logo" onerror="this.style.display='none';this.parentNode.innerHTML='G'">
+            </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <!-- 搜索图标当前页高亮或隐藏，这里选择高亮颜色作为指示 -->
+            <a href="search.html" class="nav-icon" title="搜索" style="color: var(--primary-color);">🔍</a>
+            <a href="issue.html" class="nav-icon" title="通知">🔔</a>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <a href="SignIn.html" class="btn btn-login">登录 / 注册</a>
+        </div>
+    </header>
+
+    <!-- 搜索核心区域 -->
     <div class="search-container">
         <div class="search-icon">🔍</div>
-        <input type="text" class="search-input" id="search-input" placeholder="搜索...">
+        <input type="text" class="search-input" id="search-input" placeholder="搜索算法...">
         <button class="search-btn" id="search-btn">搜索</button>
     </div>
     
-    <!-- 搜索记录容器 -->
+    <!-- 搜索历史/建议下拉框 -->
     <div class="search-history-container" id="search-history-container">
         <div class="search-history-header">
             <div class="search-history-title">搜索历史</div>
@@ -270,13 +451,30 @@
             <!-- 搜索记录将通过JavaScript动态生成 -->
         </ul>
     </div>
+
     <script>
-        // 深色模式同步
+        // --- 1. 深色模式切换功能 (从 index.html 迁移) ---
+        const themeToggle = document.getElementById('theme-toggle');
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
         document.documentElement.setAttribute('data-theme', currentTheme);
         
-        // 算法教程数据 - 用于自动补全
+        if (themeToggle) {
+            themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+            
+            themeToggle.addEventListener('click', () => {
+                const currentTheme = document.documentElement.getAttribute('data-theme');
+                const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-theme', newTheme);
+                themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+                localStorage.setItem('theme', newTheme);
+            });
+        }
+
+        // --- 2. 算法搜索逻辑 (保留原有功能) ---
+        
+        // 算法教程数据
         const algorithms = [
             { name: '排序算法', description: '冒泡、选择、插入、快速、归并排序等', url: 'algorithm/sort.html' },
             { name: '二分查找', description: '有序数组查找，时间复杂度O(log n)', url: 'algorithm/binary_search.html' },
@@ -442,7 +640,7 @@
                     <span class="history-icon">🔍</span>
                     <div class="history-text">
                         <div style="font-weight:bold">${algo.name}</div>
-                        <div style="font-size:0.85em;color:var(--search-icon-color);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${algo.description || ''}</div>
+                        <div style="font-size:0.85em;color:var(--text-light);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${algo.description || ''}</div>
                     </div>
                 </li>
             `).join('');
@@ -488,97 +686,80 @@
                 renderSuggestions(searchInput.value);
             } else {
                 renderSearchHistory();
-                if (getSearchHistory().length > 0) {
-                    searchHistoryContainer.style.display = 'block';
-                }
             }
+            searchHistoryContainer.style.display = 'block';
         }
         
         // 隐藏搜索记录
-        function hideSearchHistory() {
-            // 使用setTimeout允许点击事件执行
-            setTimeout(() => {
-                searchHistoryContainer.style.display = 'none';
-            }, 200);
+        function hideSearchHistory(e) {
+            // 如果点击的是搜索容器或搜索历史容器内部，不隐藏
+            if (e.target.closest('.search-container') || e.target.closest('.search-history-container')) {
+                return;
+            }
+            searchHistoryContainer.style.display = 'none';
         }
         
         // 事件监听
+        
+        // 搜索按钮点击
         searchBtn.addEventListener('click', () => {
             performSearch(searchInput.value);
         });
         
+        // 输入框回车
         searchInput.addEventListener('keypress', (e) => {
             if (e.key === 'Enter') {
                 performSearch(searchInput.value);
             }
         });
         
-        searchInput.addEventListener('focus', () => {
-            if (searchInput.value) {
-                renderSuggestions(searchInput.value);
-            } else {
-                renderSearchHistory();
-                if (getSearchHistory().length > 0) {
-                    searchHistoryContainer.style.display = 'block';
-                }
-            }
-        });
-        
+        // 输入框输入
         searchInput.addEventListener('input', () => {
-            if (searchInput.value) {
-                renderSuggestions(searchInput.value);
-            } else {
-                renderSearchHistory();
-                // 只有当有历史记录时才显示
-                if (getSearchHistory().length > 0) {
-                    searchHistoryContainer.style.display = 'block';
-                } else {
-                    searchHistoryContainer.style.display = 'none';
-                }
+            renderSuggestions(searchInput.value);
+        });
+        
+        // 输入框获得焦点
+        searchInput.addEventListener('focus', showSearchHistory);
+        
+        // 点击页面其他地方隐藏历史记录
+        document.addEventListener('click', hideSearchHistory);
+        
+        // 清除历史记录按钮
+        clearHistoryBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // 防止触发hideSearchHistory
+            if (confirm('确定要清空所有搜索历史吗？')) {
+                clearSearchHistory();
             }
         });
         
-        // 点击列表项
+        // 历史记录项点击委托
         searchHistoryList.addEventListener('click', (e) => {
-            // 处理建议项点击
-            const suggestionItem = e.target.closest('.suggestion-item');
-            if (suggestionItem) {
-                const url = suggestionItem.dataset.url;
-                const name = suggestionItem.dataset.name;
-                addSearchHistory(name); // 记录点击的算法名
-                window.location.href = url;
+            const deleteBtn = e.target.closest('.delete-history-item');
+            if (deleteBtn) {
+                e.stopPropagation();
+                const keyword = deleteBtn.getAttribute('data-keyword');
+                deleteSearchHistory(keyword);
                 return;
             }
-
-            // 处理历史记录项点击
+            
             const historyItem = e.target.closest('.history-item');
-            // 排除删除按钮
-            if (historyItem && !e.target.classList.contains('delete-history-item')) {
-                const keyword = historyItem.dataset.keyword;
+            if (historyItem) {
+                const keyword = historyItem.getAttribute('data-keyword');
                 searchInput.value = keyword;
                 performSearch(keyword);
                 return;
             }
             
-            // 处理删除历史按钮
-            if (e.target.classList.contains('delete-history-item')) {
-                const keyword = e.target.dataset.keyword;
-                deleteSearchHistory(keyword);
-                e.stopPropagation(); // 阻止冒泡
+            const suggestionItem = e.target.closest('.suggestion-item');
+            if (suggestionItem) {
+                const url = suggestionItem.getAttribute('data-url');
+                const name = suggestionItem.getAttribute('data-name');
+                addSearchHistory(name);
+                window.location.href = url;
             }
         });
         
-        // 清空搜索历史
-        clearHistoryBtn.addEventListener('click', clearSearchHistory);
-        
-        // 点击页面其他地方隐藏搜索记录
-        document.addEventListener('click', (e) => {
-            if (!document.querySelector('.search-container').contains(e.target) && !searchHistoryContainer.contains(e.target)) {
-                hideSearchHistory();
-            }
-        });
-        
-        // 初始渲染
+        // 初始化
         renderSearchHistory();
     </script>
 </body>

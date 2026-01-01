@@ -3,419 +3,390 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>注册</title>
+    <title>注册 - Gpnu_Acmer_Wiki</title>
+    <!-- 引入 Axios 用于发送请求 -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-        
-        /* 定义CSS变量 - 浅色模式 */
+        /* --- 全局样式 & 变量 --- */
         :root {
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --container-bg: rgba(255, 255, 255, 0.85);
-            --input-bg: #f8f9fa;
-            --input-focus-bg: #ffffff;
-            --border-color: #e0e0e0;
-            --border-focus-color: #667eea;
-            --shadow-color: rgba(0, 0, 0, 0.1);
-            --link-color: #4facfe;
-            --link-hover-color: #00f2fe;
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --input-bg: rgba(255, 255, 255, 0.6);
+            --input-focus-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #2c3e50;
+            --border-color: rgba(0,0,0,0.05);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --link-color: #3a7bd5;
+            --link-hover-color: #00d2ff;
+            --error-color: #ff4d4f;
         }
         
-        /* 深色模式 */
         [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --container-bg: rgba(42, 42, 42, 0.95);
-            --input-bg: #333333;
-            --input-focus-bg: #444444;
-            --border-color: #555555;
-            --border-focus-color: #764ba2;
-            --shadow-color: rgba(0, 0, 0, 0.3);
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --input-focus-bg: rgba(0, 0, 0, 0.4);
+            --text-color: #e2e8f0;
+            --border-color: rgba(255,255,255,0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
             --link-color: #667eea;
-            --link-hover-color: #764ba2;
+            --link-hover-color: #a3bffa;
         }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.2s ease; }
         
         body {
-            font-family: 'Arial', sans-serif;
-            line-height: 1.6;
-            color: var(--text-color);
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        /* 背景容器 */
-        .background-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            font-family: 'Segoe UI', 'Roboto', sans-serif;
+            color: var(--text-color); min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
             background-image: url('logo/citlali.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            filter: brightness(0.9);
-            z-index: -1;
-            overflow: hidden;
+            background-size: cover; background-position: center; 
+            background-repeat: no-repeat; background-attachment: fixed;
+        }
+
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-overlay); z-index: -1; backdrop-filter: blur(3px);
         }
         
-        /* 注册容器 */
-        .register-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            max-width: 90%;
-            background-color: var(--container-bg);
-            border-radius: 15px;
+        .auth-container {
+            width: 420px; max-width: 90%;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border); border-radius: 16px;
+            box-shadow: 0 8px 32px 0 rgba(0,0,0,0.1);
             padding: 2.5rem 2rem;
-            box-shadow: 0 5px 20px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center;
+            animation: fadeInUp 0.6s ease-out;
         }
+
+        .auth-container::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--primary-gradient);
+        }
+
+        .auth-header { text-align: center; margin-bottom: 2rem; width: 100%; }
+        .logo-circle {
+            width: 80px; height: 80px; margin: 0 auto 1.2rem; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            background: rgba(255,255,255,0.2); border: 2px solid var(--primary-color);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1); overflow: hidden;
+        }
+        .logo-circle img { width: 100%; height: 100%; object-fit: cover; }
+        .auth-title { font-size: 1.8rem; font-weight: 800; color: var(--text-color); }
         
-        /* 注册头部 */
-        .register-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        
-        .register-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        
-        .register-logo img {
-            width: 90%;
-            height: 90%;
-            object-fit: contain;
-        }
-        
-        .register-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--text-color);
-            margin: 0;
-        }
-        
-        /* 表单样式 */
-        .register-form {
-            width: 100%;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-            width: 100%;
-        }
+        .auth-form { width: 100%; }
+        .form-group { margin-bottom: 1.2rem; position: relative; }
+        .input-wrapper { position: relative; width: 100%; }
         
         .form-input {
-            width: 100%;
-            padding: 1rem 3rem 1rem 3rem;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            /* 隐藏浏览器默认的密码图标 */
-            -webkit-text-security: none;
+            width: 100%; padding: 1rem 3rem;
+            border: 1px solid var(--border-color); border-radius: 50px;
+            font-size: 1rem; background-color: var(--input-bg); color: var(--text-color);
+            outline: none; -webkit-text-security: none;
         }
-        
-        /* 针对不同浏览器的默认密码图标隐藏 */
-        input[type="password"]::-ms-reveal,
-        input[type="password"]::-ms-clear {
-            display: none;
-        }
-        
-        /* Safari浏览器 */
-        @supports (-webkit-appearance: none) {
-            input[type="password"] {
-                -webkit-text-security: disc;
-            }
-        }
-        
+        .form-input.has-btn { padding-right: 130px; }
         .form-input:focus {
-            outline: none;
-            border-color: var(--border-focus-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
-            background-color: var(--input-focus-bg);
+            border-color: var(--primary-color); background-color: var(--input-focus-bg);
+            box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
         }
         
-        .form-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #667eea;
-            font-size: 1.1rem;
+        /* 错误样式 */
+        .form-input.error {
+            border-color: var(--error-color);
+            box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.1);
+        }
+        .error-tip {
+            display: none; color: var(--error-color); font-size: 0.8rem;
+            margin-top: 5px; margin-left: 15px; font-weight: 600;
+            animation: fadeIn 0.3s;
         }
         
-        .toggle-password {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #667eea;
-            font-size: 1.1rem;
-            cursor: pointer;
+        .form-icon { position: absolute; left: 1.2rem; top: 27px; transform: translateY(-50%); color: var(--primary-color); }
+        .toggle-password { position: absolute; right: 1.2rem; top: 27px; transform: translateY(-50%); color: var(--text-light); cursor: pointer; }
+
+        .verify-btn {
+            position: absolute; right: 6px; top: 6px; bottom: 6px;
+            border-radius: 40px; padding: 0 15px; border: none;
+            background: var(--primary-gradient); color: white;
+            font-size: 0.85rem; font-weight: bold; cursor: pointer;
         }
-        
-        /* 注册按钮 */
-        .register-btn {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1rem;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        .verify-btn:disabled { background: #ccc; cursor: not-allowed; }
+
+        .submit-btn {
+            width: 100%; padding: 1rem; margin-top: 1rem;
+            background: var(--primary-gradient); border: none; border-radius: 50px;
+            color: white; font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
         }
-        
-        .register-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
-        
-        .register-btn:active {
-            transform: translateY(0);
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
-            /* 保持居中 */
-        }
-        
-        @media (max-width: 768px) {
-            .register-container {
-                padding: 2rem 1.5rem;
-            }
-            
-            .register-title {
-                font-size: 1.6rem;
-            }
-            
-            .register-logo {
-                width: 65px;
-                height: 65px;
-                font-size: 2rem;
-            }
-        }
-        
-        @media (max-width: 480px) {
-            .register-container {
-                padding: 1.5rem 1rem;
-                margin: 1rem;
-            }
-            
-            .register-title {
-                font-size: 1.5rem;
-            }
-            
-            .form-input {
-                padding: 0.9rem 2.5rem 0.9rem 2.5rem;
-                font-size: 0.95rem;
-            }
-            
-            .register-btn {
-                padding: 0.9rem;
-                font-size: 1rem;
-            }
-            
-            .get-code-btn {
-                padding: 0.9rem 1rem;
-                font-size: 0.8rem;
-            }
-        }
-        
-        /* 验证码区域样式 */
-        .verification-group {
-            display: flex;
-            gap: 0.5rem;
-            align-items: center;
-        }
-        
-        .verification-group .form-input {
-            flex: 1;
-            padding-right: 1rem;
-        }
-        
-        .get-code-btn {
-            padding: 1rem 1.5rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 0.9rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            white-space: nowrap;
-        }
-        
-        .get-code-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
-        }
-        
-        .get-code-btn:disabled {
-            opacity: 0.7;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(58, 123, 213, 0.4); }
+
+        .bottom-links { margin-top: 1.5rem; text-align: center; font-size: 0.9rem; color: var(--text-light); }
+        .bottom-links a { color: var(--link-color); text-decoration: none; font-weight: 600; }
+
+        .back-home { position: absolute; top: 20px; left: 20px; color: var(--text-color); text-decoration: none; font-weight: bold; background: var(--card-bg); padding: 8px 15px; border-radius: 30px; border: var(--glass-border); z-index: 10; }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
     </style>
 </head>
 <body>
-    <!-- 背景容器 -->
-    <div class="background-container"></div>
+    <a href="index.html" class="back-home">← 首页</a>
 
-    <!-- 注册容器 -->
-    <div class="register-container">
-        <div class="register-header">
-            <div class="register-logo">
-                <img src="logo/Gpnu.png" alt="Logo">
+    <div class="auth-container">
+        <div class="auth-header">
+            <div class="logo-circle">
+                <img src="logo/Gpnu.png" alt="Logo" onerror="this.style.display='none';this.parentNode.innerHTML='G'">
             </div>
-            <h1 class="register-title">注册账户</h1>
+            <h1 class="auth-title">创建账号</h1>
         </div>
         
-        <form class="register-form">
+        <form class="auth-form" novalidate>
+            <!-- 用户名栏 -->
+            <div class="form-group">
+                <div class="form-icon">📛</div>
+                <input type="text" class="form-input" id="username-input" 
+                       placeholder="请输入用户名" required maxlength="12"
+                       title="仅支持中英文、数字及下划线">
+                <div class="error-tip" id="username-error"></div>
+            </div>
+
             <div class="form-group">
                 <div class="form-icon">👤</div>
-                <input type="text" class="form-input" placeholder="邮箱" required pattern="[a-zA-Z0-9@_]+" title="邮箱只能包含字母、数字、@和下划线">
+                <input type="email" class="form-input" id="email-input" placeholder="邮箱 (@qq.com / @163.com)" required>
+                <div class="error-tip" id="email-error"></div>
             </div>
             
             <div class="form-group">
                 <div class="form-icon">🔒</div>
-                <input type="password" class="form-input" id="password-input" placeholder="设置密码" required pattern="[a-zA-Z0-9_]+" title="密码只能包含字母、数字和下划线">
+                <input type="password" class="form-input" id="password-input" placeholder="设置密码 (6-20位)" required maxlength="20">
                 <div class="toggle-password" id="toggle-password1">😌</div>
+                <div class="error-tip" id="password-error"></div>
             </div>
             
             <div class="form-group">
                 <div class="form-icon">🔄</div>
-                <input type="password" class="form-input" id="confirm-password-input" placeholder="再次输入密码" required pattern="[a-zA-Z0-9_]+" title="密码只能包含字母、数字和下划线">
+                <input type="password" class="form-input" id="confirm-password-input" placeholder="确认密码" required maxlength="20">
                 <div class="toggle-password" id="toggle-password2">😌</div>
+                <div class="error-tip" id="confirm-password-error"></div>
             </div>
             
-            <div class="form-group verification-group">
-                <div class="form-icon">✉️</div>
-                <input type="text" class="form-input" placeholder="验证码" required>
-                <button type="button" class="get-code-btn" id="get-code-btn">获取验证码</button>
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <div class="form-icon">✉️</div>
+                    <!-- 移除 required 属性，不再强制校验前端 -->
+                    <input type="text" class="form-input has-btn" id="code-input" 
+                           placeholder="验证码 (暂不需要)" maxlength="6" 
+                           inputmode="numeric">
+                    <button type="button" class="verify-btn" id="get-code-btn">获取验证码</button>
+                </div>
+                <div class="error-tip" id="code-error"></div>
             </div>
             
-            <button type="submit" class="register-btn">注册账号</button>
+            <button type="submit" class="submit-btn">立即注册</button>
         </form>
         
-        <div class="login-link" style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
-            <p>已有账号？<a href="SignIn.html" style="color: var(--link-color); text-decoration: none; font-weight: bold;">去登录</a></p>
+        <div class="bottom-links">
+            <p>已有账号？<a href="SignIn.html">去登录</a></p>
         </div>
     </div>
 
     <script>
-        // 深色模式同步
-        const currentTheme = localStorage.getItem('theme') || 
-                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        // 主题同步
+        const currentTheme = localStorage.getItem('theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', currentTheme);
         
-        // 注册表单提交处理
-        document.querySelector('.register-form').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            // 获取表单数据
-            const username = this.querySelector('input[type="text"]').value;
-            const password = this.querySelector('#password-input').value;
-            const confirmPassword = this.querySelector('#confirm-password-input').value;
-            const verificationCode = this.querySelector('.verification-group input').value;
-            
-            // 简单的表单验证
-            if (!username.trim() || !password.trim() || !confirmPassword.trim() || !verificationCode.trim()) {
-                alert('请填写所有必填字段');
-                return;
-            }
-            
-            if (password !== confirmPassword) {
-                alert('两次输入的密码不一致');
-                return;
-            }
-            
-            // 邮箱格式验证：只允许字母、数字、@和下划线
-            const emailRegex = /^[a-zA-Z0-9@_]+$/;
-            if (!emailRegex.test(username)) {
-                alert('邮箱只能包含字母、数字、@和下划线！');
-                return;
-            }
-            
-            // 密码格式验证：只允许字母、数字和下划线
-            const passwordRegex = /^[a-zA-Z0-9_]+$/;
-            if (!passwordRegex.test(password)) {
-                alert('密码只能包含字母、数字和下划线！');
-                return;
-            }
-            
-            // 这里可以添加注册逻辑
-            console.log('注册信息:', { username, password, verificationCode });
-            alert('注册功能尚未实现，仅用于演示');
-        });
+        // 获取元素
+        const usernameInput = document.getElementById('username-input');
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const confirmPasswordInput = document.getElementById('confirm-password-input');
+        const codeInput = document.getElementById('code-input');
         
-        // 密码显示/隐藏切换功能
-        function addPasswordToggle(toggleId, inputId) {
-            const togglePassword = document.getElementById(toggleId);
-            const passwordInput = document.getElementById(inputId);
+        const usernameError = document.getElementById('username-error');
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        const confirmPasswordError = document.getElementById('confirm-password-error');
+        const codeError = document.getElementById('code-error');
+
+        // 通用错误处理函数
+        const showError = (input, el, msg) => { 
+            el.textContent = msg; 
+            el.style.display = 'block'; 
+            input.classList.add('error'); 
+            return false; 
+        };
+        
+        const clearError = (input, el) => { 
+            el.style.display = 'none'; 
+            input.classList.remove('error'); 
+            return true; 
+        };
+        
+        // 0. 用户名验证
+        function validateUsername() {
+            const username = usernameInput.value.trim();
+            if (!username) return clearError(usernameInput, usernameError);
+            if (username.length < 2 || username.length > 12) {
+                return showError(usernameInput, usernameError, "用户名长度需在 2-12 位之间");
+            }
+            if (!/^[\u4e00-\u9fa5a-zA-Z0-9_]+$/.test(username)) {
+                return showError(usernameInput, usernameError, "仅支持中英文、数字及下划线");
+            }
+            return clearError(usernameInput, usernameError);
+        }
+
+        // 1. 邮箱验证
+        function validateEmail() {
+            const email = emailInput.value.trim();
+            if (!email) return clearError(emailInput, emailError);
+            if (!/^[a-zA-Z0-9._%+-]+@(qq\.com|163\.com)$/.test(email)) {
+                return showError(emailInput, emailError, email.includes('@') ? "仅支持 @qq.com 或 @163.com" : "邮箱格式不正确");
+            }
+            return clearError(emailInput, emailError);
+        }
+
+        // 2. 密码验证
+        function validatePassword() {
+            const password = passwordInput.value;
+            if (!password) return clearError(passwordInput, passwordError);
+
+            if (!/^[a-zA-Z0-9_!@#$%^&*().]+$/.test(password)) {
+                return showError(passwordInput, passwordError, "仅支持字母、数字及 _!@#$%^&*().");
+            }
+
+            if (password.length < 6 || password.length > 20) {
+                return showError(passwordInput, passwordError, "长度必须在 6-20 位之间");
+            }
             
-            togglePassword.addEventListener('click', function() {
-                // 切换密码可见性
-                const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                passwordInput.setAttribute('type', type);
-                
-                // 切换图标：隐藏时显示😌，显示时显示👀
-                this.textContent = type === 'password' ? '😌' : '👀';
-            });
+            return clearError(passwordInput, passwordError);
         }
         
-        // 为两个密码输入框添加切换功能
-        addPasswordToggle('toggle-password1', 'password-input');
-        addPasswordToggle('toggle-password2', 'confirm-password-input');
+        // 3. 确认密码验证
+        function validateConfirmPassword() {
+            const confirmPassword = confirmPasswordInput.value;
+            if (!confirmPassword && !passwordInput.value) return clearError(confirmPasswordInput, confirmPasswordError);
+            if (confirmPassword !== passwordInput.value) return showError(confirmPasswordInput, confirmPasswordError, "两次输入的密码不一致");
+            return clearError(confirmPasswordInput, confirmPasswordError);
+        }
 
-        // 获取验证码按钮功能
-        const getCodeBtn = document.getElementById('get-code-btn');
-        let countdown = 60;
+        // 4. 验证码验证 (逻辑保留但暂不调用)
+        function validateCode() {
+            const code = codeInput.value.trim();
+            if (!code) return clearError(codeInput, codeError);
+            if (/\D/.test(code)) {
+                return showError(codeInput, codeError, "验证码只能包含数字");
+            }
+            return clearError(codeInput, codeError);
+        }
         
-        getCodeBtn.addEventListener('click', function() {
-            // 这里可以添加获取验证码的逻辑
-            console.log('获取验证码');
+        // --- 实时事件监听 ---
+        usernameInput.addEventListener('input', validateUsername);
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', () => { validatePassword(); validateConfirmPassword(); });
+        confirmPasswordInput.addEventListener('input', validateConfirmPassword);
+        
+        // 验证码监听仅做格式提示，不阻断
+        codeInput.addEventListener('input', function() { validateCode(); });
+
+        // --- 提交表单 (核心逻辑) ---
+        document.querySelector('.auth-form').addEventListener('submit', async function(e) {
+            e.preventDefault();
             
-            // 模拟倒计时
-            this.disabled = true;
-            this.textContent = `${countdown}秒后重新获取`;
+            // 基础校验 (跳过验证码校验)
+            const isUsernameValid = usernameInput.value && validateUsername();
+            const isEmailValid = emailInput.value && validateEmail();
+            const isPasswordValid = passwordInput.value && validatePassword();
+            const isConfirmValid = confirmPasswordInput.value && validateConfirmPassword();
             
-            const timer = setInterval(() => {
-                countdown--;
-                getCodeBtn.textContent = `${countdown}秒后重新获取`;
+            // 只要基础字段通过，验证码不管填没填都允许通过
+            if (!isUsernameValid || !isEmailValid || !isPasswordValid || !isConfirmValid) {
+                // 抖动动画
+                document.querySelector('.auth-container').animate(
+                    [{transform: 'translateX(0)'}, {transform: 'translateX(-8px)'}, {transform: 'translateX(8px)'}, {transform: 'translateX(0)'}], 
+                    {duration: 300}
+                );
+                return;
+            }
+
+            const btn = this.querySelector('.submit-btn');
+            const originalText = btn.textContent;
+            btn.textContent = '注册中...';
+            btn.disabled = true;
+
+            try {
+                // 构建发送给后端的数据
+                // 注意：这里将前端的 username 映射为了后端的 name
+                const payload = {
+                    name: usernameInput.value.trim(),
+                    email: emailInput.value.trim(),
+                    password: passwordInput.value
+                };
                 
-                if (countdown <= 0) {
+                // 发送 POST 请求到本地后端
+                const backendUrl = 'http://localhost:8080/api/users/add';
+                const response = await axios.post(backendUrl, payload);
+                
+                // 判断后端返回值
+                if (response.status === 200 && response.data === "新增成功") {
+                    alert('注册成功！即将跳转到登录页面...');
+                    window.location.href = 'SignIn.html';
+                } else {
+                    alert('注册失败: ' + (response.data || '未知原因'));
+                }
+
+            } catch (error) {
+                console.error(error);
+                let msg = '注册失败：无法连接到服务器 (请检查后端是否启动)';
+                if (axios.isAxiosError(error) && error.response) {
+                    msg = '注册失败: ' + (error.response.data.message || error.response.statusText);
+                }
+                alert(msg);
+            } finally {
+                btn.textContent = originalText;
+                btn.disabled = false;
+            }
+        });
+        
+        // --- 辅助功能 ---
+        function bindToggle(toggleId, inputId) {
+            const toggle = document.getElementById(toggleId);
+            const input = document.getElementById(inputId);
+            toggle.addEventListener('click', () => {
+                input.type = input.type === 'password' ? 'text' : 'password';
+                toggle.textContent = input.type === 'password' ? '😌' : '👀';
+            });
+        }
+        bindToggle('toggle-password1', 'password-input');
+        bindToggle('toggle-password2', 'confirm-password-input');
+
+        // 验证码倒计时效果 (仅视觉效果)
+        const codeBtn = document.getElementById('get-code-btn');
+        codeBtn.addEventListener('click', function() {
+            if (!validateEmail() || !emailInput.value.trim()) {
+                showError(emailInput, emailError, "请先输入有效的邮箱地址");
+                emailInput.focus();
+                return;
+            }
+            
+            let count = 60;
+            this.disabled = true;
+            this.textContent = `${count}s`;
+            const timer = setInterval(() => {
+                count--;
+                this.textContent = `${count}s`;
+                if(count <= 0) {
                     clearInterval(timer);
-                    getCodeBtn.disabled = false;
-                    getCodeBtn.textContent = '获取验证码';
-                    countdown = 60;
+                    this.disabled = false;
+                    this.textContent = '重新获取';
                 }
             }, 1000);
             
-            alert('验证码已发送');
+            console.log(`Mock: Code sent to ${emailInput.value.trim()}`);
         });
     </script>
 </body>

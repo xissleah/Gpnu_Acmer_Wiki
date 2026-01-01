@@ -5,40 +5,52 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>赛事推荐 | 编程竞赛</title>
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* CSS变量定义 - 现代化配色 (源自 search.html) */
         :root {
-            --primary-color: #007bff;
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --border-color: #eee;
-            --category-bg: #ffffff;
-            --category-hover: #f8f9fa;
-            --category-active: #007bff;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
+            /* 分类导航特有变量 */
+            --category-bg: rgba(255, 255, 255, 0.6);
+            --category-hover: rgba(255, 255, 255, 0.8);
+            --category-active: #3a7bd5;
             --category-active-text: #ffffff;
         }
         
-        /* 深色模式变量 */
         [data-theme="dark"] {
             --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --card-bg: #2a2a2a;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --border-color: #333;
-            --category-bg: #2a2a2a;
-            --category-hover: #3a3a3a;
+            
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
+            
+            --category-bg: rgba(30, 41, 59, 0.6);
+            --category-hover: rgba(40, 50, 70, 0.8);
             --category-active: #667eea;
             --category-active-text: #ffffff;
         }
@@ -47,85 +59,145 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            
+            background-image: url('logo/citlali.jpg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
-        
-        /* 顶部导航栏 */
+
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-overlay); 
+            z-index: -1; 
+            backdrop-filter: blur(3px); 
+            transition: background-color 0.3s ease;
+        }
+
+        /* 顶部导航栏 - 与 search.html 一致 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: var(--text-color);
             text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
         
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
         
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
-        .nav-icon {
-            font-size: 1.2rem;
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
             cursor: pointer;
             color: var(--text-light);
-            transition: color 0.3s, transform 0.3s ease;
-        }
-        
-        .nav-icon:hover {
-            color: var(--primary-color);
-        }
-        
-        .theme-toggle {
-            background: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            text-decoration: none;
             border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            background: transparent;
         }
         
-        .theme-toggle:hover {
+        .nav-icon:hover { 
+            color: var(--primary-color); 
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .theme-toggle:hover { 
+            color: #f1c40f; 
+            transform: scale(1.3); 
+        }
+
+        /* 按钮样式更新 */
+        .btn {
+            padding: 0.6rem 1.4rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-outline {
+            background-color: transparent;
             color: var(--primary-color);
-            transform: scale(1.3);
+            border: 2px solid var(--primary-color);
+            background: rgba(255,255,255,0.1); 
+        }
+
+        .btn-outline:hover { 
+            background: var(--primary-gradient); 
+            color: white; 
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
         }
         
         /* 主要内容区域 */
@@ -135,26 +207,31 @@
             gap: 2rem;
             max-width: 1400px;
             margin: 0 auto;
+            flex: 1; /* 确保footer在底部 */
+            width: 100%;
         }
         
-        /* 左侧分类导航 */
+        /* 左侧分类导航 - 玻璃拟态适配 */
         .category-nav {
-            width: 200px;
+            width: 220px;
             background-color: var(--category-bg);
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border: var(--glass-border);
             position: sticky;
-            top: 2rem;
+            top: 6rem; /* 考虑到header的高度 */
             align-self: flex-start;
         }
         
         .category-title {
-            font-size: 1rem;
+            font-size: 1.1rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-color);
         }
         
         .category-list {
@@ -162,45 +239,41 @@
         }
         
         .category-item {
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
         }
         
         .category-btn {
             width: 100%;
-            padding: 0.6rem 0.8rem;
+            padding: 0.8rem 1rem;
             text-align: left;
             background-color: transparent;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             color: var(--text-color);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
         }
         
         .category-icon {
+            font-size: 1.1rem;
+            width: 1.5rem; /* 固定宽度确保图标对齐 */
             display: inline-block;
-            width: 1.2rem;
-            height: 1.2rem;
             text-align: center;
-            line-height: 1.2rem;
-            font-size: 1.2rem;
-        }
-        
-        .category-text {
-            display: inline-block;
         }
         
         .category-btn:hover {
             background-color: var(--category-hover);
+            transform: translateX(5px);
         }
         
         .category-btn.active {
-            background-color: var(--category-active);
+            background: var(--primary-gradient);
             color: var(--category-active-text);
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.3);
         }
         
         /* 右侧内容区域 */
@@ -213,15 +286,16 @@
         }
         
         .content-title {
-            font-size: 1.8rem;
-            font-weight: bold;
+            font-size: 2rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             color: var(--text-color);
+            text-shadow: 0 2px 4px var(--shadow-color);
         }
         
         .content-subtitle {
             color: var(--text-light);
-            font-size: 0.95rem;
+            font-size: 1rem;
         }
         
         /* 横版卡片容器 */
@@ -231,31 +305,35 @@
             gap: 1.5rem;
         }
         
-        /* 横版卡片 */
+        /* 横版卡片 - 玻璃拟态适配 */
         .horizontal-card {
             background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px var(--shadow-color);
             overflow: hidden;
             display: flex;
             transition: transform 0.3s ease, box-shadow 0.3s ease;
-            height: 150px; /* 设置固定高度 */
+            height: auto; /* 让高度自适应 */
+            min-height: 180px;
         }
         
         .horizontal-card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 5px 20px var(--shadow-color);
+            box-shadow: 0 15px 40px var(--shadow-color);
         }
         
         .card-image {
-            width: 200px;
-            height: 150px;
-            object-fit: fill;
+            width: 240px;
+            height: auto;
+            min-height: 180px;
+            object-fit: cover;
         }
         
         .card-content {
             flex: 1;
-            padding: 1.5rem;
+            padding: 1.5rem 2rem;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
@@ -266,7 +344,7 @@
         }
         
         .card-title {
-            font-size: 1.3rem;
+            font-size: 1.4rem;
             font-weight: bold;
             margin-bottom: 0.5rem;
             color: var(--text-color);
@@ -274,8 +352,8 @@
         
         .card-description {
             color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.5;
+            font-size: 0.95rem;
+            line-height: 1.6;
             margin-bottom: 1rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -286,53 +364,37 @@
         
         .card-meta {
             display: flex;
-            gap: 1rem;
-            font-size: 0.8rem;
+            gap: 1.5rem;
+            font-size: 0.85rem;
             color: var(--text-light);
+            align-items: center;
         }
         
         .card-stats {
             display: flex;
             align-items: center;
-            gap: 0.3rem;
+            gap: 0.4rem;
+            background: rgba(0,0,0,0.05);
+            padding: 4px 10px;
+            border-radius: 20px;
         }
         
         .card-action {
-            margin-top: 1rem;
+            margin-top: auto;
             display: flex;
-            gap: 0.5rem;
-        }
-        
-        .btn {
-            padding: 0.5rem 1rem;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 0.9rem;
-            font-weight: bold;
-            transition: background-color 0.3s, color 0.3s;
-            text-decoration: none;
-            display: inline-block;
+            gap: 1rem;
+            padding-top: 1rem;
         }
         
         .btn-primary {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .btn-outline {
-            background-color: transparent;
-            color: var(--primary-color);
-            border: 1px solid var(--primary-color);
-        }
-        
-        .btn-outline:hover {
-            background-color: var(--primary-color);
-            color: white;
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
+            transform: translateY(-2px);
         }
         
         /* 页脚 */
@@ -340,8 +402,10 @@
             background-color: var(--footer-bg);
             color: var(--footer-text);
             text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
         
         /* 响应式设计 */
@@ -354,19 +418,50 @@
             .category-nav {
                 width: 100%;
                 position: static;
+                margin-bottom: 1.5rem;
+                overflow-x: auto;
+                display: flex;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .category-list {
+                display: flex;
+                gap: 0.5rem;
+                width: 100%;
+            }
+            
+            .category-item {
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+
+            .category-btn {
+                white-space: nowrap;
+                width: auto;
             }
             
             .horizontal-card {
                 flex-direction: column;
+                height: auto;
             }
             
             .card-image {
                 width: 100%;
-                height: 200px;
+                height: 180px;
             }
             
             .header {
-                padding: 1rem;
+                padding: 0.8rem 1rem;
+            }
+            
+            .nav-right {
+                gap: 0.8rem;
+            }
+            
+            .btn {
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
             }
         }
     </style>
@@ -437,26 +532,40 @@
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
         
         // 检查用户偏好或本地存储
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         
         // 设置初始主题
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        if (currentTheme === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+            themeToggle.title = '切换浅色模式';
+        } else {
+            body.removeAttribute('data-theme'); // 默认浅色模式移除属性
+            themeToggle.textContent = '🌙';
+            themeToggle.title = '切换深色模式';
+        }
         
         // 切换主题
         themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const isDark = body.getAttribute('data-theme') === 'dark';
             
-            // 更新主题
-            document.documentElement.setAttribute('data-theme', newTheme);
-            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // 保存到本地存储
-            localStorage.setItem('theme', newTheme);
+            if (isDark) {
+                // 切换到浅色
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+                themeToggle.title = '切换深色模式';
+            } else {
+                // 切换到深色
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+                themeToggle.title = '切换浅色模式';
+            }
         });
 
         // 赛事数据
@@ -510,16 +619,6 @@
                 difficulty: '初级到中级',
                 date: '每周举办',
                 url: 'https://atcoder.jp/contests'
-            },
-            {
-                id: 6,
-                name: 'ACM/ICPC 亚洲区预选赛',
-                description: 'ICPC亚洲区预选赛，选拔优秀队伍参加全球总决赛，竞争激烈。',
-                category: ['international'],
-                image: 'logo/icpc.jpg',
-                difficulty: '高级',
-                date: '2025年10月',
-                url: 'https://icpc.global/regions'
             },
             {
                 id: 7,

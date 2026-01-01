@@ -1,3 +1,5 @@
+--- START OF FILE text/html ---
+
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -5,294 +7,445 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>C++基础语法教程</title>
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* 全局变量定义 */
         :root {
-            --primary-color: #007bff;
+            /* 浅色模式变量 */
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --sidebar-bg: #f8f9fa;
-            --content-bg: #ffffff;
-            --border-color: #dee2e6;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --sidebar-bg: rgba(255, 255, 255, 0.6);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
             --code-bg: #f8f9fa;
-            --code-text: #212529;
+            --code-text: #2c3e50;
+            --code-border: rgba(0, 0, 0, 0.05);
         }
-        
+
         /* 深色模式变量 */
         [data-theme="dark"] {
-            --primary-color: #667eea;
-            --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --sidebar-bg: #2a2a2a;
-            --content-bg: #1e1e1e;
-            --border-color: #333;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --code-bg: #2d2d2d;
-            --code-text: #f8f9fa;
+            --primary-color: #4facfe;
+            --primary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --primary-dark: #76b2fe;
+            
+            --bg-overlay: rgba(0, 0, 0, 0.7);
+            
+            --card-bg: rgba(30, 30, 40, 0.75);
+            --header-bg: rgba(20, 20, 30, 0.85);
+            --sidebar-bg: rgba(30, 30, 40, 0.6);
+            
+            --text-color: #e0e0e0;
+            --text-light: #a0a0a0;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(10, 10, 15, 0.9);
+            
+            --code-bg: #1a1a1a;
+            --code-text: #e0e0e0;
+            --code-border: rgba(255, 255, 255, 0.1);
         }
-        
+
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
-        
+
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
             color: var(--text-color);
+            background: url('logo/citlali.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            min-height: 100vh;
+            position: relative;
         }
-        
+
+        /* 背景遮罩 */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: var(--bg-overlay);
+            z-index: -1;
+            backdrop-filter: blur(8px);
+        }
+
         /* 顶部导航栏 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 1rem 5%;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            border-bottom: var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
-        
+
         .logo {
             display: flex;
             align-items: center;
             font-size: 1.5rem;
-            font-weight: bold;
+            font-weight: 700;
             color: var(--text-color);
             text-decoration: none;
+            gap: 12px;
         }
-        
+
         .logo-icon {
             width: 40px;
             height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            border-radius: 12px;
             overflow: hidden;
+            box-shadow: 0 4px 10px var(--shadow-color);
         }
-        
+
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
-        
+
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
-        
+
         .theme-toggle {
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            color: var(--text-color);
+            transition: transform 0.3s ease;
+            padding: 5px;
+            border-radius: 50%;
         }
-        
+
         .theme-toggle:hover {
-            color: var(--primary-color);
-            transform: scale(1.3);
+            transform: rotate(15deg) scale(1.1);
+            background-color: rgba(255, 255, 255, 0.1);
         }
-        
+
         /* 主要内容区域 */
         .main-container {
             display: flex;
             flex: 1;
+            width: 90%;
+            max-width: 1400px;
+            margin: 2rem auto;
+            gap: 2rem;
+            align-items: flex-start;
         }
-        
+
         /* 左侧导航栏 */
         .sidebar {
-            width: 250px;
+            width: 280px;
             background-color: var(--sidebar-bg);
-            border-right: 1px solid var(--border-color);
-            padding: 1rem;
-            overflow-y: auto;
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border: var(--glass-border);
             position: sticky;
-            top: 0;
-            height: calc(100vh - 70px);
+            top: 6rem;
+            max-height: calc(100vh - 8rem);
+            overflow-y: auto;
+            flex-shrink: 0;
+        }
+
+        /* 滚动条样式 */
+        .sidebar::-webkit-scrollbar {
+            width: 6px;
         }
         
+        .sidebar::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .sidebar::-webkit-scrollbar-track {
+            background-color: transparent;
+        }
+
         .sidebar h3 {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             color: var(--text-color);
-            font-size: 1.1rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid var(--primary-color);
         }
-        
+
         .sidebar ul {
             list-style: none;
         }
-        
+
         .sidebar li {
             margin-bottom: 0.5rem;
         }
-        
+
         .sidebar a {
             color: var(--text-color);
             text-decoration: none;
             display: block;
-            padding: 0.5rem 0.8rem;
-            border-radius: 5px;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            padding: 0.8rem 1rem;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+            border: 1px solid transparent;
         }
-        
+
         .sidebar a:hover {
-            background-color: rgba(0, 123, 255, 0.1);
-            color: var(--primary-color);
+            background-color: rgba(255, 255, 255, 0.2);
+            transform: translateX(5px);
         }
-        
+
         .sidebar a.active {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.4);
+            font-weight: 600;
         }
-        
+
         /* 右侧内容区域 */
         .content {
             flex: 1;
-            padding: 2rem;
-            overflow-y: auto;
-            background-color: var(--content-bg);
+            min-width: 0; /* 防止内容溢出 */
         }
-        
+
         .content-section {
-            margin-bottom: 3rem;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border: var(--glass-border);
         }
-        
+
         .content-section h2 {
             margin-bottom: 1.5rem;
             color: var(--primary-color);
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--primary-color);
+            font-size: 1.8rem;
+            position: relative;
+            padding-bottom: 0.8rem;
         }
         
+        .content-section h2::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 60px;
+            height: 4px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+
         .content-section h3 {
-            margin: 1.5rem 0 1rem;
+            margin: 2rem 0 1rem;
             color: var(--text-color);
+            font-size: 1.4rem;
+            border-left: 4px solid var(--primary-color);
+            padding-left: 1rem;
         }
         
+        .content-section h4 {
+            margin: 1.5rem 0 0.8rem;
+            color: var(--text-color);
+            font-size: 1.2rem;
+        }
+        
+        .content-section h5 {
+            margin: 1.2rem 0 0.6rem;
+            color: var(--text-light);
+            font-size: 1.1rem;
+        }
+
         .content-section p {
             margin-bottom: 1rem;
             color: var(--text-color);
+            line-height: 1.8;
+            font-size: 1.05rem;
         }
-        
+
         .content-section ul,
         .content-section ol {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             padding-left: 2rem;
+            color: var(--text-color);
         }
-        
+
         .content-section li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.6rem;
         }
-        
+
         /* 代码块样式 */
         pre {
             background-color: var(--code-bg);
-            padding: 1rem;
-            border-radius: 5px;
+            padding: 1.5rem;
+            border-radius: 12px;
             overflow-x: auto;
-            margin-bottom: 1rem;
-            border: 1px solid var(--border-color);
+            margin: 1.5rem 0;
+            border: 1px solid var(--code-border);
+            position: relative;
         }
         
         code {
-            font-family: 'Consolas', 'Monaco', monospace;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             color: var(--code-text);
+            font-size: 0.95rem;
         }
         
+        p code, li code {
+            background-color: rgba(58, 123, 213, 0.1);
+            color: var(--primary-color);
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-family: 'Consolas', monospace;
+            font-size: 0.9em;
+        }
+
+        /* 表格样式 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            background-color: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            background-color: rgba(58, 123, 213, 0.1);
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+
         /* 页脚 */
         .footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
             text-align: center;
-            padding: 1.5rem;
+            padding: 2rem;
             margin-top: auto;
+            backdrop-filter: blur(12px);
         }
-        
+
         /* 返回顶部按钮 */
         .back-to-top {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 40px;
+            right: 40px;
             width: 50px;
             height: 50px;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: var(--primary-gradient);
             color: white;
             border: none;
             border-radius: 50%;
             cursor: pointer;
             font-size: 24px;
-            box-shadow: 0 4px 10px var(--shadow-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
             opacity: 0;
             visibility: hidden;
-            transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+            transition: all 0.3s ease;
             z-index: 1000;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        
+
         .back-to-top:hover {
             transform: translateY(-5px);
-            box-shadow: 0 6px 15px var(--shadow-color);
+            box-shadow: 0 8px 25px var(--shadow-color);
         }
-        
+
         .back-to-top.show {
             opacity: 1;
             visibility: visible;
         }
-        
+
         /* 响应式设计 */
-        @media (max-width: 768px) {
+        @media (max-width: 992px) {
             .main-container {
                 flex-direction: column;
+                width: 95%;
             }
             
             .sidebar {
                 width: 100%;
-                height: auto;
+                max-height: none;
                 position: relative;
-                border-right: none;
-                border-bottom: 1px solid var(--border-color);
+                top: 0;
+                margin-bottom: 1.5rem;
+                overflow-x: auto;
             }
             
-            .content {
-                padding: 1rem;
+            .sidebar ul {
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 0.5rem;
+                padding-bottom: 0.5rem;
             }
             
+            .sidebar li {
+                margin-bottom: 0;
+                flex-shrink: 0;
+            }
+            
+            .sidebar a {
+                white-space: nowrap;
+            }
+        }
+
+        @media (max-width: 768px) {
             .header {
                 padding: 1rem;
+            }
+            
+            .content-section {
+                padding: 1.5rem;
             }
             
             .back-to-top {
                 bottom: 20px;
                 right: 20px;
-                width: 40px;
-                height: 40px;
-                font-size: 20px;
+                width: 45px;
+                height: 45px;
             }
         }
     </style>
@@ -377,26 +530,63 @@ int main() {
             <!-- 变量与常量 -->
             <section id="variables-constants" class="content-section">
                 <h2>变量与常量</h2>
-                <h3>变量</h3>
-                <p>变量是用于存储数据的内存位置，在使用前需要声明其类型和名称。</p>
-                <pre><code>// 变量声明与初始化
-int age;              // 声明一个整型变量
-age = 20;             // 赋值
-int height = 175;     // 声明并初始化
+                
+                <h3>1. 什么是变量？</h3>
+                <p>想象你在整理房间，你拿来一个<strong>盒子</strong>用来装东西。
+                在C++中，<strong>变量就像是这个盒子</strong>，它是计算机内存中一块用来存储数据的空间。</p>
+                <ul>
+                    <li><strong>变量名</strong>：就是贴在盒子上的标签（例如 <code>age</code>），用来区分不同的盒子。</li>
+                    <li><strong>变量类型</strong>：规定这个盒子只能装什么形状的东西（例如 <code>int</code> 规定只能装整数）。</li>
+                    <li><strong>变量值</strong>：就是盒子里实际装的东西（例如 <code>20</code>）。</li>
+                </ul>
 
-// 多变量声明
-int a = 1, b = 2, c = 3;
+                <h3>2. 变量的使用步骤</h3>
+                <p>使用变量通常分为三个阶段：声明、赋值、初始化。</p>
+                <pre><code>// 1. 变量声明 (Declaration)
+// 含义：告诉计算机“给我一个只能装整数的盒子，标签叫 age”
+int age; 
 
-// 类型推导（C++11及以上）
-auto name = "C++";    // 自动推导为const char*
-auto value = 3.14;    // 自动推导为double</code></pre>
-                <h3>常量</h3>
-                <p>常量是不可修改的值，使用<code>const</code>关键字声明。</p>
-                <pre><code>const int MAX_AGE = 100;    // 常量
-const double PI = 3.14159;   // 常量
+// 2. 变量赋值 (Assignment)
+// 含义：把数字 20 放入刚才那个叫 age 的盒子里
+age = 20;
 
-// 宏定义（预处理器常量）
-#define MAX_SIZE 100</code></pre>
+// 3. 变量初始化 (Initialization)
+// 含义：在申请盒子的同时，直接把东西放进去（声明 + 赋值）
+int height = 175; 
+
+// 4. 多变量声明
+// 一次性申请三个装整数的盒子
+int a = 1, b = 2, c = 3;</code></pre>
+
+                <h4>变量命名规则（重要！）</h4>
+                <p>给变量起名（标识符）是有规矩的，不能乱起：</p>
+                <ul>
+                    <li>只能包含<strong>字母</strong>、<strong>数字</strong>和<strong>下划线</strong> (<code>_</code>)。</li>
+                    <li><strong>不能以数字开头</strong> (例如 <code>1stPlace</code> 是错误的)。</li>
+                    <li><strong>区分大小写</strong> (<code>Age</code> 和 <code>age</code> 是两个不同的变量)。</li>
+                    <li>不能使用C++的<strong>关键字</strong> (例如不能给变量起名叫 <code>int</code> 或 <code>class</code>)。</li>
+                </ul>
+
+                <h3>3. 类型推导 (auto)</h3>
+                <p>从C++11标准开始，如果你觉得写类型太麻烦，且你已经给变量赋了初值，可以让编译器自己去猜类型。</p>
+                <pre><code>// 编译器看到 "C++"，自动推断 name 是字符串类型
+auto name = "C++";    
+
+// 编译器看到 3.14，自动推断 value 是双精度浮点型(double)
+auto value = 3.14;    </code></pre>
+
+                <h3>4. 常量 (Constants)</h3>
+                <p>常量就是<strong>“上了锁的透明盒子”</strong>。里面的值你可以看到，但是一旦放入，就再也无法修改。</p>
+                
+                <h4>(1) const 关键字 (推荐)</h4>
+                <p>这是现代C++推荐的方式，它有明确的数据类型，编译器会帮我们检查错误。</p>
+                <pre><code>const int MAX_LIVES = 3;  // 游戏最大生命值是3，不准改！
+// MAX_LIVES = 4;         // 错误！如果在代码里试图修改它，编译会报错</code></pre>
+
+                <h4>(2) #define 宏定义 (旧式)</h4>
+                <p>这是C语言遗留下来的方式，它更像是“文本替换”。在编译前，预处理器会把代码中所有的 <code>PI</code> 替换成 <code>3.14</code>。</p>
+                <pre><code>#define PI 3.14
+// 特点：没有类型检查，不推荐在现代C++中大量使用，但在某些特定场景仍有用。</code></pre>
             </section>
 
             <!-- 数据类型 -->
@@ -426,216 +616,342 @@ const double PI = 3.14159;   // 常量
             <!-- 运算符 -->
             <section id="operators" class="content-section">
                 <h2>运算符</h2>
-                <p>C++提供了丰富的运算符，包括：</p>
-                <h3>算术运算符</h3>
-                <p>+（加）、-（减）、*（乘）、/（除）、%（取模）、++（自增）、--（自减）</p>
-                
-                <h3>关系运算符</h3>
-                <p>==（等于）、!=（不等于）、&gt;（大于）、&lt;（小于）、&gt;=（大于等于）、&lt;=（小于等于）</p>
-                
-                <h3>逻辑运算符</h3>
-                <p>&&（与）、||（或）、!（非）</p>
-                
-                <h3>赋值运算符</h3>
-                <p>=、+=、-=、*=、/=、%=、&=、|=、^=、&gt;&gt;=、&lt;&lt;=</p>
-                
-                <h3>其他运算符</h3>
-                <p>&amp;（取地址）、*（指针解引用）、sizeof（求大小）、?:（条件运算符）、new/delete（动态内存分配）</p>
+                <p>运算符就像是数学题中的加减乘除符号，它们告诉计算机对数据进行什么样的操作。</p>
+
+                <h3>1. 算术运算符 (数学计算)</h3>
+                <p>用于常见的数学运算。注意 C++ 中的除法和取模有特殊规则。</p>
+                <table border="1">
+                    <tr>
+                        <th>符号</th><th>描述</th><th>代码示例</th><th>结果</th>
+                    </tr>
+                    <tr>
+                        <td><code>+</code>, <code>-</code>, <code>*</code></td>
+                        <td>加、减、乘</td>
+                        <td><code>int a = 10 * 2;</code></td>
+                        <td>20</td>
+                    </tr>
+                    <tr>
+                        <td><code>/</code></td>
+                        <td><strong>除法 (注意！)</strong></td>
+                        <td><code>int b = 5 / 2;</code><br><code>double c = 5.0 / 2.0;</code></td>
+                        <td>b=2 (整数相除丢弃小数)<br>c=2.5 (浮点数相除保留小数)</td>
+                    </tr>
+                    <tr>
+                        <td><code>%</code></td>
+                        <td><strong>取模 (求余数)</strong></td>
+                        <td><code>int d = 10 % 3;</code></td>
+                        <td>1 (10除以3商3余<strong>1</strong>)</td>
+                    </tr>
+                    <tr>
+                        <td><code>++</code>, <code>--</code></td>
+                        <td>自增、自减 (自身+1或-1)</td>
+                        <td><code>int e = 5; e++;</code></td>
+                        <td>e 变为 6</td>
+                    </tr>
+                </table>
+
+                <h3>2. 关系运算符 (比大小)</h3>
+                <p>用于比较两个值. 结果只有两种: <strong>真 (true/1)</strong> 或 <strong>假 (false/0)</strong>.</p>
+                <pre><code>int x = 10;
+int y = 5;
+
+bool r1 = (x > y);   // true  (10 大于 5)
+bool r2 = (x == y);  // false (10 不等于 5)
+bool r3 = (x != y);  // true  (10 确实不等于 5)
+bool r4 = (x <= 10); // true  (10 小于或等于 10)</code></pre>
+
+                <h3>3. 逻辑运算符 (组合判断)</h3>
+                <p>用于组合多个条件，常用于 if 语句中。</p>
+                <ul>
+                    <li><code>&&</code> <strong>逻辑与 (AND)</strong>：只有两边<strong>都为真</strong>，结果才为真。（理解为：并且）</li>
+                    <li><code>||</code> <strong>逻辑或 (OR)</strong>：只要两边<strong>有一个为真</strong>，结果就为真。（理解为：或者）</li>
+                    <li><code>!</code> <strong>逻辑非 (NOT)</strong>：真变假，假变真。（理解为：取反）</li>
+                </ul>
+                <pre><code>int age = 20;
+bool hasTicket = true;
+
+// 必须同时满足：年龄大于18 并且 有票
+if (age > 18 && hasTicket) {
+    std::cout &lt;&lt; "允许进入" &lt;&lt; std::endl;
+}
+
+// 只要满足一个：是VIP 或者 有优惠券
+bool isVIP = false;
+bool hasCoupon = true;
+if (isVIP || hasCoupon) {
+    std::cout &lt;&lt; "享受打折" &lt;&lt; std::endl;
+}</code></pre>
+
+                <h3>4. 赋值运算符</h3>
+                <p>最基本的是 <code>=</code>，它的意思是<strong>“把右边的值给左边”</strong>，而不是数学上的“相等”。</p>
+                <p>还有复合赋值运算符，是一种简写方式：</p>
+                <pre><code>int a = 10;
+a += 5;  // 等价于 a = a + 5;  (现在 a 是 15)
+a -= 3;  // 等价于 a = a - 3;  (现在 a 是 12)
+a *= 2;  // 等价于 a = a * 2;  (现在 a 是 24)</code></pre>
+
+                <div style="background-color: rgba(255, 0, 0, 0.1); border-left: 4px solid #ff4757; padding: 10px; margin: 15px 0;">
+                    <h4 style="margin-top: 0; color: #ff4757;">⚠️ 新手最大的坑：= 和 ==</h4>
+                    <p>千万不要混淆这两个符号！</p>
+                    <ul>
+                        <li><code>a = 5</code> ：动作。把 5 <strong>赋值</strong>给 a。</li>
+                        <li><code>a == 5</code> ：判断。判断 a <strong>是否等于</strong> 5。</li>
+                    </ul>
+                </div>
+
+                <h3>5. 其他常用运算符</h3>
+                <ul>
+                    <li><code>sizeof</code>：用来查看变量或类型占用了多少内存（字节）。
+                        <br><code>sizeof(int)</code> 通常是 4。</li>
+                    <li><code>?:</code> <strong>三目运算符</strong>：简单的 if-else 简写。
+                        <br><code>int max = (a > b) ? a : b;</code> 
+                        <br>(解释：如果 a>b，取 a，否则取 b)</li>
+                </ul>
             </section>
 
             <!-- 控制流语句 -->
             <section id="control-flow" class="content-section">
                 <h2>控制流语句</h2>
-                <h3>条件语句</h3>
-                <pre><code>// if语句
-int score = 85;
-if (score >= 90) {
-    std::cout &lt;&lt; "优秀" &lt;&lt; std::endl;
-} else if (score >= 80) {
-    std::cout &lt;&lt; "良好" &lt;&lt; std::endl;
-} else {
-    std::cout &lt;&lt; "继续努力" &lt;&lt; std::endl;
-}
+                <p>代码通常是从上往下只有一条路走到黑的。<strong>控制流语句</strong>就像是交通信号灯和路口，它决定了代码是<strong>拐弯（分支）</strong>，还是<strong>原地打转（循环）</strong>。</p>
 
-// switch语句
-int day = 3;
+                <h3>1. 条件判断 (分支语句)</h3>
+                <p>计算机根据条件的真假，决定执行哪一部分代码。</p>
+
+                <h4>(1) if - else (如果...否则...)</h4>
+                <p>这是最常用的判断语句。逻辑是：如果是真，做这件事；否则，做那件事。</p>
+                <pre><code>int score = 85;
+
+if (score >= 90) {
+    // 只有分数大于等于90才会执行这里
+    std::cout &lt;&lt; "大神！" &lt;&lt; std::endl;
+} 
+else if (score >= 60) {
+    // 分数不到90，但大于等于60执行这里
+    std::cout &lt;&lt; "及格了，万岁！" &lt;&lt; std::endl;
+} 
+else {
+    // 上面都不满足（小于60）执行这里
+    std::cout &lt;&lt; "回家准备挨揍..." &lt;&lt; std::endl;
+}</code></pre>
+
+                <h4>(2) switch (多选一)</h4>
+                <p>当你需要判断一个变量等于 1、2、3... 等明确的数值时，用 `switch` 结构更清晰，就像在自动售货机选饮料。</p>
+                <p><strong style="color: #ff4757;">注意：</strong> 每个 `case` 后面通常都要加 `break`，否则代码会“刹不住车”继续往下执行（称为穿透）。</p>
+                <pre><code>int day = 3;
+
 switch (day) {
     case 1:
-        std::cout &lt;&lt; "星期一" &lt;&lt; std::endl;
-        break;
+        std::cout &lt;&lt; "周一：痛苦面具" &lt;&lt; std::endl;
+        break; // 必须加！跳出 switch
     case 2:
-        std::cout &lt;&lt; "星期二" &lt;&lt; std::endl;
+    case 3:
+    case 4:
+        // 利用“穿透”特性：周二到周四都输出同一句话
+        std::cout &lt;&lt; "努力搬砖中" &lt;&lt; std::endl;
         break;
-    // ...
+    case 5:
+        std::cout &lt;&lt; "周五：快乐星期五！" &lt;&lt; std::endl;
+        break;
     default:
-        std::cout &lt;&lt; "无效的天数" &lt;&lt; std::endl;
-        break;
+        // 类似 else，以上都不匹配时执行
+        std::cout &lt;&lt; "周末愉快！" &lt;&lt; std::endl;
 }</code></pre>
-                
-                <h3>循环语句</h3>
-                <pre><code>// for循环
-for (int i = 0; i < 10; i++) {
-    std::cout &lt;&lt; i &lt;&lt; " ";
-}
-std::cout &lt;&lt; std::endl;
 
-// while循环
-int j = 0;
-while (j < 10) {
-    std::cout &lt;&lt; j &lt;&lt; " ";
-    j++;
-}
-std::cout &lt;&lt; std::endl;
+                <h3>2. 循环语句 (重复做某事)</h3>
+                <p>当你想让计算机重复执行某段代码时使用。</p>
 
-// do-while循环
-int k = 0;
+                <h4>(1) for 循环 (最常用)</h4>
+                <p>当你<strong>明确知道要循环多少次</strong>时使用。比如：我们要数数，从0数到9。</p>
+                <pre><code>// 语法：for (初始化; 循环条件; 每次做完后干什么)
+// 解释：从 i=0 开始; 只要 i < 10 就继续; 每次循环结束 i 加 1
+for (int i = 0; i &lt; 10; i++) {
+    std::cout &lt;&lt; "现在数到: " &lt;&lt; i &lt;&lt; " ";
+}
+// 输出：0 1 2 3 4 5 6 7 8 9</code></pre>
+
+                <h4>(2) while 循环</h4>
+                <p>当你<strong>不知道要循环多少次，只知道停止条件</strong>时使用。特点是：<strong>先判断，再执行</strong>。</p>
+                <pre><code>int money = 0;
+// 只要钱不够100块，就一直打工
+while (money &lt; 100) {
+    std::cout &lt;&lt; "打工赚钱..." &lt;&lt; std::endl;
+    money += 20; // 每次赚20
+}
+std::cout &lt;&lt; "钱够了！" &lt;&lt; std::endl;</code></pre>
+
+                <h4>(3) do-while 循环</h4>
+                <p>特点是：<strong>先执行一次，再判断</strong>。这意味着代码<strong>至少会被执行一次</strong>。</p>
+                <pre><code>int password;
 do {
-    std::cout &lt;&lt; k &lt;&lt; " ";
-    k++;
-} while (k < 10);
-std::cout &lt;&lt; std::endl;</code></pre>
-                
-                <h3>跳转语句</h3>
-                <p>break（跳出循环或switch）、continue（跳过当前循环的剩余部分）、return（返回函数结果）、goto（无条件跳转，不推荐使用）</p>
+    std::cout &lt;&lt; "请输入密码: ";
+    std::cin &gt;&gt; password;
+} while (password != 123456); // 如果密码不对，就一直让你输
+std::cout &lt;&lt; "密码正确，登录成功！" &lt;&lt; std::endl;</code></pre>
+
+                <h3>3. 跳转语句 (插队与刹车)</h3>
+                <p>在循环中，我们有时需要中途改变路线。</p>
+                <ul>
+                    <li><code>break</code>：<strong>彻底终止</strong>循环（掀桌子不玩了）。</li>
+                    <li><code>continue</code>：<strong>跳过本次</strong>循环，直接进入下一次（这局不算，重开一局）。</li>
+                </ul>
+                <pre><code>// 模拟吃包子：一共10个包子
+for (int i = 1; i &lt;= 10; i++) {
+    if (i == 3) {
+        std::cout &lt;&lt; "第3个包子掉地上了，不吃 (continue)" &lt;&lt; std::endl;
+        continue; // 跳过第3次循环的剩余部分，直接去 i=4
+    }
+    
+    if (i == 8) {
+        std::cout &lt;&lt; "吃到第8个吃撑了，不吃了 (break)" &lt;&lt; std::endl;
+        break;    // 彻底终止循环，第9、10个都不看了
+    }
+    
+    std::cout &lt;&lt; "正在吃第 " &lt;&lt; i &lt;&lt; " 个包子" &lt;&lt; std::endl;
+}</code></pre>
             </section>
 
-            <!-- 数组 -->
+            <!-- 数组 (扩充版) -->
             <section id="arrays" class="content-section">
                 <h2>数组</h2>
-                <p>数组是用于存储相同类型元素的集合。</p>
-                <pre><code>// 一维数组
-int nums[5];              // 声明一个包含5个整数的数组
-int nums2[5] = {1, 2, 3, 4, 5};  // 初始化
-int nums3[] = {1, 2, 3};  // 自动推导大小为3
+                <p>数组（Array）是用来存储<strong>一系列相同类型数据</strong>的集合。想象它是一列火车，每节车厢都贴着编号，且只能装载同一种物品。</p>
+                
+                <h3>1. 一维数组</h3>
+                <p>这是最基础的集合。数组在内存中是<strong>连续存储</strong>的，这意味着访问速度非常快。</p>
+                <pre><code>// 1. 声明与初始化
+int scores[5];                 // 声明：开辟5个装整数的车厢，里面目前是随机值
+int nums[5] = {1, 2, 3, 4, 5};  // 初始化：开辟并装入确定的值
+int vals[] = {10, 20, 30};      // 自动推导：编译器数了一下，大小为3
 
-// 二维数组
-int matrix[3][4];         // 3行4列的二维数组
-int matrix2[2][3] = {{1, 2, 3}, {4, 5, 6}};
+// 2. 访问与修改 (索引从0开始！)
+std::cout &lt;&lt; nums[0];           // 访问第1个元素：结果是1
+nums[2] = 100;                 // 修改第3个元素：现在nums变成 {1, 2, 100, 4, 5}</code></pre>
 
-// 访问数组元素
-std::cout &lt;&lt; nums2[0] &lt;&lt; std::endl;  // 输出第一个元素
-matrix[0][0] = 10;        // 设置第一个元素</code></pre>
-                <h3>数组的注意事项</h3>
-                <ul>
-                    <li>数组的大小必须是常量表达式</li>
-                    <li>数组索引从0开始</li>
-                    <li>数组在内存中是连续存储的</li>
-                    <li>访问超出数组范围的元素会导致未定义行为</li>
-                </ul>
+                <h3>2. 二维数组 (矩阵)</h3>
+                <p>如果你有一张表格，比如班级的座位表（行和列），就需要用到二维数组。</p>
+                <pre><code>// 声明一个 3行4列 的表格
+int matrix[3][4];
+
+// 初始化
+int table[2][3] = {
+    {1, 2, 3}, // 第0行
+    {4, 5, 6}  // 第1行
+};
+
+// 访问第1行第2列的元素 (结果为6)
+std::cout &lt;&lt; table[1][2]; </code></pre>
+
+                <div style="background-color: rgba(58, 123, 213, 0.1); border-left: 4px solid var(--primary-color); padding: 10px; margin: 15px 0;">
+                    <strong>💡 核心知识点：</strong>
+                    <ul>
+                        <li><strong>索引从0开始</strong>：长度为N的数组，有效索引是 <code>0</code> 到 <code>N-1</code>。</li>
+                        <li><strong>越界风险</strong>：访问 <code>nums[5]</code>（如果长度只有5）会导致程序崩溃或产生不可预知的错误，C++不会主动帮你检查越界。</li>
+                    </ul>
+                </div>
             </section>
 
-            <!-- 函数 -->
+            <!-- 函数 (扩充版) -->
             <section id="functions" class="content-section">
                 <h2>函数</h2>
-                <p>函数是一段可重复使用的代码块，用于完成特定的任务。</p>
-                <pre><code>// 函数声明
-int add(int a, int b);
+                <p>函数（Function）是将一段代码“打包”起来，并给它起一个名字。它是模块化编程的核心，能让你的代码更整洁、更易于重复使用。</p>
 
-// 函数定义
-int add(int a, int b) {
-    return a + b;
-}
-
-// 主函数中调用
-int main() {
-    int result = add(3, 4);
-    std::cout &lt;&lt; "3 + 4 = " &lt;&lt; result &lt;&lt; std::endl;
-    return 0;
-}
-
-// 带有默认参数的函数
-void printInfo(std::string name, int age = 18) {
-    std::cout &lt;&lt; "Name: " &lt;&lt; name &lt;&lt;", Age: " &lt;&lt; age &lt;&lt; std::endl;
-}
-
-// 函数重载
-int max(int a, int b) {
-    return a > b ? a : b;
-}
-
-double max(double a, double b) {
-    return a > b ? a : b;
+                <h3>1. 函数的组成部分</h3>
+                <p>定义一个函数就像写一个菜谱：</p>
+                <pre><code>返回类型 函数名 (参数列表) {
+    // 处理过程 (函数体)
+    return 返回值; 
 }</code></pre>
-                <h3>函数的组成部分</h3>
-                <ul>
-                    <li>返回类型</li>
-                    <li>函数名</li>
-                    <li>参数列表</li>
-                    <li>函数体</li>
-                </ul>
+
+                <h3>2. 传值调用 vs 传引用调用</h3>
+                <p>这是 C++ 中非常重要的概念，决定了函数能否修改外部的变量。</p>
+                <pre><code>// 1. 传值调用 (只是把复印件传过去)
+void addOne(int n) {
+    n = n + 1; 
+}
+
+// 2. 传引用调用 (把原件的地址传过去，带 & 符号)
+void realAddOne(int &n) {
+    n = n + 1;
+}
+
+int main() {
+    int x = 10;
+    addOne(x);      // x 还是 10，函数里的修改没影响外面
+    realAddOne(x);  // x 变成了 11，函数直接修改了 x 本身
+}</code></pre>
+
+                <h3>3. 函数重载</h3>
+                <p>C++ 允许定义多个<strong>同名但参数不同</strong>的函数。计算机会根据你传的参数自动选择哪一个。</p>
+                <pre><code>int add(int a, int b) { return a + b; }
+double add(double a, double b) { return a + b; } // 名字相同，但处理小数</code></pre>
             </section>
 
-            <!-- 指针 -->
+            <!-- 指针 (扩充版) -->
             <section id="pointers" class="content-section">
                 <h2>指针</h2>
-                <p>指针是存储另一个变量地址的变量。</p>
-                <pre><code>// 指针的声明与使用
-int num = 10;
-int* ptr = &num;  // 声明指针并指向num的地址
+                <p>指针（Pointer）是 C++ 的灵魂。它不直接存储数据，而是存储<strong>数据在内存中的地址</strong>。想象你有一个快递单，指针就是快递单上的“地址”。</p>
 
-std::cout &lt;&lt; "num的值: " &lt;&lt; num &lt;&lt; std::endl;
-std::cout &lt;&lt; "num的地址: " &lt;&lt; &num &lt;&lt; std::endl;
-std::cout &lt;&lt; "指针ptr的值: " &lt;&lt; ptr &lt;&lt; std::endl;
-std::cout &lt;&lt; "指针ptr指向的值: " &lt;&lt; *ptr &lt;&lt; std::endl;
-
-// 修改指针指向的值
-*ptr = 20;
-std::cout &lt;&lt; "修改后num的值: " &lt;&lt; num &lt;&lt; std::endl;
-
-// 空指针
-int* nullPtr = nullptr;
-
-// 指针数组
-int arr[3] = {1, 2, 3};
-int* ptrArr[3] = {&arr[0], &arr[1], &arr[2]};</code></pre>
-                <h3>指针的应用</h3>
+                <h3>1. 指针的两个基本操作</h3>
                 <ul>
-                    <li>动态内存分配</li>
-                    <li>函数参数传递（引用传递）</li>
-                    <li>数组操作</li>
-                    <li>链表、树等数据结构的实现</li>
+                    <li><code>&</code> (取地址符)：获取一个变量的“门牌号”。</li>
+                    <li><code>*</code> (解引用符)：顺着“门牌号”去找里面住的人。</li>
                 </ul>
+
+                <pre><code>int a = 10;
+int *p = &a; // 指针变量 p 存储了变量 a 的地址
+
+std::cout &lt;&lt; p;   // 输出地址 (如 0x61ff1c)
+std::cout &lt;&lt; *p;  // 输出 10 (顺着地址找到了 a)
+
+*p = 20;          // 通过指针把 a 的值改成了 20</code></pre>
+
+                <h3>2. 指针与数组</h3>
+                <p>数组名其实就是一个指向数组首元素的指针。<code>nums[i]</code> 本质上就是 <code>*(nums + i)</code>。</p>
+                <pre><code>int arr[3] = {10, 20, 30};
+int *ptr = arr; // ptr 指向 arr[0]
+
+std::cout &lt;&lt; *(ptr + 1); // 输出 20 (地址往后挪一位)</code></pre>
+
+                <h3>3. nullptr (空指针)</h3>
+                <p>如果一个指针目前没有指向任何地方，应该把它设置为 <code>nullptr</code>，这比旧式的 <code>NULL</code> 更安全。</p>
             </section>
 
-            <!-- 结构体 -->
+            <!-- 结构体 (扩充版) -->
             <section id="structures" class="content-section">
                 <h2>结构体</h2>
-                <p>结构体是一种用户定义的数据类型，可以包含不同类型的成员。</p>
-                <pre><code>// 结构体定义
+                <p>结构体（Struct）允许你创建自己的数据类型。它可以把<strong>不同类型的数据</strong>（如姓名、年龄、分数）打包在一起，形成一个整体。</p>
+
+                <h3>1. 定义与使用</h3>
+                <pre><code>// 定义一个“学生”模板
 struct Student {
     std::string name;
     int age;
     double score;
 };
 
-// 结构体的使用
 int main() {
-    // 方法一：直接初始化
-    Student stu1 = {"张三", 18, 90.5};
+    // 实例化一个学生
+    Student s1 = {"张三", 18, 95.5};
     
-    // 方法二：逐个成员赋值
-    Student stu2;
-    stu2.name = "李四";
-    stu2.age = 19;
-    stu2.score = 88.0;
+    // 使用 . 访问成员
+    std::cout &lt;&lt; s1.name &lt;&lt; "得了" &lt;&lt; s1.score &lt;&lt; "分";
     
-    // 访问结构体成员
-    std::cout &lt;&lt; "姓名: " &lt;&lt; stu1.name &lt;&lt; std::endl;
-    std::cout &lt;&lt; "年龄: " &lt;&lt; stu1.age &lt;&lt; std::endl;
-    std::cout &lt;&lt; "成绩: " &lt;&lt; stu1.score &lt;&lt; std::endl;
-    
-    return 0;
-}
+    s1.age = 19; // 修改成员
+}</code></pre>
 
-// 结构体数组
-Student students[2] = {{"张三", 18, 90.5}, {"李四", 19, 88.0}};
+                <h3>2. 结构体指针 (-> 运算符)</h3>
+                <p>当你通过指针访问结构体时，使用 <code>-></code> 是最常用的方式。</p>
+                <pre><code>Student s2 = {"李四", 20, 88.0};
+Student *p = &s2;
 
-// 结构体指针
-Student* pStu = &stu1;
-std::cout &lt;&lt; "姓名: " &lt;&lt; pStu->name &lt;&lt; std::endl;  // 使用->访问成员</code></pre>
+// 这两种写法等价，但推荐下面那种
+std::cout &lt;&lt; (*p).name; 
+std::cout &lt;&lt; p->name;   // 常用写法：指针名->成员名</code></pre>
+
+                <div style="background-color: rgba(58, 123, 213, 0.1); border-left: 4px solid var(--primary-color); padding: 10px; margin: 15px 0;">
+                    <strong>💡 结构体在竞赛中的用处：</strong>
+                    <p>在算法竞赛中，结构体常用于封装具有多个属性的对象，比如“点”（x, y坐标）、“边”（起点、终点、权重）等，配合 STL 的容器使用非常方便。</p>
+                </div>
             </section>
-
-
 
             <!-- STL -->
             <section id="stl" class="content-section">
@@ -1781,39 +2097,53 @@ int main() {
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
         
         // 检查用户偏好或本地存储
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         
         // 设置初始主题
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        if (currentTheme === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+            themeToggle.title = '切换浅色模式';
+        } else {
+            body.removeAttribute('data-theme');
+            themeToggle.textContent = '🌙';
+            themeToggle.title = '切换深色模式';
+        }
         
         // 切换主题
         themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const isDark = body.getAttribute('data-theme') === 'dark';
             
-            // 更新主题
-            document.documentElement.setAttribute('data-theme', newTheme);
-            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // 保存到本地存储
-            localStorage.setItem('theme', newTheme);
+            if (isDark) {
+                // 切换到浅色
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+                themeToggle.title = '切换深色模式';
+            } else {
+                // 切换到深色
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+                themeToggle.title = '切换浅色模式';
+            }
         });
         
         // 导航栏高亮当前章节
         const sections = document.querySelectorAll('.content-section');
         const navLinks = document.querySelectorAll('.sidebar a');
         
-        window.addEventListener('scroll', () => {
+        function highlightNavigation() {
             let current = '';
             
             sections.forEach(section => {
                 const sectionTop = section.offsetTop;
                 const sectionHeight = section.clientHeight;
-                if (pageYOffset >= sectionTop - 150) {
+                if (window.pageYOffset >= sectionTop - 150) {
                     current = section.getAttribute('id');
                 }
             });
@@ -1824,10 +2154,12 @@ int main() {
                     link.classList.add('active');
                 }
             });
-        });
+        }
+        
+        window.addEventListener('scroll', highlightNavigation);
         
         // 初始高亮
-        window.dispatchEvent(new Event('scroll'));
+        highlightNavigation();
         
         // 返回顶部按钮功能
         const backToTopBtn = document.getElementById('back-to-top');

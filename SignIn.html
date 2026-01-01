@@ -3,376 +3,350 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>登录页面</title>
+    <title>登录 - Gpnu_Acmer_Wiki</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
-        }
-        
-        /* 定义CSS变量 - 浅色模式 */
+        /* CSS 保持不变 */
         :root {
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --container-bg: rgba(255, 255, 255, 0.85);
-            --input-bg: #f8f9fa;
-            --input-focus-bg: #ffffff;
-            --border-color: #e0e0e0;
-            --border-focus-color: #667eea;
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+            --primary-dark: #0056b3;
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --input-bg: rgba(255, 255, 255, 0.6);
+            --input-focus-bg: rgba(255, 255, 255, 0.95);
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --link-color: #4facfe;
-            --link-hover-color: #00f2fe;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --link-color: #3a7bd5;
+            --link-hover-color: #00d2ff;
+            --error-color: #ff4d4f;
         }
         
-        /* 深色模式 */
         [data-theme="dark"] {
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --container-bg: rgba(42, 42, 42, 0.95);
-            --input-bg: #333333;
-            --input-focus-bg: #444444;
-            --border-color: #555555;
-            --border-focus-color: #764ba2;
-            --shadow-color: rgba(0, 0, 0, 0.3);
+            --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-dark: #5568d3;
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --input-bg: rgba(0, 0, 0, 0.2);
+            --input-focus-bg: rgba(0, 0, 0, 0.4);
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
             --link-color: #667eea;
-            --link-hover-color: #764ba2;
+            --link-hover-color: #a3bffa;
         }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; transition: all 0.3s ease; }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
             color: var(--text-color);
-            height: 100vh;
-            overflow: hidden;
-        }
-        
-        /* 背景容器 */
-        .background-container {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            min-height: 100vh;
+            display: flex; align-items: center; justify-content: center;
             background-image: url('logo/citlali.jpg');
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            filter: brightness(0.9);
-            z-index: -1;
-            overflow: hidden;
+            background-size: cover; background-position: center; 
+            background-repeat: no-repeat; background-attachment: fixed;
+        }
+
+        body::before {
+            content: ""; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-overlay); z-index: -1; backdrop-filter: blur(3px);
         }
         
-        /* 登录容器 */
         .login-container {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            width: 400px;
-            max-width: 90%;
-            background-color: var(--container-bg);
-            border-radius: 15px;
+            width: 400px; max-width: 90%;
+            background-color: var(--card-bg);
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border); border-radius: 16px;
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             padding: 2.5rem 2rem;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            box-shadow: 0 5px 20px var(--shadow-color);
+            display: flex; flex-direction: column; align-items: center;
+            position: relative; overflow: hidden;
+            animation: fadeInUp 0.6s ease-out;
         }
         
-        /* 登录头部 */
-        .login-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-            width: 100%;
+        .login-container::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 4px;
+            background: var(--primary-gradient);
         }
+
+        .login-header { text-align: center; margin-bottom: 2rem; width: 100%; }
         
         .login-logo {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 1.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 80px; height: 80px; margin: 0 auto 1.2rem; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; overflow: hidden;
+            background: rgba(255,255,255,0.2); border: 2px solid var(--primary-color);
+            box-shadow: 0 4px 15px var(--shadow-color);
         }
+        .login-logo img { width: 100%; height: 100%; object-fit: cover; }
         
-        .login-logo img {
-            width: 90%;
-            height: 90%;
-            object-fit: contain;
-        }
+        .login-title { font-size: 1.8rem; font-weight: 800; color: var(--text-color); margin: 0; letter-spacing: -0.5px; }
         
-        .login-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--text-color);
-            margin: 0;
-        }
+        .login-form { width: 100%; }
         
-        /* 表单样式 */
-        .login-form {
-            width: 100%;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-            position: relative;
-            width: 100%;
-        }
+        .form-group { margin-bottom: 1.2rem; position: relative; width: 100%; }
         
         .form-input {
-            width: 100%;
-            padding: 1rem 3rem 1rem 3rem;
-            border: 1px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-            background-color: var(--input-bg);
-            color: var(--text-color);
-            /* 隐藏浏览器默认的密码图标 */
+            width: 100%; padding: 1rem 3rem 1rem 3rem;
+            border: 1px solid var(--border-color); border-radius: 50px; 
+            font-size: 1rem; background-color: var(--input-bg); color: var(--text-color);
             -webkit-text-security: none;
         }
-        
-        /* 针对不同浏览器的默认密码图标隐藏 */
-        input[type="password"]::-ms-reveal,
-        input[type="password"]::-ms-clear {
-            display: none;
-        }
-        
-        /* Safari浏览器 */
-        @supports (-webkit-appearance: none) {
-            input[type="password"] {
-                -webkit-text-security: disc;
-            }
-        }
-        
         .form-input:focus {
-            outline: none;
-            border-color: var(--border-focus-color);
-            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+            outline: none; border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(58, 123, 213, 0.2);
             background-color: var(--input-focus-bg);
         }
         
+        /* 错误样式 */
+        .form-input.error {
+            border-color: var(--error-color);
+            background-color: rgba(255, 77, 79, 0.05);
+            box-shadow: 0 0 0 3px rgba(255, 77, 79, 0.1);
+        }
+
+        .error-tip {
+            display: none; color: var(--error-color); font-size: 0.8rem;
+            margin-top: 5px; margin-left: 15px; font-weight: 600;
+            line-height: 1.3; /* 增加行高，防止多行文字挤在一起 */
+            animation: fadeIn 0.3s ease;
+        }
+        
         .form-icon {
-            position: absolute;
-            right: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #999;
-            font-size: 1.1rem;
+            position: absolute; top: 27px; transform: translateY(-50%);
+            color: var(--text-light); font-size: 1.1rem; opacity: 0.7; right: 1.2rem;
         }
+        .form-icon.left { left: 1.2rem; right: auto; color: var(--primary-color); opacity: 1; }
         
-        .form-icon.left {
-            left: 1rem;
-            right: auto;
-            color: #667eea;
-        }
-        
-        /* 登录按钮 */
         .login-btn {
-            width: 100%;
-            padding: 1rem;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            border-radius: 10px;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 1.5rem;
-            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+            width: 100%; padding: 1rem; background: var(--primary-gradient);
+            border: none; border-radius: 50px; color: white;
+            font-size: 1.1rem; font-weight: 700; cursor: pointer;
+            margin-top: 1rem; box-shadow: 0 4px 15px rgba(0,0,0,0.2); letter-spacing: 1px;
         }
+        .login-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(58, 123, 213, 0.4); }
+        .login-btn:active { transform: translateY(0); }
+        .login-btn:disabled { background: #ccc; cursor: not-allowed; transform: none; }
         
-        .login-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
-        }
+        .login-options { margin-top: 1.8rem; text-align: center; font-size: 0.9rem; color: var(--text-light); }
+        .login-options a { color: var(--link-color); text-decoration: none; font-weight: 600; position: relative; }
+        .login-options a:hover { color: var(--link-hover-color); }
         
-        .login-btn:active {
-            transform: translateY(0);
+        .back-home {
+            position: absolute; top: 20px; left: 20px; text-decoration: none;
+            color: var(--text-color); font-weight: bold; display: flex; align-items: center; gap: 5px;
+            padding: 8px 15px; background: var(--card-bg); backdrop-filter: blur(5px);
+            border-radius: 30px; border: var(--glass-border); font-size: 0.9rem; z-index: 10;
         }
-        
-        /* 其他选项 */
-        .login-options {
-            margin-top: 1.5rem;
-            text-align: center;
-            font-size: 0.85rem;
-            color: var(--text-color);
-            width: 100%;
-        }
-        
-        .login-options a {
-            color: var(--link-color);
-            text-decoration: none;
-            font-weight: bold;
-            transition: color 0.3s ease;
-        }
-        
-        .login-options a:hover {
-            color: var(--link-hover-color);
-            text-decoration: underline;
-        }
-        
-        /* 响应式设计 */
-        @media (max-width: 1024px) {
-            /* 保持居中 */
-        }
-        
-        @media (max-width: 768px) {
-            .login-container {
-                padding: 2rem 1.5rem;
-            }
-            
-            .login-title {
-                font-size: 1.6rem;
-            }
-            
-            .login-logo {
-            width: 65px;
-            height: 65px;
-        }
-        
-        .login-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        }
+        .back-home:hover { color: var(--primary-color); transform: translateX(-3px); }
+
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(-5px); } to { opacity: 1; transform: translateY(0); } }
         
         @media (max-width: 480px) {
-            .login-container {
-                padding: 1.5rem;
-                margin: 1rem;
-            }
-            
-            .login-title {
-                font-size: 1.6rem;
-            }
-            
-            .login-logo {
-            width: 60px;
-            height: 60px;
-        }
-        
-        .login-logo img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-            
-            .form-input {
-                padding: 0.9rem 2.5rem 0.9rem 0.9rem;
-                font-size: 0.95rem;
-            }
-            
-            .login-btn {
-                padding: 0.9rem;
-                font-size: 1rem;
-            }
+            .login-container { padding: 2rem 1.5rem; width: 95%; }
+            .login-title { font-size: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- 背景容器 -->
-    <div class="background-container"></div>
+    <a href="index.html" class="back-home">← 返回首页</a>
 
-    <!-- 登录容器 -->
     <div class="login-container">
         <div class="login-header">
-                <div class="login-logo">
-                    <img src="logo/Gpnu.png" alt="Logo">
-                </div>
-                <h1 class="login-title">登录</h1>
+            <div class="login-logo">
+                <img src="logo/Gpnu.png" alt="Logo" onerror="this.style.display='none';this.parentNode.innerHTML='G'">
             </div>
+            <h1 class="login-title">用户登录</h1>
+        </div>
         
-        <form class="login-form">
+        <form class="login-form" novalidate>
+            <!-- 邮箱 -->
             <div class="form-group">
-                <input type="text" class="form-input" placeholder="邮箱" required pattern="[a-zA-Z0-9@_]+" title="邮箱只能包含字母、数字、@和下划线">
+                <input type="email" class="form-input" id="email-input" 
+                       placeholder="邮箱 (@qq.com / @163.com)" required autocomplete="email">
                 <div class="form-icon left">👤</div>
+                <div class="error-tip" id="email-error"></div>
             </div>
             
+            <!-- 密码 -->
             <div class="form-group">
-                <input type="password" class="form-input" id="password-input" placeholder="密码" required pattern="[a-zA-Z0-9_]+" title="密码只能包含字母、数字和下划线">
+                <!-- 修改点：Title 属性增加了明确的字符提示 -->
+                <input type="password" class="form-input" id="password-input" 
+                       placeholder="密码 (6-20位)" required autocomplete="current-password"
+                       maxlength="20"
+                       title="仅支持字母、数字及 _ ! @ # $ % ^ & * ( ) .">
                 <div class="form-icon left">🔒</div>
                 <div class="form-icon" id="toggle-password" style="cursor: pointer;">😌</div>
+                <div class="error-tip" id="password-error"></div>
             </div>
             
-            <button type="submit" class="login-btn">登录</button>
+            <button type="submit" class="login-btn">登 录</button>
         </form>
         
         <div class="login-options">
-            <p>还没有账号？<a href="Register.html">立即注册</a></p>
-            <p style="margin-top: 0.3rem;"><a href="find.html">忘记密码？</a></p>
+            <p>还没有账号？ <a href="Register.html">立即注册</a></p>
+            <p style="margin-top: 0.5rem;"><a href="find.html" style="font-size: 0.85rem; opacity: 0.8;">忘记密码？</a></p>
         </div>
     </div>
 
     <script>
-        // 深色模式同步
+        // 深色模式
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         document.documentElement.setAttribute('data-theme', currentTheme);
         
-        // 登录表单提交处理
-        document.querySelector('.login-form').addEventListener('submit', function(e) {
+        const emailInput = document.getElementById('email-input');
+        const passwordInput = document.getElementById('password-input');
+        const emailError = document.getElementById('email-error');
+        const passwordError = document.getElementById('password-error');
+        const loginBtn = document.querySelector('.login-btn');
+
+        // 通用显示错误
+        function showError(input, errorElement, message) {
+            input.classList.add('error');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+            return false;
+        }
+
+        // 通用清除错误
+        function clearError(input, errorElement) {
+            input.classList.remove('error');
+            errorElement.style.display = 'none';
+            return true;
+        }
+
+        // --- 1. 邮箱验证逻辑 ---
+        function validateEmail() {
+            const email = emailInput.value.trim();
+            if (!email) return clearError(emailInput, emailError);
+
+            if (/['";\-\-]/.test(email)) {
+                return showError(emailInput, emailError, "包含非法字符 (引号、分号等)");
+            }
+
+            const domainRegex = /^[a-zA-Z0-9._%+-]+@(qq\.com|163\.com)$/;
+            if (!domainRegex.test(email)) {
+                if (email.includes('@')) {
+                    return showError(emailInput, emailError, "仅支持 @qq.com 或 @163.com 邮箱");
+                }
+                return showError(emailInput, emailError, "邮箱格式不正确");
+            }
+            return clearError(emailInput, emailError);
+        }
+
+        // --- 2. 密码验证逻辑 (详细提示) ---
+        function validatePassword() {
+            const password = passwordInput.value;
+            if (!password) return clearError(passwordInput, passwordError);
+
+            // 规则 A: 长度检查
+            if (password.length < 6 || password.length > 20) {
+                return showError(passwordInput, passwordError, "密码长度必须在 6 到 20 位之间");
+            }
+
+            // 规则 B: 字符白名单 (严格匹配)
+            // 允许：字母、数字、下划线、点、以及常见特殊符号 !@#$%^&*()
+            const allowListRegex = /^[a-zA-Z0-9_.!@#$%^&*()]+$/;
+
+            if (!allowListRegex.test(password)) {
+                // 如果检测到严重违规字符
+                if (/['";\-\s]/.test(password)) {
+                    return showError(passwordInput, passwordError, "禁止使用空格、引号或分号");
+                }
+                // 修改点：直接列出允许的字符
+                return showError(passwordInput, passwordError, "仅支持字母、数字及 _ ! @ # $ % ^ & * ( ) .");
+            }
+
+            return clearError(passwordInput, passwordError);
+        }
+
+        // --- 实时监听 ---
+        emailInput.addEventListener('input', validateEmail);
+        passwordInput.addEventListener('input', validatePassword);
+
+        emailInput.addEventListener('blur', function() {
+            if (!this.value.trim()) showError(this, emailError, "请输入邮箱地址");
+            else validateEmail();
+        });
+        passwordInput.addEventListener('blur', function() {
+            if (!this.value) showError(this, passwordError, "请输入密码");
+            else validatePassword();
+        });
+
+        // --- 提交处理 ---
+        document.querySelector('.login-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            // 获取表单数据
-            const username = this.querySelector('input[type="text"]').value;
-            const password = this.querySelector('input[type="password"]').value;
-            
-            // 简单的表单验证
-            if (!username.trim() || !password.trim()) {
-                alert('请输入用户名和密码');
+            const isEmailValid = emailInput.value.trim() && validateEmail();
+            const isPwdValid = passwordInput.value && validatePassword();
+
+            if (!isEmailValid || !isPwdValid) {
+                document.querySelector('.login-container').animate([
+                    { transform: 'translateX(0)' }, { transform: 'translateX(-10px)' },
+                    { transform: 'translateX(10px)' }, { transform: 'translateX(0)' }
+                ], { duration: 300 });
                 return;
             }
-            
-            // 邮箱格式验证：只允许字母、数字、@和下划线
-            const emailRegex = /^[a-zA-Z0-9@_]+$/;
-            if (!emailRegex.test(username)) {
-                alert('邮箱只能包含字母、数字、@和下划线！');
-                return;
+
+            const btn = loginBtn;
+            const originalText = btn.textContent;
+            btn.textContent = '登录中...';
+            btn.style.opacity = '0.7';
+            btn.disabled = true;
+
+            try {
+                const payload = {
+                    email: emailInput.value.trim(),
+                    password: passwordInput.value,
+                    timestamp: new Date().toISOString()
+                };
+
+                const backendUrl = 'https://localhost:8080/api/signin'; 
+
+                const response = await axios.post(backendUrl, payload);
+
+                if (response.status === 200) {
+                    const data = response.data;
+                    if(data.token) {
+                        localStorage.setItem('authToken', data.token); 
+                        alert('登录成功！');
+                        window.location.href = 'index.html'; 
+                    } else {
+                        throw new Error('未收到登录令牌');
+                    }
+                }
+            } catch (error) {
+                let msg = '登录请求失败';
+                if (axios.isAxiosError(error)) {
+                    if (error.response) {
+                        msg = error.response.data.message || '账号或密码错误';
+                    } else {
+                        msg = error.message;
+                    }
+                } else {
+                    msg = error.message;
+                }
+                alert(msg);
+            } finally {
+                btn.textContent = originalText;
+                btn.style.opacity = '1';
+                btn.disabled = false;
             }
-            
-            // 密码格式验证：只允许字母、数字和下划线
-            const passwordRegex = /^[a-zA-Z0-9_]+$/;
-            if (!passwordRegex.test(password)) {
-                alert('密码只能包含字母、数字和下划线！');
-                return;
-            }
-            
-            // 这里可以添加登录逻辑
-            console.log('登录信息:', { username, password });
-            alert('登录功能尚未实现');
         });
         
-        // 输入框聚焦效果
-        const inputs = document.querySelectorAll('.form-input');
-        inputs.forEach(input => {
-            input.addEventListener('focus', function() {
-                this.parentElement.style.transform = 'translateY(-2px)';
-                this.parentElement.style.transition = 'transform 0.3s ease';
-            });
-            
-            input.addEventListener('blur', function() {
-                this.parentElement.style.transform = 'translateY(0)';
-            });
-        });
-        
-        // 密码显示/隐藏切换功能
         const togglePassword = document.getElementById('toggle-password');
-        const passwordInput = document.getElementById('password-input');
-        
         togglePassword.addEventListener('click', function() {
-            // 切换密码可见性
             const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
             passwordInput.setAttribute('type', type);
-            
-            // 切换图标：隐藏时显示😌，显示时显示👀
             this.textContent = type === 'password' ? '😌' : '👀';
         });
     </script>

@@ -5,40 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>算法教程 | Algorithm Manual</title>
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* 全局变量 - 统一风格 */
         :root {
-            --primary-color: #007bff;
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            --bg-overlay: rgba(255, 255, 255, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --border-color: #eee;
-            --category-bg: #ffffff;
-            --category-hover: #f8f9fa;
-            --category-active: #007bff;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            --category-bg: rgba(255, 255, 255, 0.6);
+            --category-hover: rgba(255, 255, 255, 0.8);
+            --category-active: #3a7bd5;
             --category-active-text: #ffffff;
         }
-        
+
         /* 深色模式变量 */
         [data-theme="dark"] {
             --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --card-bg: #2a2a2a;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --border-color: #333;
-            --category-bg: #2a2a2a;
-            --category-hover: #3a3a3a;
+            --bg-overlay: rgba(15, 23, 42, 0.85);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            --text-color: #e2e8f0;
+            --text-light: #94a3b8;
+            --border-color: rgba(255, 255, 255, 0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(15, 23, 42, 0.95);
+            --footer-text: #94a3b8;
+            --category-bg: rgba(30, 41, 59, 0.6);
+            --category-hover: rgba(45, 55, 72, 0.8);
             --category-active: #667eea;
             --category-active-text: #ffffff;
         }
@@ -47,14 +51,34 @@
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: all 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
+            background-image: url('logo/citlali.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
             color: var(--text-color);
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        /* 背景遮罩 */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-overlay);
+            z-index: -1;
+            backdrop-filter: blur(8px);
         }
         
         /* 顶部导航栏 */
@@ -64,7 +88,12 @@
             align-items: center;
             padding: 1rem 2rem;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(12px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            border-bottom: var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
         }
         
         .logo {
@@ -74,23 +103,29 @@
             font-weight: bold;
             color: var(--text-color);
             text-decoration: none;
+            background: var(--primary-gradient);
+            /* 修复位置 1：添加标准属性 */
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .logo-icon {
             width: 40px;
             height: 40px;
             margin-right: 10px;
-            border-radius: 5px;
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            box-shadow: 0 4px 10px var(--shadow-color);
         }
         
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
         
         .nav-right {
@@ -102,30 +137,38 @@
         .nav-icon {
             font-size: 1.2rem;
             cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s, transform 0.3s ease;
+            color: var(--text-color);
+            transition: transform 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
         }
         
         .nav-icon:hover {
-            color: var(--primary-color);
+            background-color: rgba(255, 255, 255, 0.1);
+            transform: scale(1.1);
         }
         
         .theme-toggle {
             background: none;
             border: none;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
             cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            color: var(--text-color);
+            transition: transform 0.3s ease;
+            padding: 0.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .theme-toggle:hover {
-            color: var(--primary-color);
-            transform: scale(1.3);
+            transform: rotate(30deg) scale(1.1);
+            background-color: rgba(255, 255, 255, 0.1);
         }
         
         /* 主要内容区域 */
@@ -135,26 +178,31 @@
             gap: 2rem;
             max-width: 1400px;
             margin: 0 auto;
+            flex: 1;
         }
         
         /* 左侧分类导航 */
         .category-nav {
-            width: 200px;
+            width: 220px;
             background-color: var(--category-bg);
-            border-radius: 8px;
-            padding: 1rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            backdrop-filter: blur(12px);
+            border-radius: 20px;
+            padding: 1.5rem;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border: var(--glass-border);
             position: sticky;
-            top: 2rem;
+            top: 6rem;
             align-self: flex-start;
         }
         
         .category-title {
-            font-size: 1rem;
+            font-size: 1.2rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            padding-bottom: 0.5rem;
-            border-bottom: 2px solid var(--border-color);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid;
+            border-image: var(--primary-gradient) 1;
+            color: var(--text-color);
         }
         
         .category-list {
@@ -162,45 +210,46 @@
         }
         
         .category-item {
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
         }
         
         .category-btn {
             width: 100%;
-            padding: 0.6rem 0.8rem;
+            padding: 0.8rem 1rem;
             text-align: left;
             background-color: transparent;
             border: none;
-            border-radius: 4px;
+            border-radius: 12px;
             color: var(--text-color);
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
             align-items: center;
-            gap: 0.5rem;
+            gap: 0.8rem;
         }
         
         .category-icon {
             display: inline-block;
-            width: 1.2rem;
-            height: 1.2rem;
+            width: 1.5rem;
             text-align: center;
-            line-height: 1.2rem;
             font-size: 1.2rem;
         }
         
         .category-text {
             display: inline-block;
+            font-weight: 500;
         }
         
         .category-btn:hover {
             background-color: var(--category-hover);
+            transform: translateX(5px);
         }
         
         .category-btn.active {
-            background-color: var(--category-active);
+            background: var(--primary-gradient);
             color: var(--category-active-text);
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.3);
         }
         
         /* 右侧内容区域 */
@@ -209,19 +258,29 @@
         }
         
         .content-header {
-            margin-bottom: 2rem;
+            margin-bottom: 2.5rem;
+            background-color: var(--header-bg);
+            backdrop-filter: blur(12px);
+            padding: 2rem;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border: var(--glass-border);
         }
         
         .content-title {
-            font-size: 1.8rem;
-            font-weight: bold;
-            margin-bottom: 0.5rem;
-            color: var(--text-color);
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin-bottom: 0.8rem;
+            background: var(--primary-gradient);
+            /* 修复位置 2：添加标准属性 */
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .content-subtitle {
             color: var(--text-light);
-            font-size: 0.95rem;
+            font-size: 1.1rem;
         }
         
         /* 横版卡片容器 */
@@ -234,22 +293,24 @@
         /* 横版卡片 */
         .horizontal-card {
             background-color: var(--card-bg);
-            border-radius: 10px;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px var(--shadow-color);
+            border: var(--glass-border);
             overflow: hidden;
             display: flex;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             padding: 1.5rem;
+            align-items: center;
         }
         
         .horizontal-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px var(--shadow-color);
+            transform: translateY(-5px) scale(1.01);
+            box-shadow: 0 15px 40px var(--shadow-color);
+            border-color: rgba(255, 255, 255, 0.8);
         }
         
-        .card-image {
-            display: none;
-        }
+        /* 已删除卡片图标 */
         
         .card-content {
             flex: 1;
@@ -259,21 +320,24 @@
         }
         
         .card-header {
-            margin-bottom: 1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
         
         .card-title {
-            font-size: 1.3rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 700;
             margin-bottom: 0.5rem;
             color: var(--text-color);
         }
         
         .card-description {
             color: var(--text-light);
-            font-size: 0.9rem;
-            line-height: 1.5;
-            margin-bottom: 1rem;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            margin-bottom: 1.2rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             line-clamp: 2;
@@ -284,8 +348,12 @@
         .card-meta {
             display: flex;
             gap: 1rem;
-            font-size: 0.8rem;
+            font-size: 0.85rem;
             color: var(--text-light);
+            background: rgba(0, 0, 0, 0.05);
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            align-self: flex-start;
         }
         
         .card-stats {
@@ -297,48 +365,54 @@
         .card-action {
             margin-top: 1rem;
             display: flex;
-            gap: 0.5rem;
+            gap: 0.8rem;
         }
         
         .btn {
-            padding: 0.5rem 1rem;
+            padding: 0.6rem 1.2rem;
             border: none;
-            border-radius: 5px;
+            border-radius: 50px;
             cursor: pointer;
             font-size: 0.9rem;
-            font-weight: bold;
-            transition: background-color 0.3s, color 0.3s;
+            font-weight: 600;
+            transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
         }
         
         .btn-primary {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
+            box-shadow: 0 4px 15px rgba(58, 123, 213, 0.3);
         }
         
         .btn-primary:hover {
-            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
         }
         
         .btn-outline {
             background-color: transparent;
             color: var(--primary-color);
-            border: 1px solid var(--primary-color);
+            border: 2px solid var(--primary-color);
         }
         
         .btn-outline:hover {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
+            border-color: transparent;
+            transform: translateY(-2px);
         }
         
         /* 页脚 */
         .footer {
             background-color: var(--footer-bg);
+            backdrop-filter: blur(12px);
             color: var(--footer-text);
             text-align: center;
             padding: 2rem;
-            margin-top: 2rem;
+            margin-top: auto;
+            border-top: var(--glass-border);
         }
         
         /* 响应式设计 */
@@ -351,19 +425,48 @@
             .category-nav {
                 width: 100%;
                 position: static;
+                margin-bottom: 1.5rem;
+                overflow-x: auto;
+                white-space: nowrap;
+                padding: 1rem;
+                display: flex;
+                gap: 1rem;
+            }
+            
+            .category-list {
+                display: flex;
+                gap: 0.5rem;
+            }
+            
+            .category-item {
+                margin-bottom: 0;
+            }
+            
+            .category-btn {
+                width: auto;
+                white-space: nowrap;
+                padding: 0.6rem 1rem;
             }
             
             .horizontal-card {
                 flex-direction: column;
+                align-items: flex-start;
             }
             
             .card-image {
                 width: 100%;
-                height: 200px;
+                height: 180px;
+                margin-right: 0;
+                margin-bottom: 1rem;
             }
             
             .header {
                 padding: 1rem;
+            }
+            
+            .content-header {
+                padding: 1.5rem;
+                margin-bottom: 1.5rem;
             }
         }
     </style>
@@ -447,26 +550,40 @@
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
+        const body = document.body;
         
         // 检查用户偏好或本地存储
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         
         // 设置初始主题
-        document.documentElement.setAttribute('data-theme', currentTheme);
-        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        if (currentTheme === 'dark') {
+            body.setAttribute('data-theme', 'dark');
+            themeToggle.textContent = '☀️';
+            themeToggle.title = '切换浅色模式';
+        } else {
+            body.removeAttribute('data-theme');
+            themeToggle.textContent = '🌙';
+            themeToggle.title = '切换深色模式';
+        }
         
         // 切换主题
         themeToggle.addEventListener('click', () => {
-            const currentTheme = document.documentElement.getAttribute('data-theme');
-            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            const isDark = body.getAttribute('data-theme') === 'dark';
             
-            // 更新主题
-            document.documentElement.setAttribute('data-theme', newTheme);
-            themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // 保存到本地存储
-            localStorage.setItem('theme', newTheme);
+            if (isDark) {
+                // 切换到浅色
+                body.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+                themeToggle.textContent = '🌙';
+                themeToggle.title = '切换深色模式';
+            } else {
+                // 切换到深色
+                body.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+                themeToggle.textContent = '☀️';
+                themeToggle.title = '切换浅色模式';
+            }
         });
 
         // 算法教程数据
@@ -508,7 +625,10 @@
                 difficulty: '初级',
                 complexity: 'O(n)',
                 url: 'algorithm/simulation.html'
-            },            {                id: 38,                name: '枚举算法',                description: '枚举算法是一种暴力搜索算法，通过遍历所有可能的情况来寻找问题的解，适用于问题规模较小的情况。',                category: ['basic'],                image: 'logo/enumeration.jpg',                difficulty: '初级',                complexity: 'O(n)',                url: 'algorithm/enumeration.html'            },            {                id: 39,                name: '递归算法',                description: '递归算法是一种直接或间接调用自身的算法，常用于解决可以分解为相同子问题的复杂问题。',                category: ['basic'],                image: 'logo/recursion.jpg',                difficulty: '初级到中级',                complexity: 'O(2^n)或O(n)',                url: 'algorithm/recursion.html'            },            {                id: 59,                name: '滑动窗口',                description: '滑动窗口是一种用于解决数组或字符串问题的高效算法技巧，通过维护一个可变大小或固定大小的窗口，将嵌套循环问题转换为单循环问题。',                category: ['basic'],                image: 'logo/sliding_window.jpg',                difficulty: '初级到中级',                complexity: 'O(n)',                url: 'algorithm/sliding_window.html'            },
+            },            {                id: 38,                name: '枚举算法',                description: '枚举算法是一种暴力搜索算法，通过遍历所有可能的情况来寻找问题的解，适用于问题规模较小的情况。',                category: ['basic'],                image: 'logo/enumeration.jpg',                difficulty: '初级',
+                complexity: 'O(n)',
+                url: 'algorithm/enumeration.html'
+            },            {                id: 39,                name: '递归算法',                description: '递归算法是一种直接或间接调用自身的算法，常用于解决可以分解为相同子问题的复杂问题。',                category: ['basic'],                image: 'logo/recursion.jpg',                difficulty: '初级到中级',                complexity: 'O(2^n)或O(n)',                url: 'algorithm/recursion.html'            },            {                id: 59,                name: '滑动窗口',                description: '滑动窗口是一种用于解决数组或字符串问题的高效算法技巧，通过维护一个可变大小或固定大小的窗口，将嵌套循环问题转换为单循环问题。',                category: ['basic'],                image: 'logo/sliding_window.jpg',                difficulty: '初级到中级',                complexity: 'O(n)',                url: 'algorithm/sliding_window.html'            },
             {
                 id: 19,
                 name: '栈',
@@ -524,10 +644,7 @@
                 id: 21,
                 name: '队列',
                 description: '队列是一种先进先出（FIFO）的数据结构，支持enqueue、dequeue等基本操作，常用于广度优先搜索、任务调度等场景。',
-                category: ['data_structure'],
-                image: 'logo/queue.jpg',
-                difficulty: '初级',
-                complexity: 'O(1)平均操作时间',
+                category: ['data_structure'],                image: 'logo/queue.jpg',                difficulty: '初级',                complexity: 'O(1)平均操作时间',
                 url: 'algorithm/queue.html'
             },            {                id: 22,                name: '链表',                description: '链表是一种线性数据结构，包括单链表、双链表、循环链表等，支持插入、删除等操作，常用于实现其他数据结构或需要频繁插入删除的场景。',                category: ['data_structure'],                image: 'logo/linked_list.jpg',                difficulty: '初级到中级',                complexity: 'O(n)',                url: 'algorithm/list.html'            },            {                id: 23,                name: '二叉树',                description: '二叉树是每个节点最多有两个子节点的树结构，包括前序、中序、后序、层次等遍历方式，是许多高级数据结构的基础。',                category: ['data_structure', 'tree'],                image: 'logo/binary_tree.jpg',                difficulty: '中级',                complexity: 'O(n)',                url: 'algorithm/binary_tree.html'            },            {                id: 24,                name: '并查集',                description: '并查集是一种用于处理元素分组和合并的树形数据结构，支持查找（find）和合并（union）操作，常用于连通性问题。',                category: ['data_structure'],                image: 'logo/union_find.jpg',                difficulty: '中级',                complexity: 'O(α(n))',                url: 'algorithm/union-find.html'            },            {                id: 25,                name: '哈希表',                description: '哈希表是一种通过哈希函数将键映射到值的数据结构，支持高效的插入、查找、删除操作，常用于需要快速查找的场景。',                category: ['data_structure'],                image: 'logo/hash_table.jpg',                difficulty: '中级',                complexity: 'O(1)平均操作时间',                url: 'algorithm/hash_map.html'            },            {                id: 26,                name: '单调栈',                description: '单调栈是一种特殊的栈，栈内元素保持单调递增或单调递减的特性，常用于解决下一个更大元素、最大矩形面积等问题。',                category: ['data_structure'],                image: 'logo/monotonic_stack.jpg',                difficulty: '中级到高级',                complexity: 'O(n)',                url: 'algorithm/monotonic_stack.html'            },            {                id: 27,                name: '单调队列',                description: '单调队列是一种特殊的队列，队列内元素保持单调递增或单调递减的特性，常用于解决滑动窗口最大值等问题。',                category: ['data_structure'],                image: 'logo/monotonic_queue.jpg',                difficulty: '中级到高级',                complexity: 'O(n)',                url: 'algorithm/monotonic_queue.html'            },            {                id: 28,                name: '优先队列',                description: '优先队列是一种每次取出优先级最高元素的队列，通常基于堆实现，常用于任务调度、Dijkstra算法等场景。',                category: ['data_structure'],                image: 'logo/priority_queue.jpg',                difficulty: '中级',                complexity: 'O(log n)',                url: 'algorithm/priority_queue.html'            },            {                id: 29,                name: '线段树',                description: '线段树是一种用于处理区间查询和更新的二叉树结构，支持区间求和、区间最大值、区间更新等操作，常用于范围查询问题。',                category: ['data_structure'],                image: 'logo/segment_tree.jpg',                difficulty: '高级',                complexity: 'O(log n)',                url: 'algorithm/segment_tree.html'            },            {                id: 30,                name: 'ST表',                description: 'ST表是一种用于解决静态区间查询问题的数据结构，通过预处理实现O(1)时间复杂度的区间最大值、最小值查询，不支持动态更新。',                category: ['data_structure'],                image: 'logo/st_table.jpg',                difficulty: '中级到高级',                complexity: 'O(n log n)预处理，O(1)查询',                url: 'algorithm/st.html'            },            {                id: 31,                name: '平衡树',                description: '平衡树是一种保持高度平衡的二叉搜索树，如AVL树、红黑树等，支持高效的插入、删除和查找操作，时间复杂度均为O(log n)。',                category: ['data_structure'],                image: 'logo/balanced_tree.jpg',                difficulty: '高级',                complexity: 'O(log n)',                url: 'algorithm/balanced_tree.html'            },            {                id: 60,                name: '树状数组',                description: '树状数组（Fenwick Tree）是一种用于处理区间查询和单点更新的数据结构，支持高效的前缀和查询和单点更新操作，时间复杂度均为O(log n)。',                category: ['data_structure'],                image: 'logo/fenwick_tree.jpg',                difficulty: '中级到高级',                complexity: 'O(log n)',                url: 'algorithm/fenwick_tree.html'            },
             {                id: 6,                name: '深度优先搜索',                description: 'DFS算法的原理和应用，包括图的遍历、回溯法、岛屿数量、路径搜索等经典问题。',                category: ['search'],                image: 'logo/dfs.jpg',                difficulty: '中级',                complexity: 'O(V+E)',                url: 'algorithm/dfs.html'            },            {                id: 7,                name: '广度优先搜索',                description: 'BFS算法的原理和应用，包括最短路径问题、层序遍历、拓扑排序、最小生成树等经典问题。',                category: ['search'],                image: 'logo/bfs.jpg',                difficulty: '中级',                complexity: 'O(V+E)',                url: 'algorithm/bfs.html'            },            {                id: 47,                name: '存图方法',                description: '常见的图存储方法包括邻接矩阵、邻接表、链式前向星等，不同的存储方法适用于不同类型的图和算法。',                category: ['graph'],                image: 'logo/graph_representation.jpg',                difficulty: '初级',                complexity: 'O(V+E)',                url: 'algorithm/graph_storage.html'            },            {                id: 48,                name: '图的遍历',                description: '图的遍历是指从图中的某一顶点出发，按照某种搜索算法沿着图中的边对图中的所有顶点访问一次且仅访问一次，主要包括DFS和BFS两种方法。',                category: ['graph'],                image: 'logo/graph_traversal.jpg',                difficulty: '初级到中级',                complexity: 'O(V+E)',                url: 'algorithm/graph_traversal.html'            },            {                id: 49,                name: '拓扑排序',                description: '拓扑排序是对有向无环图(DAG)的顶点进行排序，使得对于每条有向边(u,v)，顶点u都在顶点v之前出现，常用于任务调度等场景。',                category: ['graph'],                image: 'logo/topological_sort.jpg',                difficulty: '中级',                complexity: 'O(V+E)',                url: 'algorithm/Topological_Sort.html'            },            {                id: 50,                name: 'Dijkstra',                description: 'Dijkstra算法是一种用于求解单源最短路径的贪心算法，适用于边权非负的图，时间复杂度可以优化到O((V+E)log V)。',                category: ['graph'],                image: 'logo/dijkstra.jpg',                difficulty: '中级',                complexity: 'O((V+E)log V)',                url: 'algorithm/Dijkstra.html'            },            {                id: 51,                name: 'Floyd-Warshall',                description: 'Floyd-Warshall算法是一种用于求解所有顶点对之间最短路径的动态规划算法，时间复杂度为O(V³)，适用于小到中等规模的图。',                category: ['graph'],                image: 'logo/floyd_warshall.jpg',                difficulty: '中级',                complexity: 'O(V³)',                url: 'algorithm/Floyd_Warshall.html'            },            {                id: 52,                name: 'Bellman-Ford',                description: 'Bellman-Ford算法用于求解单源最短路径问题，能够处理存在负权边的图，并可以检测负权回路，时间复杂度为O(VE)。',                category: ['graph'],                image: 'logo/bellman_ford.jpg',                difficulty: '中级',                complexity: 'O(VE)',                url: 'algorithm/bellman_ford.html'            },            {                id: 53,                name: 'Kruskal',                description: 'Kruskal算法是一种基于贪心的最小生成树算法，使用并查集来避免环的形成，时间复杂度为O(E log E)。',                category: ['graph'],                image: 'logo/kruskal.jpg',                difficulty: '中级',                complexity: 'O(E log E)',                url: 'algorithm/Kruskal.html'            },            {                id: 54,                name: 'Prim',                description: 'Prim算法是一种用于构建最小生成树的贪心算法，从一个顶点开始，逐步扩展生成树，时间复杂度为O((V+E)log V)。',                category: ['graph'],                image: 'logo/prim.jpg',                difficulty: '中级',                complexity: 'O((V+E)log V)',                url: 'algorithm/prim.html'            },            {                id: 55,                name: 'Tarjan',                description: 'Tarjan算法是一种用于求解图的强连通分量、割点、桥等问题的高效算法，时间复杂度为O(V+E)。',                category: ['graph'],                image: 'logo/tarjan.jpg',                difficulty: '高级',                complexity: 'O(V+E)',                url: 'algorithm/tarjan.html'            },            {                id: 56,                name: '匈牙利算法',                description: '匈牙利算法是一种用于求解二分图最大匹配的算法，时间复杂度为O(VE)，常用于任务分配等问题。',                category: ['graph'],                image: 'logo/hungarian.jpg',                difficulty: '中级',                complexity: 'O(VE)',                url: 'algorithm/Kuhn_Munkres_algorithm.html'            },            {                id: 57,                name: '网络流',                description: '网络流是指在一个有向图中，从源点到汇点的流量，常见的网络流算法包括Ford-Fulkerson方法、Edmonds-Karp算法、Dinic算法等。',                category: ['graph'],                image: 'logo/network_flow.jpg',                difficulty: '高级',                complexity: 'O(E²V)到O(EV²)',                url: 'algorithm/dinic.html'            },            {                id: 58,                name: '费用流',                description: '费用流是网络流的一种扩展，每条边不仅有容量限制，还有单位流量的费用，目标是在满足流量要求的同时最小化总费用。',                category: ['graph'],                image: 'logo/cost_flow.jpg',                difficulty: '高级',                complexity: 'O(FE log V)',                url: 'algorithm/mcmf.html'            },
@@ -566,7 +683,6 @@
                 const card = document.createElement('div');
                 card.className = 'horizontal-card';
                 card.innerHTML = `
-                    <img src="${algorithm.image}" alt="${algorithm.name}" class="card-image">
                     <div class="card-content">
                         <div class="card-header">
                             <h3 class="card-title">${algorithm.name}</h3>

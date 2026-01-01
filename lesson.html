@@ -5,184 +5,222 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>典题讲解 - Gpnu_Acmer_Wiki</title>
     <style>
-        /* CSS变量 - 主题颜色 */
+        /* --- 1. 从 index.html 引入的核心样式 --- */
         :root {
-            --primary-color: #007bff;
-            --secondary-color: #2ecc71;
-            --bg-color: #ffffff;
-            --card-bg: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --border-color: #e0e0e0;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-            --hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
+            --primary-dark: #0056b3;
+            --bg-overlay: rgba(255, 255, 255, 0.4);
+            --card-bg: rgba(255, 255, 255, 0.75);
+            --header-bg: rgba(255, 255, 255, 0.85);
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
+            --shadow-color: rgba(0, 0, 0, 0.1);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
+            /* 难度颜色变量 */
+            --diff-easy: #2ecc71;
+            --diff-medium: #f39c12;
+            --diff-hard: #e74c3c;
         }
 
         [data-theme="dark"] {
             --primary-color: #667eea;
-            --secondary-color: #2ecc71;
-            --bg-color: #121212;
-            --card-bg: #2a2a2a;
-            --text-color: #ffffff;
-            --text-light: #bdc3c7;
-            --border-color: #4a6178;
-            --shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-            --hover-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --primary-dark: #5568d3;
+            --bg-overlay: rgba(15, 23, 42, 0.85);
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease;
         }
 
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            transition: background-color 0.3s ease, color 0.3s ease;
+            color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-image: url('logo/citlali.jpg');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
 
-        /* 头部导航 */
-        .header {
-            background-color: var(--card-bg);
-            box-shadow: var(--shadow);
+        body::before {
+            content: "";
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1000;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-overlay);
+            z-index: -1;
+            backdrop-filter: blur(3px);
             transition: background-color 0.3s ease;
         }
 
-        .nav-container {
-            max-width: 1200px;
-            margin: 0 auto;
+        /* 顶部导航栏 */
+        .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
+            background-color: var(--header-bg);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
 
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: var(--primary-color);
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-color);
             text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
 
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
 
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
 
-        .nav-menu {
+        .nav-right {
             display: flex;
-            list-style: none;
-            gap: 2rem;
-        }
-
-        .nav-menu a {
-            text-decoration: none;
-            color: var(--text-color);
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .nav-menu a:hover {
-            color: var(--primary-color);
-        }
-
-        .nav-icons {
-            display: flex;
-            gap: 1rem;
             align-items: center;
+            gap: 1.5rem;
         }
 
-        .nav-icon {
-            font-size: 1.2rem;
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
             cursor: pointer;
-            color: var(--text-color);
-            transition: color 0.3s, transform 0.3s ease;
-        }
-
-        /* 摇晃动画 - 铃铛 */
-        @keyframes shake {
-            0%, 100% { transform: rotate(0deg); }
-            20%, 60% { transform: rotate(-15deg); }
-            40%, 80% { transform: rotate(15deg); }
+            color: var(--text-light);
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            text-decoration: none;
+            border: none;
+            background: transparent;
         }
 
         .nav-icon:hover {
             color: var(--primary-color);
-        }
-
-        /* 搜索图标悬停时放大并保持 */
-        .nav-icon:nth-child(1):hover {
-            transform: scale(1.3);
-        }
-
-        /* 铃铛图标悬停时应用摇晃动画 */
-        .nav-icon:nth-child(2):hover {
-            animation: shake 0.5s ease-in-out;
-        }
-
-        /* 主题切换按钮 */
-        .theme-toggle {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-color);
-            transition: color 0.3s ease;
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
         }
 
         .theme-toggle:hover {
-            color: var(--primary-color);
+            color: #f1c40f;
             transform: scale(1.3);
         }
 
-        /* 主内容区域 */
-        .container {
-            max-width: 1200px;
-            margin: 80px auto 2rem;
-            display: flex;
-            gap: 2rem;
-            padding: 0 2rem;
+        .btn {
+            padding: 0.5rem 1.2rem;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            text-decoration: none;
+            display: inline-block;
+            text-align: center;
         }
 
-        /* 侧边栏导航 */
-        .sidebar {
-            width: 250px;
+        .btn-outline {
+            background-color: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-outline:hover {
+            background: var(--primary-gradient);
+            color: white;
+            border-color: transparent;
+            box-shadow: 0 5px 15px rgba(58, 123, 213, 0.4);
+        }
+
+        /* --- 2. 页面布局样式 --- */
+        .layout-container {
+            max-width: 1280px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2rem;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            align-items: flex-start;
+        }
+
+        /* 通用毛玻璃卡片样式 */
+        .glass-panel {
             background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 16px;
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
+            transition: all 0.3s ease;
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 260px;
             padding: 1.5rem;
             position: sticky;
             top: 100px;
-            height: fit-content;
+            flex-shrink: 0;
         }
 
         .sidebar-title {
             font-size: 1.2rem;
-            font-weight: bold;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            font-weight: 700;
+            margin-bottom: 1.2rem;
+            color: var(--text-color);
+            border-left: 4px solid var(--primary-color);
+            padding-left: 10px;
+            line-height: 1;
         }
 
         .sidebar-menu {
@@ -190,193 +228,252 @@
         }
 
         .sidebar-menu li {
-            margin-bottom: 0.5rem;
+            margin-bottom: 0.4rem;
         }
 
         .sidebar-menu a {
             text-decoration: none;
-            color: var(--text-color);
+            color: var(--text-light);
             display: block;
             padding: 0.75rem 1rem;
-            border-radius: 4px;
-            transition: all 0.3s ease;
+            border-radius: 10px;
+            font-weight: 500;
+            transition: all 0.2s ease;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         .sidebar-menu a:hover {
-            background-color: var(--primary-color);
-            color: white;
+            background-color: rgba(58, 123, 213, 0.1);
+            color: var(--primary-color);
+            transform: translateX(5px);
         }
 
         .sidebar-menu a.active {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
+            box-shadow: 0 4px 10px rgba(58, 123, 213, 0.3);
         }
-
-        /* 主内容 */
+        
+        /* 主内容区 */
         .main-content {
             flex: 1;
-            background-color: var(--card-bg);
-            border-radius: 8px;
-            box-shadow: var(--shadow);
-            padding: 2rem;
+            padding: 2.5rem;
+            min-height: 80vh;
         }
 
-        .content-title {
+        .content-header {
+            margin-bottom: 2.5rem;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+
+        .page-title {
             font-size: 2rem;
-            margin-bottom: 1.5rem;
-            color: var(--primary-color);
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: var(--primary-gradient);
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
 
-        /* 分类区域样式 */
+        .page-desc {
+            color: var(--text-light);
+            font-size: 1.05rem;
+        }
+
+        /* 分类区块 */
         .category-section {
-            margin-bottom: 3rem;
+            margin-bottom: 3.5rem;
+            scroll-margin-top: 120px;
         }
 
         .category-title {
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 700;
             margin-bottom: 1.5rem;
-            color: var(--primary-color);
-            border-bottom: 2px solid var(--border-color);
-            padding-bottom: 0.5rem;
+            color: var(--text-color);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+        }
+        
+        .category-title::before {
+            content: '';
+            display: block;
+            width: 8px;
+            height: 24px;
+            background: var(--primary-gradient);
+            border-radius: 4px;
         }
 
-        /* 典题卡片 */
+        /* 题目卡片网格 */
         .lesson-cards {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 1.5rem;
         }
 
+        /* 题目卡片 */
         .lesson-card {
-            background-color: var(--bg-color);
-            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.5);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.4);
+            border-radius: 12px;
             padding: 1.5rem;
-            box-shadow: var(--shadow);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        [data-theme="dark"] .lesson-card {
+            background-color: rgba(30, 41, 59, 0.4);
+            border-color: rgba(255,255,255,0.05);
+        }
+
+        .lesson-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-gradient);
+            opacity: 0;
+            transition: opacity 0.3s;
         }
 
         .lesson-card:hover {
             transform: translateY(-5px);
-            box-shadow: var(--hover-shadow);
+            box-shadow: 0 10px 30px var(--shadow-color);
+            background-color: var(--card-bg);
+        }
+
+        .lesson-card:hover::before {
+            opacity: 1;
         }
 
         .lesson-card h3 {
-            color: var(--primary-color);
-            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text-color);
+            margin-bottom: 0.8rem;
         }
 
         .lesson-meta {
             display: flex;
-            gap: 1rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
             margin-bottom: 1rem;
-            font-size: 0.9rem;
+        }
+
+        .tag {
+            font-size: 0.8rem;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+
+        .tag-diff { color: white; }
+        .tag-diff.easy { background-color: var(--diff-easy); }
+        .tag-diff.medium { background-color: var(--diff-medium); }
+        .tag-diff.hard { background-color: var(--diff-hard); }
+
+        .tag-topic {
+            background-color: rgba(0,0,0,0.05);
             color: var(--text-light);
         }
-
-        .lesson-difficulty {
-            padding: 0.25rem 0.5rem;
-            border-radius: 4px;
-            font-weight: bold;
-        }
-
-        .difficulty-easy {
-            background-color: var(--secondary-color);
-            color: white;
-        }
-
-        .difficulty-medium {
-            background-color: #f39c12;
-            color: white;
-        }
-
-        .difficulty-hard {
-            background-color: #e74c3c;
-            color: white;
-        }
+        [data-theme="dark"] .tag-topic { background-color: rgba(255,255,255,0.1); }
 
         .lesson-description {
-            margin-bottom: 1rem;
             color: var(--text-light);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+            line-height: 1.5;
         }
 
-        .lesson-link {
-            display: inline-block;
-            padding: 0.75rem 1.5rem;
-            background-color: var(--primary-color);
-            color: white;
-            text-decoration: none;
-            border-radius: 4px;
-            transition: background-color 0.3s ease;
-        }
-
-        .lesson-link:hover {
-            background-color: #2980b9;
+        .card-footer {
+            margin-top: auto;
+            text-align: right;
         }
 
         /* 页脚 */
         .footer {
-            background-color: var(--card-bg);
+            background-color: var(--footer-bg);
+            color: var(--footer-text);
             text-align: center;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
-            transition: background-color 0.3s ease;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
 
-        /* 响应式设计 */
+        /* 动画 */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .layout-container { animation: fadeIn 0.8s ease-out; }
+
+        /* 响应式 */
         @media (max-width: 768px) {
-            .nav-container {
+            .layout-container {
+                flex-direction: column;
                 padding: 1rem;
             }
-
-            .nav-menu {
-                display: none;
-            }
-
-            .container {
-                flex-direction: column;
-                padding: 0 1rem;
-            }
-
             .sidebar {
                 width: 100%;
                 position: static;
+                margin-bottom: 1.5rem;
             }
+            .sidebar-menu {
+                display: flex;
+                overflow-x: auto;
+                padding-bottom: 0.5rem;
+                gap: 0.5rem;
+            }
+            .sidebar-menu a {
+                white-space: nowrap;
+            }
+            .header {
+                padding: 0.8rem 1rem;
+            }
+            .page-title { font-size: 1.6rem; }
+            .main-content { padding: 1.5rem; }
         }
     </style>
 </head>
 <body>
-    <!-- 头部导航 -->
+    <!-- 顶部导航栏 -->
     <header class="header">
-        <div class="nav-container">
-            <a href="index.html" class="logo">
-                <div class="logo-icon">
-                    <img src="logo/Gpnu.png" alt="Logo">
-                </div>
-                <span>Gpnu_Acmer_Wiki</span>
-            </a>
-            <ul class="nav-menu">
-                <li><a href="index.html">首页</a></li>
-                <li><a href="algorithm_manu.html">算法手册</a></li>
-                <li><a href="list.html">题单推荐</a></li>
-
-            </ul>
-            <div class="nav-icons">
-                <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
-                <a href="issue.html" class="nav-icon" style="text-decoration: none;">🔔</a>
-                <button class="theme-toggle" id="themeToggle">🌙</button>
+        <a href="index.html" class="logo">
+            <div class="logo-icon">
+                <img src="logo/Gpnu.png" alt="Logo" onerror="this.style.display='none';this.parentNode.innerHTML='G'">
             </div>
+            <span>Gpnu_Acmer_Wiki</span>
+        </a>
+        <div class="nav-right">
+            <a href="search.html" class="nav-icon" title="搜索">🔍</a>
+            <a href="issue.html" class="nav-icon" title="通知">🔔</a>
+            <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <a href="SignIn.html" class="btn btn-outline">登录 / 注册</a>
         </div>
     </header>
 
-    <!-- 主内容区域 -->
-    <div class="container">
+    <!-- 页面主体布局 -->
+    <div class="layout-container">
         <!-- 侧边栏导航 -->
-        <aside class="sidebar">
+        <aside class="sidebar glass-panel">
             <h2 class="sidebar-title">题目分类</h2>
             <ul class="sidebar-menu">
-                <li><a href="#basic-algorithm" class="active">基础算法</a></li>
+                <li><a href="#basic-algorithm" class="active">基础算法 <span>👉</span></a></li>
                 <li><a href="#search-algorithm">搜索算法</a></li>
                 <li><a href="#data-structure">数据结构</a></li>
                 <li><a href="#string-algorithm">字符串算法</a></li>
@@ -387,10 +484,12 @@
             </ul>
         </aside>
 
-        <!-- 主内容 -->
-        <main class="main-content">
-            <h1 class="content-title">典题讲解</h1>
-            <p>精选经典算法题目，深入解析解题思路和代码实现，帮你掌握核心算法思想，提升解题能力！</p>
+        <!-- 主内容区域 -->
+        <main class="main-content glass-panel">
+            <div class="content-header">
+                <h1 class="page-title">典题讲解</h1>
+                <p class="page-desc">精选经典算法题目，深入解析解题思路和代码实现，帮你掌握核心算法思想，提升解题能力！</p>
+            </div>
 
             <!-- 基础算法 -->
             <section id="basic-algorithm" class="category-section">
@@ -399,22 +498,26 @@
                     <div class="lesson-card">
                         <h3>两数之和</h3>
                         <div class="lesson-meta">
-                            <span class="lesson-difficulty difficulty-easy">简单</span>
-                            <span>数组</span>
-                            <span>哈希表</span>
+                            <span class="tag tag-diff easy">简单</span>
+                            <span class="tag tag-topic">数组</span>
+                            <span class="tag tag-topic">哈希表</span>
                         </div>
-                        <div class="lesson-description">给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出 和为目标值 target 的那 两个 整数，并返回它们的数组下标。</div>
-                        <a href="#" class="lesson-link">查看讲解</a>
+                        <div class="lesson-description">给定一个整数数组 nums 和一个整数目标值 target，请你在该数组中找出和为目标值 target 的那两个整数。</div>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">查看讲解</a>
+                        </div>
                     </div>
                     <div class="lesson-card">
                         <h3>三数之和</h3>
                         <div class="lesson-meta">
-                            <span class="lesson-difficulty difficulty-medium">中等</span>
-                            <span>数组</span>
-                            <span>双指针</span>
+                            <span class="tag tag-diff medium">中等</span>
+                            <span class="tag tag-topic">数组</span>
+                            <span class="tag tag-topic">双指针</span>
                         </div>
-                        <div class="lesson-description">给你一个包含 n 个整数的数组 nums，判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。</div>
-                        <a href="#" class="lesson-link">查看讲解</a>
+                        <div class="lesson-description">判断 nums 中是否存在三个元素 a，b，c ，使得 a + b + c = 0 ？请你找出所有和为 0 且不重复的三元组。</div>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">查看讲解</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -423,7 +526,9 @@
             <section id="search-algorithm" class="category-section">
                 <h2 class="category-title">搜索算法</h2>
                 <div class="lesson-cards">
-                    <!-- 后续可添加搜索算法相关题目 -->
+                    <div style="grid-column: 1/-1; text-align: center; color: var(--text-light); padding: 2rem; border: 1px dashed var(--border-color); border-radius: 10px;">
+                        🚧 内容建设中...
+                    </div>
                 </div>
             </section>
 
@@ -434,21 +539,25 @@
                     <div class="lesson-card">
                         <h3>反转链表</h3>
                         <div class="lesson-meta">
-                            <span class="lesson-difficulty difficulty-easy">简单</span>
-                            <span>链表</span>
+                            <span class="tag tag-diff easy">简单</span>
+                            <span class="tag tag-topic">链表</span>
                         </div>
                         <div class="lesson-description">给你单链表的头节点 head ，请你反转链表，并返回反转后的链表。</div>
-                        <a href="#" class="lesson-link">查看讲解</a>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">查看讲解</a>
+                        </div>
                     </div>
                     <div class="lesson-card">
                         <h3>二叉树的中序遍历</h3>
                         <div class="lesson-meta">
-                            <span class="lesson-difficulty difficulty-easy">简单</span>
-                            <span>树</span>
-                            <span>深度优先搜索</span>
+                            <span class="tag tag-diff easy">简单</span>
+                            <span class="tag tag-topic">树</span>
+                            <span class="tag tag-topic">DFS</span>
                         </div>
-                        <div class="lesson-description">给定一个二叉树的根节点 root ，返回它的 中序 遍历。</div>
-                        <a href="#" class="lesson-link">查看讲解</a>
+                        <div class="lesson-description">给定一个二叉树的根节点 root ，返回它的中序遍历。</div>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">查看讲解</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -460,12 +569,14 @@
                     <div class="lesson-card">
                         <h3>最长回文子串</h3>
                         <div class="lesson-meta">
-                            <span class="lesson-difficulty difficulty-medium">中等</span>
-                            <span>字符串</span>
-                            <span>动态规划</span>
+                            <span class="tag tag-diff medium">中等</span>
+                            <span class="tag tag-topic">字符串</span>
+                            <span class="tag tag-topic">DP</span>
                         </div>
                         <div class="lesson-description">给你一个字符串 s，找到 s 中最长的回文子串。</div>
-                        <a href="#" class="lesson-link">查看讲解</a>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">查看讲解</a>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -477,77 +588,93 @@
                     <div class="lesson-card">
                         <h3>爬楼梯</h3>
                         <div class="lesson-meta">
-                            <span class="lesson-difficulty difficulty-easy">简单</span>
-                            <span>动态规划</span>
+                            <span class="tag tag-diff easy">简单</span>
+                            <span class="tag tag-topic">DP</span>
                         </div>
-                        <div class="lesson-description">假设你正在爬楼梯。需要 n 阶你才能到达楼顶。每次你可以爬 1 或 2 个台阶。你有多少种不同的方法可以爬到楼顶呢？</div>
-                        <a href="#" class="lesson-link">查看讲解</a>
+                        <div class="lesson-description">假设你正在爬楼梯。需要 n 阶你才能到达楼顶。每次你可以爬 1 或 2 个台阶。有多少种不同的方法？</div>
+                        <div class="card-footer">
+                            <a href="#" class="btn btn-outline" style="font-size: 0.8rem;">查看讲解</a>
+                        </div>
                     </div>
                 </div>
             </section>
 
-            <!-- 数论 -->
             <section id="number-theory" class="category-section">
                 <h2 class="category-title">数论</h2>
-                <div class="lesson-cards">
-                    <!-- 后续可添加数论相关题目 -->
-                </div>
+                <div style="color: var(--text-light); font-style: italic;">更多题目即将上线...</div>
             </section>
 
-            <!-- 图论 -->
             <section id="graph-theory" class="category-section">
                 <h2 class="category-title">图论</h2>
-                <div class="lesson-cards">
-                    <!-- 后续可添加图论相关题目 -->
-                </div>
+                <div style="color: var(--text-light); font-style: italic;">更多题目即将上线...</div>
             </section>
 
-            <!-- 赛事题目 -->
             <section id="competition-problem" class="category-section">
                 <h2 class="category-title">赛事题目</h2>
-                <div class="lesson-cards">
-                    <!-- 后续可添加赛事相关题目 -->
-                </div>
+                <div style="color: var(--text-light); font-style: italic;">更多题目即将上线...</div>
             </section>
         </main>
     </div>
 
     <!-- 页脚 -->
     <footer class="footer">
-        <p>&copy; 2024 Gpnu_Acmer_Wiki. All rights reserved.</p>
+        <div style="margin-bottom: 1rem;">
+            <span style="font-size: 1.5rem; font-weight: bold; color: white; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Gpnu_Acmer_Wiki</span>
+        </div>
+        <p style="opacity: 0.7;">Copyright © 2025 All Rights Reserved</p>
+        <p style="font-size: 0.8rem; margin-top: 10px; opacity: 0.5;">Code is Poetry.</p>
     </footer>
 
     <script>
-        // 主题切换功能
-        const themeToggle = document.getElementById('themeToggle');
-        const body = document.body;
-
-        // 检查本地存储中的主题设置
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme) {
-            body.setAttribute('data-theme', savedTheme);
-            themeToggle.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
-        }
-
-        // 切换主题
+        // 深色模式切换功能
+        const themeToggle = document.getElementById('theme-toggle');
+        const currentTheme = localStorage.getItem('theme') || 
+                          (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        document.documentElement.setAttribute('data-theme', currentTheme);
+        themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
+        
         themeToggle.addEventListener('click', () => {
-            const currentTheme = body.getAttribute('data-theme');
+            const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            body.setAttribute('data-theme', newTheme);
-            localStorage.setItem('theme', newTheme);
+            document.documentElement.setAttribute('data-theme', newTheme);
             themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
+            localStorage.setItem('theme', newTheme);
         });
 
-        // 侧边栏导航激活状态
+        // 侧边栏导航点击激活
         const sidebarLinks = document.querySelectorAll('.sidebar-menu a');
         sidebarLinks.forEach(link => {
             link.addEventListener('click', () => {
-                // 移除所有激活状态
                 sidebarLinks.forEach(l => l.classList.remove('active'));
-                // 添加当前激活状态
                 link.classList.add('active');
             });
+        });
+
+        // 滚动监听 (已修复全选Bug)
+        window.addEventListener('scroll', () => {
+            let current = '';
+            const sections = document.querySelectorAll('.category-section');
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (pageYOffset >= sectionTop - 150) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            sidebarLinks.forEach(link => {
+                link.classList.remove('active');
+                // 修复点：只有当 current 不为空字符串时，才进行 includes 匹配
+                if (current && link.getAttribute('href').includes(current)) {
+                    link.classList.add('active');
+                }
+            });
+            
+            // 可选：如果滚动到顶部且没有选中项，默认选中第一个
+            if (!current && window.scrollY < 100) {
+                sidebarLinks[0].classList.add('active');
+            }
         });
     </script>
 </body>

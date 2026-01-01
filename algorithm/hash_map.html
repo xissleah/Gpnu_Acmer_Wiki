@@ -4,120 +4,177 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>哈希表 | Hash Table</title>
+    
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* CSS变量定义 - 现代化配色 */
         :root {
-            --primary-color: #007bff;
+            /* 主色调 */
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            
+            /* 背景遮罩 - 浅色模式下让背景图稍微变白一点 */
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            /* 卡片背景 */
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --border-color: #eee;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
+            /* 代码块背景 */
+            --code-bg: rgba(0, 0, 0, 0.05);
         }
         
         /* 深色模式变量 */
         [data-theme="dark"] {
             --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --card-bg: #2a2a2a;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --border-color: #333;
+            
+            /* 深色模式下让背景图变暗 */
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
+            
+            --code-bg: rgba(0, 0, 0, 0.3);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            
+            /* --- 背景图设置 --- */
+            background-image: url('../logo/citlali.jpg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
-        
+
+        /* 背景遮罩层 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-overlay); 
+            z-index: -1; 
+            backdrop-filter: blur(3px); 
+            transition: background-color 0.3s ease;
+        }
+
         /* 顶部导航栏 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: var(--text-color);
             text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        /* --- Logo 图标样式 (正圆形) --- */
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%; /* 正圆 */
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
         
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
         
+        /* --- 导航栏右侧布局 (严格对齐) --- */
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
-        .nav-icon {
-            font-size: 1.2rem;
+        /* 通用图标容器样式 */
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
             cursor: pointer;
             color: var(--text-light);
-            transition: color 0.3s, transform 0.3s ease;
-        }
-        
-        .nav-icon:hover {
-            color: var(--primary-color);
-        }
-        
-        .theme-toggle {
-            background: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* 布局属性 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;  /* 固定宽度 */
+            height: 40px; /* 固定高度 */
+            text-decoration: none;
             border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            background: transparent;
         }
         
-        .theme-toggle:hover {
-            color: var(--primary-color);
-            transform: scale(1.3);
+        .nav-icon:hover { 
+            color: var(--primary-color); 
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .theme-toggle:hover { 
+            color: #f1c40f; 
+            transform: scale(1.3); 
         }
         
         /* 主要内容区域 */
@@ -125,70 +182,103 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+            width: 100%;
+            position: relative;
+            z-index: 1;
         }
         
         .content-header {
             margin-bottom: 2rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
         }
         
         .content-title {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.2rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             color: var(--text-color);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .content-subtitle {
             color: var(--text-light);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         
+        /* 文章章节卡片化 */
         .content-section {
             background-color: var(--card-bg);
-            border-radius: 8px;
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-5px);
         }
         
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
         }
         
         .section-content {
-            margin-bottom: 1.5rem;
             line-height: 1.8;
+            color: var(--text-light);
         }
         
         .section-content p {
             margin-bottom: 1rem;
         }
-
-        .section-content ul {
+        
+        .section-content ul, .section-content ol {
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
         
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* 代码块样式优化 */
         .code-block {
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             overflow-x: auto;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
         }
         
-        [data-theme="dark"] .code-block {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+        pre {
+            margin: 0;
         }
         
+        /* 表格样式 */
         .table-container {
             overflow-x: auto;
             margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         
         table {
@@ -197,32 +287,40 @@
         }
         
         th, td {
-            padding: 0.8rem;
+            padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
         
         th {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
         }
         
         tr:hover {
-            background-color: rgba(0, 123, 255, 0.05);
+            background-color: rgba(0, 0, 0, 0.02);
         }
         
         [data-theme="dark"] tr:hover {
-            background-color: rgba(102, 126, 234, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
+        /* 强调文本 */
+        .highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
         /* 页脚 */
         .footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
             text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
         
         /* 回到顶部按钮 */
@@ -232,7 +330,7 @@
             right: 2rem;
             width: 50px;
             height: 50px;
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
             border: none;
             border-radius: 50%;
@@ -241,10 +339,11 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
             opacity: 0;
             visibility: hidden;
+            z-index: 100;
         }
         
         .back-to-top.visible {
@@ -253,97 +352,78 @@
         }
         
         .back-to-top:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.1);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
         }
         
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-            }
-            
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .content-section {
-                padding: 1.5rem;
-            }
-            
-            .content-title {
-                font-size: 1.5rem;
-            }
-            
-            .section-title {
-                font-size: 1.2rem;
-            }
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.8rem; }
+            .section-title { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
     <!-- 顶部导航栏 -->
     <header class="header">
-        <a href="index.html" class="logo">
+        <a href="../index.html" class="logo">
             <div class="logo-icon">
                 <img src="../logo/Gpnu.png" alt="Logo">
             </div>
             <span>Gpnu_Acmer_Wiki</span>
         </a>
         <div class="nav-right">
-            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
-            <div class="nav-icon">🔔</div>
+            <a href="../search.html" class="nav-icon" title="搜索">🔍</a>
+            <a href="../issue.html" class="nav-icon" title="通知">🔔</a>
             <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <!-- 保持登录按钮一致性，虽然内部页可能不需要 -->
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
     <main class="main-content">
-        <div class="content-header">
-            <h1 class="content-title">哈希表</h1>
-            <p class="content-subtitle">Hash Table / Hash Map</p>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">1. 什么是哈希表?</h2>
-            <div class="section-content">
-                <p>哈希表（Hash Table），也称为散列表，是一种数据结构，它通过建立<strong>键（Key）</strong>与<strong>值（Value）</strong>之间的映射关系，实现了高效的查找、插入和删除操作。</p>
-                <p><strong>形象理解：</strong></p>
-                <ul>
-                    <li><strong>数组：</strong>像是一排有编号的储物柜（0, 1, 2...）。你想找东西，必须知道柜子编号（下标）。</li>
-                    <li><strong>哈希表：</strong>像是一个智能图书馆。你想找一本《算法导论》（Key），系统通过某种计算（哈希函数）直接告诉你它在“第 3 排第 5 个架子”（Index），而不需要你从第一本书开始挨个查找。</li>
-                </ul>
-                <p>其核心目标是在<strong>O(1)</strong>（常数时间）内完成数据的查找。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">2. 核心原理：哈希函数与冲突</h2>
-            <div class="section-content">
-                <p>哈希表是如何工作的？主要包含两个关键部分：</p>
-                
-                <h3>(1) 哈希函数 (Hash Function)</h3>
-                <p>将任意类型的 Key（如字符串 "Apple"）转换成一个整数下标的函数。例如：<code>index = hash("Apple") % 数组长度</code>。</p>
-
-                <h3>(2) 哈希冲突 (Collision)</h3>
-                <p>由于数组长度有限，不同的 Key 可能会计算出相同的下标（例如 <code>hash("Cat")</code> 和 <code>hash("Dog")</code> 都指向下标 5）。这就叫冲突。</p>
-                <p><strong>常见解决方法（拉链法）：</strong></p>
-                <p>在每个数组下标处不直接存数据，而是挂一个<strong>链表</strong>。所有映射到下标 5 的数据都串在这个链表上。查找时，先找到下标，再遍历短链表。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">3. C++ STL 中的哈希表</h2>
-            <div class="section-content">
-                <p>在 C++ 中，我们通常不需要手写哈希表，STL 提供了非常强大的容器。主要有两种：</p>
-                <ul>
-                    <li><code>std::map</code>：基于红黑树实现，有序，增删查复杂度 O(log n)。</li>
-                    <li><code>std::unordered_map</code>：基于<strong>哈希表</strong>实现，无序，增删查平均复杂度 <strong>O(1)</strong>。</li>
-                </ul>
-                <p>在追求速度的算法竞赛或工程中，如果不需要按 Key 排序，首选 <code>unordered_map</code>。</p>
-
-                <p><strong>基本用法示例：</strong></p>
-                <div class="code-block">
+        
+<div class="content-header">
+<h1 class="content-title">哈希表</h1>
+<p class="content-subtitle">Hash Table / Hash Map</p>
+</div>
+<div class="content-section">
+<h2 class="section-title">1. 什么是哈希表?</h2>
+<div class="section-content">
+<p>哈希表（Hash Table），也称为散列表，是一种数据结构，它通过建立<strong>键（Key）</strong>与<strong>值（Value）</strong>之间的映射关系，实现了高效的查找、插入和删除操作。</p>
+<p><strong>形象理解：</strong></p>
+<ul>
+<li><strong>数组：</strong>像是一排有编号的储物柜（0, 1, 2...）。你想找东西，必须知道柜子编号（下标）。</li>
+<li><strong>哈希表：</strong>像是一个智能图书馆。你想找一本《算法导论》（Key），系统通过某种计算（哈希函数）直接告诉你它在“第 3 排第 5 个架子”（Index），而不需要你从第一本书开始挨个查找。</li>
+</ul>
+<p>其核心目标是在<strong>O(1)</strong>（常数时间）内完成数据的查找。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">2. 核心原理：哈希函数与冲突</h2>
+<div class="section-content">
+<p>哈希表是如何工作的？主要包含两个关键部分：</p>
+<h3>(1) 哈希函数 (Hash Function)</h3>
+<p>将任意类型的 Key（如字符串 "Apple"）转换成一个整数下标的函数。例如：<code>index = hash("Apple") % 数组长度</code>。</p>
+<h3>(2) 哈希冲突 (Collision)</h3>
+<p>由于数组长度有限，不同的 Key 可能会计算出相同的下标（例如 <code>hash("Cat")</code> 和 <code>hash("Dog")</code> 都指向下标 5）。这就叫冲突。</p>
+<p><strong>常见解决方法（拉链法）：</strong></p>
+<p>在每个数组下标处不直接存数据，而是挂一个<strong>链表</strong>。所有映射到下标 5 的数据都串在这个链表上。查找时，先找到下标，再遍历短链表。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">3. C++ STL 中的哈希表</h2>
+<div class="section-content">
+<p>在 C++ 中，我们通常不需要手写哈希表，STL 提供了非常强大的容器。主要有两种：</p>
+<ul>
+<li><code>std::map</code>：基于红黑树实现，有序，增删查复杂度 O(log n)。</li>
+<li><code>std::unordered_map</code>：基于<strong>哈希表</strong>实现，无序，增删查平均复杂度 <strong>O(1)</strong>。</li>
+</ul>
+<p>在追求速度的算法竞赛或工程中，如果不需要按 Key 排序，首选 <code>unordered_map</code>。</p>
+<p><strong>基本用法示例：</strong></p>
+<div class="code-block">
 <pre>#include &lt;iostream&gt;
 #include &lt;unordered_map&gt; // 必须包含头文件
 #include &lt;string&gt;
@@ -360,7 +440,7 @@ int main() {
 
     // 2. 查找和访问
     if (scores.count("Alice")) { // count返回1表示存在，0表示不存在
-        cout << "Alice的分数是: " << scores["Alice"] << endl;
+        cout &lt;&lt; "Alice的分数是: " &lt;&lt; scores["Alice"] &lt;&lt; endl;
     }
 
     // 3. 修改数据
@@ -368,21 +448,20 @@ int main() {
 
     // 4. 遍历哈希表 (注意：输出顺序是不确定的)
     for (auto item : scores) {
-        cout << item.first << " : " << item.second << endl;
+        cout &lt;&lt; item.first &lt;&lt; " : " &lt;&lt; item.second &lt;&lt; endl;
     }
 
     return 0;
 }</pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">4. 实战应用：数字频率统计</h2>
-            <div class="section-content">
-                <p>假设有一个数组，里面的数字范围很大（如 1 到 10^9），但数字个数只有 10 万个。我们想知道每个数字出现了多少次。</p>
-                <p>由于数字范围太大，无法直接开一个 <code>int count[1000000000]</code> 的数组（内存会爆）。这时哈希表就是最佳选择。</p>
-                <div class="code-block">
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">4. 实战应用：数字频率统计</h2>
+<div class="section-content">
+<p>假设有一个数组，里面的数字范围很大（如 1 到 10^9），但数字个数只有 10 万个。我们想知道每个数字出现了多少次。</p>
+<p>由于数字范围太大，无法直接开一个 <code>int count[1000000000]</code> 的数组（内存会爆）。这时哈希表就是最佳选择。</p>
+<div class="code-block">
 <pre>#include &lt;iostream&gt;
 #include &lt;unordered_map&gt;
 #include &lt;vector&gt;
@@ -400,93 +479,79 @@ int main() {
     }
 
     // 输出结果
-    cout << "10000 出现了 " << counter[10000] << " 次" << endl;
-    cout << "20 出现了 " << counter[20] << " 次" << endl;
+    cout &lt;&lt; "10000 出现了 " &lt;&lt; counter[10000] &lt;&lt; " 次" &lt;&lt; endl;
+    cout &lt;&lt; "20 出现了 " &lt;&lt; counter[20] &lt;&lt; " 次" &lt;&lt; endl;
     
     return 0;
 }</pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">5. 性能对比</h2>
-            <div class="section-content">
-                <p>为什么要用哈希表而不是数组遍历或二分查找？</p>
-                <table>
-                    <tr>
-                        <th>数据结构</th>
-                        <th>查找时间 (平均)</th>
-                        <th>插入时间 (平均)</th>
-                        <th>特点</th>
-                    </tr>
-                    <tr>
-                        <td>普通数组 (Array)</td>
-                        <td>O(n)</td>
-                        <td>O(1)</td>
-                        <td>查找慢，需要遍历</td>
-                    </tr>
-                    <tr>
-                        <td>有序数组 (二分查找)</td>
-                        <td>O(log n)</td>
-                        <td>O(n)</td>
-                        <td>查找快，但插入慢（需要移动元素）</td>
-                    </tr>
-                    <tr>
-                        <td>平衡树 (std::map)</td>
-                        <td>O(log n)</td>
-                        <td>O(log n)</td>
-                        <td>数据有序，性能稳定</td>
-                    </tr>
-                    <tr>
-                        <td><strong>哈希表 (std::unordered_map)</strong></td>
-                        <td><strong>O(1)</strong></td>
-                        <td><strong>O(1)</strong></td>
-                        <td><strong>速度最快，但数据无序</strong></td>
-                    </tr>
-                </table>
-            </div>
-        </div>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">5. 性能对比</h2>
+<div class="section-content">
+<p>为什么要用哈希表而不是数组遍历或二分查找？</p>
+<table>
+<tr>
+<th>数据结构</th>
+<th>查找时间 (平均)</th>
+<th>插入时间 (平均)</th>
+<th>特点</th>
+</tr>
+<tr>
+<td>普通数组 (Array)</td>
+<td>O(n)</td>
+<td>O(1)</td>
+<td>查找慢，需要遍历</td>
+</tr>
+<tr>
+<td>有序数组 (二分查找)</td>
+<td>O(log n)</td>
+<td>O(n)</td>
+<td>查找快，但插入慢（需要移动元素）</td>
+</tr>
+<tr>
+<td>平衡树 (std::map)</td>
+<td>O(log n)</td>
+<td>O(log n)</td>
+<td>数据有序，性能稳定</td>
+</tr>
+<tr>
+<td><strong>哈希表 (std::unordered_map)</strong></td>
+<td><strong>O(1)</strong></td>
+<td><strong>O(1)</strong></td>
+<td><strong>速度最快，但数据无序</strong></td>
+</tr>
+</table>
+</div>
+</div>
 
     </main>
-
     <!-- 页脚 -->
     <footer class="footer">
         <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
     </footer>
 
-    <!-- 回到顶部按钮 -->
     <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
-
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
-        
-        // 检查用户偏好或本地存储
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         
-        // 设置初始主题
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
         
-        // 切换主题
         themeToggle.addEventListener('click', () => {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            // 更新主题
             document.documentElement.setAttribute('data-theme', newTheme);
             themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // 保存到本地存储
             localStorage.setItem('theme', newTheme);
         });
 
         // 回到顶部按钮功能
         const backToTopBtn = document.getElementById('back-to-top');
-        
-        // 监听滚动事件
         window.addEventListener('scroll', () => {
             if (window.pageYOffset > 300) {
                 backToTopBtn.classList.add('visible');
@@ -495,7 +560,6 @@ int main() {
             }
         });
         
-        // 点击回到顶部
         backToTopBtn.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,
@@ -503,5 +567,6 @@ int main() {
             });
         });
     </script>
+
 </body>
 </html>

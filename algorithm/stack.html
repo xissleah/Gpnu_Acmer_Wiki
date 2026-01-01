@@ -4,120 +4,177 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>栈 | Stack</title>
+    
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* CSS变量定义 - 现代化配色 */
         :root {
-            --primary-color: #007bff;
+            /* 主色调 */
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            
+            /* 背景遮罩 - 浅色模式下让背景图稍微变白一点 */
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            /* 卡片背景 */
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --border-color: #eee;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
+            /* 代码块背景 */
+            --code-bg: rgba(0, 0, 0, 0.05);
         }
         
         /* 深色模式变量 */
         [data-theme="dark"] {
             --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --card-bg: #2a2a2a;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --border-color: #333;
+            
+            /* 深色模式下让背景图变暗 */
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
+            
+            --code-bg: rgba(0, 0, 0, 0.3);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            
+            /* --- 背景图设置 --- */
+            background-image: url('../logo/citlali.jpg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
-        
+
+        /* 背景遮罩层 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-overlay); 
+            z-index: -1; 
+            backdrop-filter: blur(3px); 
+            transition: background-color 0.3s ease;
+        }
+
         /* 顶部导航栏 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: var(--text-color);
             text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        /* --- Logo 图标样式 (正圆形) --- */
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%; /* 正圆 */
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
         
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
         
+        /* --- 导航栏右侧布局 (严格对齐) --- */
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
-        .nav-icon {
-            font-size: 1.2rem;
+        /* 通用图标容器样式 */
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
             cursor: pointer;
             color: var(--text-light);
-            transition: color 0.3s, transform 0.3s ease;
-        }
-        
-        .nav-icon:hover {
-            color: var(--primary-color);
-        }
-        
-        .theme-toggle {
-            background: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* 布局属性 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;  /* 固定宽度 */
+            height: 40px; /* 固定高度 */
+            text-decoration: none;
             border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            background: transparent;
         }
         
-        .theme-toggle:hover {
-            color: var(--primary-color);
-            transform: scale(1.3);
+        .nav-icon:hover { 
+            color: var(--primary-color); 
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .theme-toggle:hover { 
+            color: #f1c40f; 
+            transform: scale(1.3); 
         }
         
         /* 主要内容区域 */
@@ -125,70 +182,103 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+            width: 100%;
+            position: relative;
+            z-index: 1;
         }
         
         .content-header {
             margin-bottom: 2rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
         }
         
         .content-title {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.2rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             color: var(--text-color);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .content-subtitle {
             color: var(--text-light);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         
+        /* 文章章节卡片化 */
         .content-section {
             background-color: var(--card-bg);
-            border-radius: 8px;
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-5px);
         }
         
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
         }
         
         .section-content {
-            margin-bottom: 1.5rem;
             line-height: 1.8;
+            color: var(--text-light);
         }
         
         .section-content p {
             margin-bottom: 1rem;
         }
         
-        .section-content ul {
-            margin-left: 2rem;
+        .section-content ul, .section-content ol {
+            margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
         
+        .section-content li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* 代码块样式优化 */
         .code-block {
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             overflow-x: auto;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
         }
         
-        [data-theme="dark"] .code-block {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+        pre {
+            margin: 0;
         }
         
+        /* 表格样式 */
         .table-container {
             overflow-x: auto;
             margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         
         table {
@@ -197,42 +287,82 @@
         }
         
         th, td {
-            padding: 0.8rem;
-            border-bottom: 1px solid var(--border-color);
+            padding: 1rem;
             text-align: left;
+            border-bottom: 1px solid var(--border-color);
         }
         
         th {
-            font-weight: bold;
-            color: var(--primary-color);
+            background: var(--primary-gradient);
+            color: white;
+            font-weight: 600;
         }
         
+        tr:hover {
+            background-color: rgba(0, 0, 0, 0.02);
+        }
+        
+        [data-theme="dark"] tr:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+        }
+        
+        /* 强调文本 */
+        .highlight {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+
         /* 页脚 */
         .footer {
             background-color: var(--footer-bg);
             color: var(--footer-text);
-            padding: 2rem;
             text-align: center;
-            margin-top: 2rem;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
+        }
+        
+        /* 回到顶部按钮 */
+        .back-to-top {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            width: 50px;
+            height: 50px;
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
+            opacity: 0;
+            visibility: hidden;
+            z-index: 100;
+        }
+        
+        .back-to-top.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .back-to-top:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
         }
         
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-            }
-            
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .content-title {
-                font-size: 1.5rem;
-            }
-            
-            .section-title {
-                font-size: 1.2rem;
-            }
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.8rem; }
+            .section-title { font-size: 1.3rem; }
         }
     </style>
 </head>
@@ -246,46 +376,44 @@
             <span>Gpnu_Acmer_Wiki</span>
         </a>
         <div class="nav-right">
-            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
-            <div class="nav-icon">🔔</div>
+            <a href="../search.html" class="nav-icon" title="搜索">🔍</a>
+            <a href="../issue.html" class="nav-icon" title="通知">🔔</a>
             <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <!-- 保持登录按钮一致性，虽然内部页可能不需要 -->
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
     <main class="main-content">
-        <div class="content-header">
-            <h1 class="content-title">栈</h1>
-            <p class="content-subtitle">Stack</p>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">1. 什么是栈?</h2>
-            <div class="section-content">
-                <p>栈（Stack）是一种特殊的线性数据结构，它遵循**后进先出**（LIFO, Last In First Out）的原则。就像一摞盘子，你只能从最上面放入盘子（Push），也只能从最上面取走盘子（Pop）。</p>
-                <p>最后放入栈的元素，会最先被取出来。这种特性使得栈在处理需要“回溯”或“撤销”操作的问题时非常有用。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">2. 栈的基本操作</h2>
-            <div class="section-content">
-                <p>栈主要支持以下几种操作：</p>
-                <ul>
-                    <li><strong>push(x)</strong>: 将元素 x 放入栈顶（入栈）。</li>
-                    <li><strong>pop()</strong>: 移除栈顶元素（出栈）。</li>
-                    <li><strong>top()</strong>: 获取栈顶元素的值，但不移除它。</li>
-                    <li><strong>empty()</strong>: 判断栈是否为空。</li>
-                    <li><strong>size()</strong>: 获取栈中元素的数量。</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">3. 栈的实现 (C++ STL)</h2>
-            <div class="section-content">
-                <p>在 C++ 中，我们可以直接使用标准模板库（STL）中的 <code>stack</code> 容器。</p>
-                <div class="code-block">
+        
+<div class="content-header">
+<h1 class="content-title">栈</h1>
+<p class="content-subtitle">Stack</p>
+</div>
+<div class="content-section">
+<h2 class="section-title">1. 什么是栈?</h2>
+<div class="section-content">
+<p>栈（Stack）是一种特殊的线性数据结构，它遵循**后进先出**（LIFO, Last In First Out）的原则。就像一摞盘子，你只能从最上面放入盘子（Push），也只能从最上面取走盘子（Pop）。</p>
+<p>最后放入栈的元素，会最先被取出来。这种特性使得栈在处理需要“回溯”或“撤销”操作的问题时非常有用。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">2. 栈的基本操作</h2>
+<div class="section-content">
+<p>栈主要支持以下几种操作：</p>
+<ul>
+<li><strong>push(x)</strong>: 将元素 x 放入栈顶（入栈）。</li>
+<li><strong>pop()</strong>: 移除栈顶元素（出栈）。</li>
+<li><strong>top()</strong>: 获取栈顶元素的值，但不移除它。</li>
+<li><strong>empty()</strong>: 判断栈是否为空。</li>
+<li><strong>size()</strong>: 获取栈中元素的数量。</li>
+</ul>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">3. 栈的实现 (C++ STL)</h2>
+<div class="section-content">
+<p>在 C++ 中，我们可以直接使用标准模板库（STL）中的 <code>stack</code> 容器。</p>
+<div class="code-block">
 <pre>#include &lt;iostream&gt;
 #include &lt;stack&gt;
 using namespace std;
@@ -299,31 +427,30 @@ int main() {
     s.push(30);
 
     // 输出栈顶元素
-    cout << "栈顶元素: " << s.top() << endl; // 输出 30
+    cout &lt;&lt; "栈顶元素: " &lt;&lt; s.top() &lt;&lt; endl; // 输出 30
 
     // 出栈
     s.pop();
-    cout << "出栈后栈顶元素: " << s.top() << endl; // 输出 20
+    cout &lt;&lt; "出栈后栈顶元素: " &lt;&lt; s.top() &lt;&lt; endl; // 输出 20
 
     // 检查是否为空
     if (!s.empty()) {
-        cout << "栈不为空" << endl;
+        cout &lt;&lt; "栈不为空" &lt;&lt; endl;
     }
     
     // 栈的大小
-    cout << "栈的大小: " << s.size() << endl; // 输出 2
+    cout &lt;&lt; "栈的大小: " &lt;&lt; s.size() &lt;&lt; endl; // 输出 2
 
     return 0;
 }</pre>
-                </div>
-            </div>
-        </div>
-        
-        <div class="content-section">
-            <h2 class="section-title">4. 手写栈的实现</h2>
-            <div class="section-content">
-                <p>我们也可以用数组模拟一个栈，这在算法竞赛中非常常见，因为效率稍高且实现简单。</p>
-                <div class="code-block">
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">4. 手写栈的实现</h2>
+<div class="section-content">
+<p>我们也可以用数组模拟一个栈，这在算法竞赛中非常常见，因为效率稍高且实现简单。</p>
+<div class="code-block">
 <pre>#include &lt;iostream&gt;
 using namespace std;
 
@@ -338,7 +465,7 @@ void push(int x) {
 
 // 出栈
 void pop() {
-    if (tt > 0) tt--;
+    if (tt &gt; 0) tt--;
 }
 
 // 获取栈顶
@@ -354,69 +481,79 @@ bool empty() {
 int main() {
     push(1);
     push(2);
-    cout << top() << endl; // 2
+    cout &lt;&lt; top() &lt;&lt; endl; // 2
     pop();
-    cout << top() << endl; // 1
+    cout &lt;&lt; top() &lt;&lt; endl; // 1
     return 0;
 }</pre>
-                </div>
-            </div>
-        </div>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">5. 复杂度分析</h2>
+<div class="section-content">
+<table>
+<tr>
+<th>操作</th>
+<th>时间复杂度</th>
+</tr>
+<tr>
+<td>入栈 (Push)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>出栈 (Pop)</td>
+<td>O(1)</td>
+</tr>
+<tr>
+<td>获取栈顶 (Top)</td>
+<td>O(1)</td>
+</tr>
+</table>
+</div>
+</div>
 
-        <div class="content-section">
-            <h2 class="section-title">5. 复杂度分析</h2>
-            <div class="section-content">
-                <table>
-                    <tr>
-                        <th>操作</th>
-                        <th>时间复杂度</th>
-                    </tr>
-                    <tr>
-                        <td>入栈 (Push)</td>
-                        <td>O(1)</td>
-                    </tr>
-                    <tr>
-                        <td>出栈 (Pop)</td>
-                        <td>O(1)</td>
-                    </tr>
-                    <tr>
-                        <td>获取栈顶 (Top)</td>
-                        <td>O(1)</td>
-                    </tr>
-                </table>
-            </div>
-        </div>
     </main>
-
     <!-- 页脚 -->
     <footer class="footer">
         <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
     </footer>
 
+    <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
-        
-        // 检查用户偏好或本地存储
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         
-        // 设置初始主题
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
         
-        // 切换主题
         themeToggle.addEventListener('click', () => {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            // 更新主题
             document.documentElement.setAttribute('data-theme', newTheme);
             themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // 保存到本地存储
             localStorage.setItem('theme', newTheme);
         });
+
+        // 回到顶部按钮功能
+        const backToTopBtn = document.getElementById('back-to-top');
+        window.addEventListener('scroll', () => {
+            if (window.pageYOffset > 300) {
+                backToTopBtn.classList.add('visible');
+            } else {
+                backToTopBtn.classList.remove('visible');
+            }
+        });
+        
+        backToTopBtn.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        });
     </script>
+
 </body>
 </html>

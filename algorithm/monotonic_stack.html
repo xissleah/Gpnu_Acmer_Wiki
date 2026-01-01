@@ -4,120 +4,177 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>单调栈 | Monotonic Stack</title>
+    
     <style>
-        /* CSS变量定义 - 浅色模式 */
+        /* CSS变量定义 - 现代化配色 */
         :root {
-            --primary-color: #007bff;
+            /* 主色调 */
+            --primary-color: #3a7bd5;
+            --primary-gradient: linear-gradient(135deg, #3a7bd5 0%, #00d2ff 100%);
             --primary-dark: #0056b3;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --text-light: #666666;
-            --header-bg: #ffffff;
-            --card-bg: #ffffff;
-            --footer-bg: #333333;
-            --footer-text: #ffffff;
+            
+            /* 背景遮罩 - 浅色模式下让背景图稍微变白一点 */
+            --bg-overlay: rgba(255, 255, 255, 0.4); 
+            
+            /* 卡片背景 */
+            --card-bg: rgba(255, 255, 255, 0.75); 
+            --header-bg: rgba(255, 255, 255, 0.85);
+            
+            --text-color: #2c3e50;
+            --text-light: #4a5a6a;
+            --border-color: rgba(0,0,0,0.05);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --border-color: #eee;
+            --glass-border: 1px solid rgba(255, 255, 255, 0.6);
+            --footer-bg: rgba(44, 62, 80, 0.9);
+            --footer-text: #bdc3c7;
+            
+            /* 代码块背景 */
+            --code-bg: rgba(0, 0, 0, 0.05);
         }
         
         /* 深色模式变量 */
         [data-theme="dark"] {
             --primary-color: #667eea;
+            --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             --primary-dark: #5568d3;
-            --bg-color: #121212;
-            --text-color: #ffffff;
-            --text-light: #cccccc;
-            --header-bg: #1e1e1e;
-            --card-bg: #2a2a2a;
-            --footer-bg: #1e1e1e;
-            --footer-text: #cccccc;
-            --shadow-color: rgba(0, 0, 0, 0.3);
-            --border-color: #333;
+            
+            /* 深色模式下让背景图变暗 */
+            --bg-overlay: rgba(15, 23, 42, 0.85); 
+            
+            --card-bg: rgba(30, 41, 59, 0.7);
+            --header-bg: rgba(15, 23, 42, 0.9);
+            
+            --text-color: #e2e8f0;
+            --text-light: #cbd5e1;
+            --border-color: rgba(255,255,255,0.1);
+            --shadow-color: rgba(0, 0, 0, 0.4);
+            --glass-border: 1px solid rgba(255, 255, 255, 0.1);
+            --footer-bg: rgba(11, 17, 32, 0.95);
+            --footer-text: #94a3b8;
+            
+            --code-bg: rgba(0, 0, 0, 0.3);
         }
         
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
         
         body {
-            font-family: 'Arial', sans-serif;
+            font-family: 'Segoe UI', 'Roboto', 'Helvetica Neue', Arial, sans-serif;
             line-height: 1.6;
-            background-color: var(--bg-color);
             color: var(--text-color);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            
+            /* --- 背景图设置 --- */
+            background-image: url('../logo/citlali.jpg');
+            background-size: cover;      
+            background-position: center; 
+            background-attachment: fixed;
+            background-repeat: no-repeat;
         }
-        
+
+        /* 背景遮罩层 */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background-color: var(--bg-overlay); 
+            z-index: -1; 
+            backdrop-filter: blur(3px); 
+            transition: background-color 0.3s ease;
+        }
+
         /* 顶部导航栏 */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 1rem 2rem;
+            padding: 0.8rem 2rem;
             background-color: var(--header-bg);
-            box-shadow: 0 2px 5px var(--shadow-color);
+            backdrop-filter: blur(15px); 
+            -webkit-backdrop-filter: blur(15px);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: var(--glass-border);
         }
         
         .logo {
             display: flex;
             align-items: center;
-            font-size: 1.5rem;
-            font-weight: bold;
+            font-size: 1.4rem;
+            font-weight: 800;
             color: var(--text-color);
             text-decoration: none;
+            letter-spacing: -0.5px;
+            text-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
         
+        /* --- Logo 图标样式 (正圆形) --- */
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
-            border-radius: 5px;
+            width: 42px;
+            height: 42px;
+            margin-right: 12px;
+            border-radius: 50%; /* 正圆 */
+            background: rgba(255,255,255,0.2);
+            box-shadow: 0 2px 5px var(--shadow-color);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            border: 2px solid var(--primary-color);
         }
         
         .logo-icon img {
             width: 100%;
             height: 100%;
-            object-fit: contain;
+            object-fit: cover;
         }
         
+        /* --- 导航栏右侧布局 (严格对齐) --- */
         .nav-right {
             display: flex;
             align-items: center;
-            gap: 1rem;
+            gap: 1.5rem;
         }
         
-        .nav-icon {
-            font-size: 1.2rem;
+        /* 通用图标容器样式 */
+        .nav-icon, .theme-toggle {
+            font-size: 1.3rem;
             cursor: pointer;
             color: var(--text-light);
-            transition: color 0.3s, transform 0.3s ease;
-        }
-        
-        .nav-icon:hover {
-            color: var(--primary-color);
-        }
-        
-        .theme-toggle {
-            background: none;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* 布局属性 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;  /* 固定宽度 */
+            height: 40px; /* 固定高度 */
+            text-decoration: none;
             border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--text-light);
-            transition: color 0.3s ease, transform 0.3s ease;
-            padding: 0;
-            line-height: 1;
-            vertical-align: middle;
-            display: inline-block;
+            background: transparent;
         }
         
-        .theme-toggle:hover {
-            color: var(--primary-color);
-            transform: scale(1.3);
+        .nav-icon:hover { 
+            color: var(--primary-color); 
+            transform: translateY(-2px);
+            text-shadow: 0 0 10px var(--primary-color);
+        }
+        
+        .theme-toggle:hover { 
+            color: #f1c40f; 
+            transform: scale(1.3); 
         }
         
         /* 主要内容区域 */
@@ -125,75 +182,103 @@
             max-width: 1200px;
             margin: 0 auto;
             padding: 2rem;
+            width: 100%;
+            position: relative;
+            z-index: 1;
         }
         
         .content-header {
             margin-bottom: 2rem;
+            text-align: center;
+            padding: 2rem;
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            border: var(--glass-border);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
         }
         
         .content-title {
-            font-size: 2rem;
-            font-weight: bold;
+            font-size: 2.2rem;
+            font-weight: 800;
             margin-bottom: 0.5rem;
             color: var(--text-color);
+            background: var(--primary-gradient);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
         }
         
         .content-subtitle {
             color: var(--text-light);
-            font-size: 1rem;
+            font-size: 1.1rem;
         }
         
+        /* 文章章节卡片化 */
         .content-section {
             background-color: var(--card-bg);
-            border-radius: 8px;
+            backdrop-filter: blur(12px); 
+            -webkit-backdrop-filter: blur(12px);
+            border: var(--glass-border);
+            border-radius: 16px;
             padding: 2rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
+            box-shadow: 0 8px 32px 0 var(--shadow-color);
             margin-bottom: 2rem;
+            transition: transform 0.3s ease;
+        }
+        
+        .content-section:hover {
+            transform: translateY(-5px);
         }
         
         .section-title {
-            font-size: 1.5rem;
+            font-size: 1.6rem;
             font-weight: bold;
-            margin-bottom: 1rem;
-            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            color: var(--text-color);
+            border-left: 5px solid var(--primary-color);
+            padding-left: 15px;
         }
         
         .section-content {
-            margin-bottom: 1.5rem;
             line-height: 1.8;
+            color: var(--text-light);
         }
         
         .section-content p {
             margin-bottom: 1rem;
         }
-
-        .section-content ol, .section-content ul {
+        
+        .section-content ul, .section-content ol {
             margin-left: 1.5rem;
             margin-bottom: 1rem;
         }
-
+        
         .section-content li {
             margin-bottom: 0.5rem;
-            line-height: 1.8;
         }
         
+        /* 代码块样式优化 */
         .code-block {
-            background-color: #f5f5f5;
-            border-radius: 4px;
-            padding: 1rem;
-            font-family: 'Courier New', Courier, monospace;
+            background-color: var(--code-bg);
+            border-radius: 8px;
+            padding: 1.2rem;
+            font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
             overflow-x: auto;
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
         }
         
-        [data-theme="dark"] .code-block {
-            background-color: #1e1e1e;
-            color: #d4d4d4;
+        pre {
+            margin: 0;
         }
         
+        /* 表格样式 */
         .table-container {
             overflow-x: auto;
             margin-bottom: 1.5rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid var(--border-color);
         }
         
         table {
@@ -202,23 +287,23 @@
         }
         
         th, td {
-            padding: 0.8rem;
+            padding: 1rem;
             text-align: left;
             border-bottom: 1px solid var(--border-color);
         }
         
         th {
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
-            font-weight: bold;
+            font-weight: 600;
         }
         
         tr:hover {
-            background-color: rgba(0, 123, 255, 0.05);
+            background-color: rgba(0, 0, 0, 0.02);
         }
         
         [data-theme="dark"] tr:hover {
-            background-color: rgba(102, 126, 234, 0.1);
+            background-color: rgba(255, 255, 255, 0.05);
         }
         
         /* 强调文本 */
@@ -232,8 +317,10 @@
             background-color: var(--footer-bg);
             color: var(--footer-text);
             text-align: center;
-            padding: 2rem;
-            margin-top: 2rem;
+            padding: 3rem 2rem;
+            margin-top: auto;
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(255,255,255,0.05);
         }
         
         /* 回到顶部按钮 */
@@ -243,7 +330,7 @@
             right: 2rem;
             width: 50px;
             height: 50px;
-            background-color: var(--primary-color);
+            background: var(--primary-gradient);
             color: white;
             border: none;
             border-radius: 50%;
@@ -252,10 +339,11 @@
             align-items: center;
             justify-content: center;
             font-size: 1.5rem;
-            box-shadow: 0 2px 10px var(--shadow-color);
-            transition: background-color 0.3s ease, transform 0.3s ease;
+            box-shadow: 0 4px 15px var(--shadow-color);
+            transition: all 0.3s ease;
             opacity: 0;
             visibility: hidden;
+            z-index: 100;
         }
         
         .back-to-top.visible {
@@ -264,113 +352,96 @@
         }
         
         .back-to-top:hover {
-            background-color: var(--primary-dark);
-            transform: scale(1.1);
+            transform: translateY(-5px);
+            box-shadow: 0 6px 20px rgba(58, 123, 213, 0.5);
         }
         
         /* 响应式设计 */
         @media (max-width: 768px) {
-            .header {
-                padding: 1rem;
-            }
-            
-            .main-content {
-                padding: 1rem;
-            }
-            
-            .content-section {
-                padding: 1.5rem;
-            }
-            
-            .content-title {
-                font-size: 1.5rem;
-            }
-            
-            .section-title {
-                font-size: 1.2rem;
-            }
+            .header { padding: 1rem; }
+            .main-content { padding: 1rem; }
+            .content-section { padding: 1.5rem; }
+            .content-title { font-size: 1.8rem; }
+            .section-title { font-size: 1.3rem; }
         }
     </style>
 </head>
 <body>
     <!-- 顶部导航栏 -->
     <header class="header">
-        <a href="index.html" class="logo">
+        <a href="../index.html" class="logo">
             <div class="logo-icon">
                 <img src="../logo/Gpnu.png" alt="Logo">
             </div>
             <span>Gpnu_Acmer_Wiki</span>
         </a>
         <div class="nav-right">
-            <a href="search.html" class="nav-icon" style="text-decoration: none;">🔍</a>
-            <div class="nav-icon">🔔</div>
+            <a href="../search.html" class="nav-icon" title="搜索">🔍</a>
+            <a href="../issue.html" class="nav-icon" title="通知">🔔</a>
             <button class="theme-toggle" id="theme-toggle" title="切换深色模式">🌙</button>
+            <!-- 保持登录按钮一致性，虽然内部页可能不需要 -->
         </div>
     </header>
 
-    <!-- 主要内容区域 -->
     <main class="main-content">
-        <div class="content-header">
-            <h1 class="content-title">单调栈</h1>
-            <p class="content-subtitle">Monotonic Stack - O(n) 解决 "下一个更大元素" 问题</p>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">1. 什么是单调栈?</h2>
-            <div class="section-content">
-                <p>单调栈是一种特殊的栈结构。顾名思义，栈内的元素（从栈底到栈顶）是<span class="highlight">严格单调递增</span>或<span class="highlight">严格单调递减</span>的。</p>
-                <p><strong>特性：</strong> 通过维护栈的单调性，我们可以高效地找到数组中某个元素<strong>左边或右边第一个比它大（或小）的元素</strong>。</p>
-                <ul>
-                    <li><strong>单调递增栈：</strong> 栈底到栈顶从小到大。用于找第一个<strong>比自己小</strong>的元素。</li>
-                    <li><strong>单调递减栈：</strong> 栈底到栈顶从大到小。用于找第一个<strong>比自己大</strong>的元素。</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">2. 核心应用场景：NGE 问题</h2>
-            <div class="section-content">
-                <p>最经典的应用是 <strong>Next Greater Element (NGE)</strong> 问题：</p>
-                <p><em>题目：给定一个数组，求每个元素右边第一个比它大的元素。</em></p>
-                <p><strong>暴力做法：</strong> 对于每个元素 <code>i</code>，遍历 <code>i+1</code> 到 <code>n</code>，找到第一个大于 <code>a[i]</code> 的数。时间复杂度是 <strong>O(n²)</strong>。</p>
-                <p><strong>单调栈做法：</strong> 只需要遍历一次数组，每个元素进栈一次，出栈一次。时间复杂度是 <strong>O(n)</strong>。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">3. 算法图解：排队比身高</h2>
-            <div class="section-content">
-                <p>我们可以把单调栈（以查找右边第一个更大元素为例）想象成<strong>排队比身高</strong>：</p>
-                <p>假设我们维护一个<strong>从栈底到栈顶递减</strong>的栈（高个子在下面，矮个子在上面）。</p>
-                <ol>
-                    <li>现在来了一个新元素 <code>X</code>。</li>
-                    <li>如果 <code>X</code> 的身高比栈顶的人<strong>高</strong>，那么对于栈顶那个人来说，<code>X</code> 就是他往右看遇到的第一个比他高的人！</li>
-                    <li>于是栈顶的人找到了答案，可以安心“出栈”离开了。</li>
-                    <li>重复这个过程，直到栈顶的人比 <code>X</code> 高，或者栈空了。</li>
-                    <li>最后把 <code>X</code> 放入栈中（入列）。</li>
-                </ol>
-                <p><strong>结论：</strong> 谁把栈顶“挤”走的，谁就是栈顶元素的“下一个更大元素”。</p>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">4. 通用代码模板 (C++)</h2>
-            <div class="section-content">
-                <p>在 ACM/LeetCode 中，我们通常<strong>在栈中存索引（下标）</strong>，而不是直接存数值，因为下标可以推算出距离，也可以通过下标访问数值。</p>
-                <p>以下模板解决：<strong>寻找数组中每个元素右边第一个比它大的元素</strong>。</p>
-                <div class="code-block">
+        
+<div class="content-header">
+<h1 class="content-title">单调栈</h1>
+<p class="content-subtitle">Monotonic Stack - O(n) 解决 "下一个更大元素" 问题</p>
+</div>
+<div class="content-section">
+<h2 class="section-title">1. 什么是单调栈?</h2>
+<div class="section-content">
+<p>单调栈是一种特殊的栈结构。顾名思义，栈内的元素（从栈底到栈顶）是<span class="highlight">严格单调递增</span>或<span class="highlight">严格单调递减</span>的。</p>
+<p><strong>特性：</strong> 通过维护栈的单调性，我们可以高效地找到数组中某个元素<strong>左边或右边第一个比它大（或小）的元素</strong>。</p>
+<ul>
+<li><strong>单调递增栈：</strong> 栈底到栈顶从小到大。用于找第一个<strong>比自己小</strong>的元素。</li>
+<li><strong>单调递减栈：</strong> 栈底到栈顶从大到小。用于找第一个<strong>比自己大</strong>的元素。</li>
+</ul>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">2. 核心应用场景：NGE 问题</h2>
+<div class="section-content">
+<p>最经典的应用是 <strong>Next Greater Element (NGE)</strong> 问题：</p>
+<p><em>题目：给定一个数组，求每个元素右边第一个比它大的元素。</em></p>
+<p><strong>暴力做法：</strong> 对于每个元素 <code>i</code>，遍历 <code>i+1</code> 到 <code>n</code>，找到第一个大于 <code>a[i]</code> 的数。时间复杂度是 <strong>O(n²)</strong>。</p>
+<p><strong>单调栈做法：</strong> 只需要遍历一次数组，每个元素进栈一次，出栈一次。时间复杂度是 <strong>O(n)</strong>。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">3. 算法图解：排队比身高</h2>
+<div class="section-content">
+<p>我们可以把单调栈（以查找右边第一个更大元素为例）想象成<strong>排队比身高</strong>：</p>
+<p>假设我们维护一个<strong>从栈底到栈顶递减</strong>的栈（高个子在下面，矮个子在上面）。</p>
+<ol>
+<li>现在来了一个新元素 <code>X</code>。</li>
+<li>如果 <code>X</code> 的身高比栈顶的人<strong>高</strong>，那么对于栈顶那个人来说，<code>X</code> 就是他往右看遇到的第一个比他高的人！</li>
+<li>于是栈顶的人找到了答案，可以安心“出栈”离开了。</li>
+<li>重复这个过程，直到栈顶的人比 <code>X</code> 高，或者栈空了。</li>
+<li>最后把 <code>X</code> 放入栈中（入列）。</li>
+</ol>
+<p><strong>结论：</strong> 谁把栈顶“挤”走的，谁就是栈顶元素的“下一个更大元素”。</p>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">4. 通用代码模板 (C++)</h2>
+<div class="section-content">
+<p>在 ACM/LeetCode 中，我们通常<strong>在栈中存索引（下标）</strong>，而不是直接存数值，因为下标可以推算出距离，也可以通过下标访问数值。</p>
+<p>以下模板解决：<strong>寻找数组中每个元素右边第一个比它大的元素</strong>。</p>
+<div class="code-block">
 <pre>#include &lt;bits/stdc++.h&gt;
 using namespace std;
 
-vector&lt;int&gt; nextGreaterElement(vector&lt;int&gt;& nums) {
+vector&lt;int&gt; nextGreaterElement(vector&lt;int&gt;&amp; nums) {
     int n = nums.size();
     vector&lt;int&gt; ans(n, -1); // 结果数组，默认为 -1
     stack&lt;int&gt; st;          // 单调栈，存下标
     
-    for (int i = 0; i < n; i++) {
-        // 当栈不为空，且当前元素 > 栈顶元素指向的值
+    for (int i = 0; i &lt; n; i++) {
+        // 当栈不为空，且当前元素 &gt; 栈顶元素指向的值
         // 说明当前元素 nums[i] 就是栈顶元素的 NGE
-        while (!st.empty() && nums[i] > nums[st.top()]) {
+        while (!st.empty() &amp;&amp; nums[i] &gt; nums[st.top()]) {
             int index = st.top(); // 取出栈顶下标
             st.pop();             // 弹出
             ans[index] = nums[i]; // 记录答案：index 的 NGE 是 nums[i]
@@ -379,96 +450,81 @@ vector&lt;int&gt; nextGreaterElement(vector&lt;int&gt;& nums) {
     }
     return ans;
 }</pre>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">5. 变种总结表</h2>
-            <div class="section-content">
-                <p>根据题目要求，选择维护递增栈还是递减栈，以及是找左边还是右边。</p>
-                <div class="table-container">
-                    <table>
-                        <tr>
-                            <th>问题目标</th>
-                            <th>栈的单调性 (栈底->栈顶)</th>
-                            <th>核心判断条件</th>
-                        </tr>
-                        <tr>
-                            <td>右边第一个<strong>更大</strong></td>
-                            <td>递减</td>
-                            <td><code>nums[i] > nums[st.top()]</code></td>
-                        </tr>
-                        <tr>
-                            <td>右边第一个<strong>更小</strong></td>
-                            <td>递增</td>
-                            <td><code>nums[i] < nums[st.top()]</code></td>
-                        </tr>
-                        <tr>
-                            <td>左边第一个<strong>更大</strong></td>
-                            <td>递减 (倒序遍历 或 入栈前记录)</td>
-                            <td>同上，但逻辑相反</td>
-                        </tr>
-                        <tr>
-                            <td>左边第一个<strong>更小</strong></td>
-                            <td>递增 (倒序遍历 或 入栈前记录)</td>
-                            <td>同上，但逻辑相反</td>
-                        </tr>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-        <div class="content-section">
-            <h2 class="section-title">6. 经典题目</h2>
-            <div class="section-content">
-                <ul>
-                    <li><strong>每日温度 (Daily Temperatures)：</strong> 求还需要等几天才能等到更高的温度？(典型的右边第一个更大元素，求下标差值)</li>
-                    <li><strong>柱状图中最大的矩形 (Largest Rectangle in Histogram)：</strong> 需要找每根柱子左右两边第一个比它矮的位置。(使用单调递增栈)</li>
-                    <li><strong>接雨水 (Trapping Rain Water)：</strong> 利用单调栈找凹槽结构。</li>
-                </ul>
-            </div>
-        </div>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">5. 变种总结表</h2>
+<div class="section-content">
+<p>根据题目要求，选择维护递增栈还是递减栈，以及是找左边还是右边。</p>
+<div class="table-container">
+<table>
+<tr>
+<th>问题目标</th>
+<th>栈的单调性 (栈底-&gt;栈顶)</th>
+<th>核心判断条件</th>
+</tr>
+<tr>
+<td>右边第一个<strong>更大</strong></td>
+<td>递减</td>
+<td><code>nums[i] &gt; nums[st.top()]</code></td>
+</tr>
+<tr>
+<td>右边第一个<strong>更小</strong></td>
+<td>递增</td>
+<td><code>nums[i] &lt; nums[st.top()]</code></td>
+</tr>
+<tr>
+<td>左边第一个<strong>更大</strong></td>
+<td>递减 (倒序遍历 或 入栈前记录)</td>
+<td>同上，但逻辑相反</td>
+</tr>
+<tr>
+<td>左边第一个<strong>更小</strong></td>
+<td>递增 (倒序遍历 或 入栈前记录)</td>
+<td>同上，但逻辑相反</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="content-section">
+<h2 class="section-title">6. 经典题目</h2>
+<div class="section-content">
+<ul>
+<li><strong>每日温度 (Daily Temperatures)：</strong> 求还需要等几天才能等到更高的温度？(典型的右边第一个更大元素，求下标差值)</li>
+<li><strong>柱状图中最大的矩形 (Largest Rectangle in Histogram)：</strong> 需要找每根柱子左右两边第一个比它矮的位置。(使用单调递增栈)</li>
+<li><strong>接雨水 (Trapping Rain Water)：</strong> 利用单调栈找凹槽结构。</li>
+</ul>
+</div>
+</div>
 
     </main>
-
     <!-- 页脚 -->
     <footer class="footer">
         <p>Copyright © 2025 Gpnu_Acmer_Wiki / All Rights Reserved</p>
     </footer>
 
-    <!-- 回到顶部按钮 -->
     <button id="back-to-top" class="back-to-top" title="回到顶部">↑</button>
-
     <script>
         // 深色模式切换功能
         const themeToggle = document.getElementById('theme-toggle');
-        
-        // 检查用户偏好或本地存储
         const currentTheme = localStorage.getItem('theme') || 
                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
         
-        // 设置初始主题
         document.documentElement.setAttribute('data-theme', currentTheme);
         themeToggle.textContent = currentTheme === 'dark' ? '☀️' : '🌙';
         
-        // 切换主题
         themeToggle.addEventListener('click', () => {
             const currentTheme = document.documentElement.getAttribute('data-theme');
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
-            
-            // 更新主题
             document.documentElement.setAttribute('data-theme', newTheme);
             themeToggle.textContent = newTheme === 'dark' ? '☀️' : '🌙';
-            
-            // 保存到本地存储
             localStorage.setItem('theme', newTheme);
         });
 
         // 回到顶部按钮功能
         const backToTopBtn = document.getElementById('back-to-top');
-        
-        // 监听滚动事件
         window.addEventListener('scroll', () => {
             if (window.pageYOffset > 300) {
                 backToTopBtn.classList.add('visible');
@@ -477,7 +533,6 @@ vector&lt;int&gt; nextGreaterElement(vector&lt;int&gt;& nums) {
             }
         });
         
-        // 点击回到顶部
         backToTopBtn.addEventListener('click', () => {
             window.scrollTo({
                 top: 0,
@@ -485,5 +540,6 @@ vector&lt;int&gt; nextGreaterElement(vector&lt;int&gt;& nums) {
             });
         });
     </script>
+
 </body>
 </html>
